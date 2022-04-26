@@ -155,6 +155,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   notePrefab: {fileID: 848576772978090438, guid: e914aa2c2b6a2394f93aaeb0038a55eb,
     type: 3}
+  holdPrefab: {fileID: 5744367414494298441, guid: 2edee2eec6904584d9d168eb2605a7f6,
+    type: 3}
   columns:
   - gObj: {fileID: 1572897791}
     key: 100
@@ -164,10 +166,11 @@ MonoBehaviour:
     key: 106
   - gObj: {fileID: 277210571}
     key: 107
-  bpm: 60
-  travelSpeed: 3
+  bpm: 100
+  travelSpeed: 5
   dir: {x: 0, y: -1}
   hitWindow: 0.1
+  noteAdvance: 5
   noteTimeout: 3
   scoreText: {fileID: 105423348}
   score: 0
@@ -197,7 +200,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 674f652252d88c746a0c5ea1ce4a0efe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  fname: map1.txt
+  fnameOver: 
 --- !u!1 &41231847
 GameObject:
   m_ObjectHideFlags: 0

@@ -13,16 +13,37 @@ public class NoteSerializer : MonoBehaviour
 
     public class Map
     {
-        public struct Note
+        public class Note
         {
             public int lane;
             public float beat;
 
+            public bool hold;
+            public float holdLen;
+
+            public Note()
+            {
+                lane = 0;
+                beat = 0;
+                hold = false;
+                holdLen = 0;
+            }
+
             public Note(int lane_, float beat_)
             {
-                this.lane = lane_;
-                this.beat = beat_;
+                lane = lane_;
+                beat = beat_;
+                hold = false;
+                holdLen = 0;
             }
+            public Note(int lane_, float beat_, bool hold_, float holdLen_)
+            {
+                lane = lane_;
+                beat = beat_;
+                hold = hold_;
+                holdLen = holdLen_;
+            }
+
         }
 
         public string name;
@@ -34,17 +55,33 @@ public class NoteSerializer : MonoBehaviour
             notes = new List<Note>();
         }
 
+        public void addNote(Note n)
+        {
+            MusicPlayer.Column col = MusicPlayer.sing.columns[n.lane];
+            if (n.beat < col.blockedTil) Debug.LogError("Spawning a note in a blocked segment");
+            else
+            {
+                notes.Add(n);
+            }
+
+            if (n.hold) {
+                // Update column blocking
+                col.blockedTil = Mathf.Max(col.blockedTil, n.beat + n.holdLen);
+            }
+        }
+
     }
 
 
-    public string fname;
+    public string fnameOver;
     private Map map;
 
     // Acceptable char pool for category data
     // L-left single R-right single
+    List<char> typePool;
     List<char> catPool;
     List<char> lanePool;
-    char accentChar = '~';
+    List<char> accentPool;
 
     float beat = 0;
     MusicPlayer mPlay;
@@ -57,14 +94,25 @@ public class NoteSerializer : MonoBehaviour
     void Start()
     {
         // Generate charpools
+        typePool = new List<char>();
         catPool = new List<char>();
         lanePool = new List<char>();
-        for (char c = 'a'; c <= 'z'; c++) catPool.Add(c);
-        for (char c = 'A'; c <= 'Z'; c++) catPool.Add(c);
+        accentPool = new List<char>();
+
+        catPool.Add('L');
+        catPool.Add('R');
+        typePool.Add('H');
         for (char c = '0'; c <= '9'; c++) lanePool.Add(c);
+
+        accentPool.Add('~');
 
         mPlay = GetComponent<MusicPlayer>();
 
+        if (fnameOver.Length > 0) parseMap(fnameOver);
+    }
+
+    private void parseMap(string fname)
+    {
         string fpath = Application.dataPath + "/Maps/" + fname;
         StreamReader reader = new StreamReader(fpath);
         string data = reader.ReadToEnd();
@@ -98,7 +146,8 @@ public class NoteSerializer : MonoBehaviour
         }
 
         // Map is populated now, load into music player
-        foreach (Map.Note n in map.notes) {
+        foreach (Map.Note n in map.notes)
+        {
             mPlay.enqueueNote(n);
         }
     }
@@ -132,49 +181,51 @@ public class NoteSerializer : MonoBehaviour
         return ParseState.ERR;
     }
 
+    class StringScanner {
+        public string str;
+        public int ptr;
+
+        public StringScanner(string str_)
+        {
+            this.str = str_;
+            ptr = 0;
+        }
+
+        public string getSegment(List<char> charlist)
+        {
+            string o = "";
+            while (ptr < str.Length)
+            {
+                if (charlist.Contains(str[ptr])) o += str[ptr];
+                else break;
+
+                ptr++;
+            }
+
+            return o;
+        }
+    }
 
     private ParseState parseSTREAM(string tok)
     {
+        StringScanner scanner = new StringScanner(tok);
+
         // Single note reader
-        // Read a column
-        int i = 0;
-        string col = "";
-        while (i<tok.Length)
+        string type = scanner.getSegment(typePool);
+        string col = scanner.getSegment(catPool);
+        string lane = scanner.getSegment(lanePool);
+        int accent = scanner.getSegment(accentPool).Length;
+
+
+
+        // Write to note
+        bool hold = false;
+        float holdLen = 0;
+
+        if (type.Equals("H"))
         {
-            if (catPool.Contains(tok[i])) col += tok[i];
-            else break;
-
-            i++;
-        }
-
-        switch (col)
-        {
-            case "R":
-            case "L":
-                break;
-            default:
-                Debug.LogError("Illegal category: " + col);
-                break;
-        }
-
-        // Read lane
-        string lane = "";
-        while (i<tok.Length)
-        {
-            if (lanePool.Contains(tok[i])) lane += tok[i];
-            else break;
-
-            i++;
-        }
-
-        // Read accent (can have different amounts)
-        int accent = 0;
-        while (i < tok.Length)
-        {
-            if (tok[i] == accentChar) accent++;
-            else break;
-
-            i++;
+            hold = true;
+            holdLen = 2f;
         }
 
         // Empty = no lane specifier, defaults to the left lane of the category
@@ -206,10 +257,10 @@ public class NoteSerializer : MonoBehaviour
 
             int sCol = Random.Range(leftValid, leftValid + validCols);
 
-            for (int j=0; j<=accent; j++) map.notes.Add(new Map.Note(sCol + j, beat));
+            for (int j=0; j<=accent; j++) map.addNote(new Map.Note(sCol + j, beat, hold, holdLen));
 
         } else {
-            map.notes.Add(new Map.Note(l, beat));
+            map.addNote(new Map.Note(l, beat, hold, holdLen));
         }
 
         // Normally look for a beat specifier, just advance beat here

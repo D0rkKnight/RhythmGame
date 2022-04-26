@@ -1,11 +1,11 @@
 mapname: Hello World
 
 streamstart
-L1
+HL1
 L1~
 L2
-L2~~
+HL2~~
 R1
 R1~
-R2
+HR2
 R2~~

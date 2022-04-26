@@ -11,32 +11,62 @@ public class MusicPlayer : MonoBehaviour
         public GameObject gameObj;
         public float hitTime; // In seconds, as Unity standard
         public Column col;
+        public bool dead;
 
         public NoteObj(GameObject gameObj_, float hitTime_, Column col_)
         {
             this.gameObj = gameObj_;
             this.hitTime = hitTime_;
             this.col = col_;
+            dead = false;
+        }
+
+        public virtual void highlight(Color c)
+        {
+            gameObj.GetComponent<SpriteRenderer>().color = c;
+        }
+    }
+
+    public class HoldObj : NoteObj
+    {
+        public float holdBeats;
+        public bool held;
+
+        public HoldObj(GameObject gameObj_, float hitTime_, Column col_, float holdBeats_) : base(gameObj_, hitTime_, col_)
+        {
+            holdBeats = holdBeats_;
+            held = false;
+        }
+
+        public override void highlight(Color c)
+        {
+            base.highlight(c);
+            Transform bg = gameObj.transform.Find("HoldBar");
+            bg.GetComponent<SpriteRenderer>().color = c;
         }
     }
 
     [System.Serializable]
-    public struct Column
+    public class Column
     {
         public GameObject gObj;
         public KeyCode key;
+        public float blockedTil; // in beats
 
         public Column(GameObject gObj_, KeyCode key_)
         {
             this.gObj = gObj_;
             this.key = key_;
+            blockedTil = 0;
         }
     }
 
     public GameObject notePrefab;
+    public GameObject holdPrefab;
     public Column[] columns;
     public float bpm = 60;
     private float beatInterval;
+    private float currBeat;
     private float lastBeat;
     private float songStart;
     private float songStartDelay = 3f;
@@ -54,9 +84,14 @@ public class MusicPlayer : MonoBehaviour
     private List<NoteObj> notes;
     private List<NoteSerializer.Map.Note> noteQueue;
 
+    public static MusicPlayer sing;
+
     // Start is called before the first frame update
     void Start()
     {
+        if (sing != null) Debug.LogError("Singleton broken");
+        sing = this;
+
         notes = new List<NoteObj>();
         noteQueue = new List<NoteSerializer.Map.Note>();
 
@@ -69,6 +104,8 @@ public class MusicPlayer : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        currBeat = (Time.time - songStart) / beatInterval;
+
         // If eclipsing the beat threshold, spawn a beat.
         if (Time.time > lastBeat + beatInterval)
         {
@@ -84,12 +121,8 @@ public class MusicPlayer : MonoBehaviour
             
             if (Time.time + noteAdvance > bTime)
             {
-                // Load in note
-                GameObject nObj = Instantiate(notePrefab);
-                Column col = columns[n.lane];
-
-                notes.Add(new NoteObj(nObj, bTime, col));
-
+                if (n.hold) spawnHold(n);
+                else spawnNote(n);
                 dump.Add(n);
             }
         }
@@ -112,7 +145,9 @@ public class MusicPlayer : MonoBehaviour
             Vector2 p = tPos + dp;
             note.gameObj.transform.position = new Vector3(p.x, p.y, -1);
 
-            if (dt < -noteTimeout) passed.Add(note);
+            float noteExtension = 0;
+            if (note is HoldObj) noteExtension += ((HoldObj)note).holdBeats * beatInterval;
+            if (dt < -(noteTimeout + noteExtension)) passed.Add(note);
         }
 
         // Clean dead note buffer
@@ -123,11 +158,12 @@ public class MusicPlayer : MonoBehaviour
         {
             if (Input.GetKeyDown(col.key))
             {
-                // Get bets note within the acceptable input range
+                // Get best note within the acceptable input range
                 NoteObj bestNote = null;
 
                 foreach (NoteObj note in notes)
                 {
+                    if (note.dead) continue;
                     if (!col.Equals(note.col)) continue;
 
                     if (Mathf.Abs(note.hitTime - Time.time) < hitWindow)
@@ -140,7 +176,15 @@ public class MusicPlayer : MonoBehaviour
                 if (bestNote != null)
                 {
                     addScore(100);
-                    kill(bestNote);
+                    if (bestNote is HoldObj)
+                    {
+                        ((HoldObj)bestNote).held = true;
+                        bestNote.highlight(Color.white);
+                    }
+                    else // Kill if regular note
+                    {
+                        kill(bestNote);
+                    }
                 }
 
                 // Highlight trigger box
@@ -152,6 +196,15 @@ public class MusicPlayer : MonoBehaviour
             {
                 // Reset color
                 highlightCol(col, Color.white);
+
+                // Mark held holds as dead
+                foreach(NoteObj n in notes) {
+                    if (n is HoldObj && n.col.Equals(col) && ((HoldObj) n).held)
+                    {
+                        n.dead = true;
+                        n.highlight(Color.grey);
+                    }
+                }
             }
         }
     }
@@ -171,8 +224,23 @@ public class MusicPlayer : MonoBehaviour
     private void onBeat()
     {
 
-        // Spawn some sample notes for testing
-        // notes.Add(new NoteObj(Instantiate(notePrefab), Time.time + 5f, columns[0]));
+        foreach (NoteObj n in notes)
+        {
+            if (n is HoldObj)
+            {
+                HoldObj hn = (HoldObj)n;
+
+                // Don't give ticking when first hit
+                if (Mathf.Abs(hn.hitTime - Time.time) < hitWindow) continue;
+
+                // If still within point range
+                if (hn.held && Time.time < hn.hitTime + (hn.holdBeats * beatInterval))
+                {
+                    addScore(10);
+                }
+            }
+        }
+
     }
 
     private void highlightCol(Column col, Color c)
@@ -186,4 +254,30 @@ public class MusicPlayer : MonoBehaviour
     {
         noteQueue.Add(note);
     }
+
+    private void spawnNote(NoteSerializer.Map.Note n)
+    {
+        // Load in note
+        float bTime = songStart + (beatInterval * n.beat);
+        GameObject nObj = Instantiate(notePrefab);
+        Column col = columns[n.lane];
+
+        notes.Add(new NoteObj(nObj, bTime, col));
+    }
+
+    private void spawnHold(NoteSerializer.Map.Note n)
+    {
+        if (!n.hold) Debug.LogError("Data pack does not designate a hold");
+
+        float bTime = songStart + (beatInterval * n.beat);
+
+        GameObject nObj = Instantiate(holdPrefab);
+        Transform bg = nObj.transform.Find("HoldBar");
+
+        // Scale background bar appropriately
+        bg.localScale = new Vector3(bg.localScale.x, travelSpeed * beatInterval * n.holdLen, bg.localScale.z);
+
+        Column col = columns[n.lane];
+        notes.Add(new HoldObj(nObj, bTime, col, n.holdLen));
+    } 
 }
