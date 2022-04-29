@@ -48,21 +48,42 @@ public class NoteSerializer : MonoBehaviour
 
         public string name;
         public List<Note> notes;
+        public float endBeat;
+        public bool[] beatFrameOccupancy;
 
         // Map is populated after creation
-        public Map()
+        public Map(int width_)
         {
             notes = new List<Note>();
+            beatFrameOccupancy = new bool[width_];
         }
 
         public void addNote(Note n)
         {
             MusicPlayer.Column col = MusicPlayer.sing.columns[n.lane];
-            if (n.beat < col.blockedTil) Debug.LogError("Spawning a note in a blocked segment");
-            else
+
+
+            if (n.beat < col.blockedTil)
             {
-                notes.Add(n);
+                Debug.LogWarning("Spawning a note in a blocked segment: beat "
+                    +n.beat+" when blocked til "+col.blockedTil);
+
+                return;
             }
+
+            if (beatFrameOccupancy[n.lane])
+            {
+                Debug.LogWarning("Lane " + n.lane + " occupied by another note on same frame");
+                return;
+            }
+
+            if(!col.Active)
+            {
+                Debug.LogWarning("Lane " + n.lane + " deactivated");
+                return;
+            }
+
+            notes.Add(n);
 
             if (n.hold) {
                 // Update column blocking
@@ -88,11 +109,24 @@ public class NoteSerializer : MonoBehaviour
 
     int lOff = 0;
     int rOff = 2;
+    public int accentLim = 0;
+    public bool genHolds = false;
+
+    // Hacks for now
+    int lDef = 1;
+    int rDef = 2;
+
     int width = 4;
+
+    public static NoteSerializer sing;
 
     // Start is called before the first frame update
     void Start()
     {
+        // Setup singleton
+        if (sing != null) Debug.LogError("Singleton broken");
+        sing = this;
+
         // Generate charpools
         typePool = new List<char>();
         catPool = new List<char>();
@@ -108,7 +142,17 @@ public class NoteSerializer : MonoBehaviour
 
         mPlay = GetComponent<MusicPlayer>();
 
+        genMap();
+    }
+
+    // Called when new map needs to be loaded into the music player
+    public void genMap()
+    {
+        resetBeat();
+
         if (fnameOver.Length > 0) parseMap(fnameOver);
+        
+        // Don't do anything if we don't have a map to generate
     }
 
     private void parseMap(string fname)
@@ -120,7 +164,7 @@ public class NoteSerializer : MonoBehaviour
         string[] tokens = data.Split('\n');
         ParseState state = ParseState.HEADER;
 
-        map = new Map();
+        map = new Map(width);
 
         foreach (string tok in tokens)
         {
@@ -222,25 +266,42 @@ public class NoteSerializer : MonoBehaviour
         bool hold = false;
         float holdLen = 0;
 
-        if (type.Equals("H"))
+        if (type.Equals("H") && genHolds)
         {
             hold = true;
             holdLen = 2f;
         }
+
+        // Limit accents
+        accent = Mathf.Min(accent, accentLim);
 
         // Empty = no lane specifier, defaults to the left lane of the category
         int l = 0;
         if (lane.Length > 0) l = int.Parse(lane)-1;
 
         // Given lane weights, calculate target lane
+        int def = 0;
         switch (col)
         {
             case "R":
                 l += rOff;
+                def = lDef;
                 break;
             case "L":
                 l += lOff;
+                def = rDef;
                 break;
+            default:
+                Debug.LogError("Lane marker " + col + " not recognized");
+                break;
+        }
+
+        // If lane isn't available, default to default lanes
+        // Accents for example will stack up and block each other
+        MusicPlayer.Column[] columns = MusicPlayer.sing.columns;
+        if (!columns[l].Active)
+        {
+            l = def;
         }
 
         // Double/triple up according to accents
@@ -264,8 +325,28 @@ public class NoteSerializer : MonoBehaviour
         }
 
         // Normally look for a beat specifier, just advance beat here
-        beat++;
+        advanceBeat(1);
 
         return ParseState.STREAM; // Persist state
+    }
+
+    void advanceBeat(float amt)
+    {
+        beat += amt;
+        
+        if (map != null) for (int i=0; i<map.beatFrameOccupancy.Length; i++)
+        {
+            map.beatFrameOccupancy[i] = false;
+        }
+    }
+
+    void resetBeat()
+    {
+        beat = 0;
+
+        if (map != null) for (int i = 0; i < map.beatFrameOccupancy.Length; i++)
+        {
+            map.beatFrameOccupancy[i] = false;
+        }
     }
 }

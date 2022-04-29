@@ -53,11 +53,23 @@ public class MusicPlayer : MonoBehaviour
         public KeyCode key;
         public float blockedTil; // in beats
 
-        public Column(GameObject gObj_, KeyCode key_)
+        private bool active = true;
+        public bool Active
+        {
+            get { return active; }
+            set
+            {
+                active = value;
+                gObj.SetActive(value);
+            }
+        }
+
+        public Column(GameObject gObj_, KeyCode key_, bool active_)
         {
             this.gObj = gObj_;
             this.key = key_;
             blockedTil = 0;
+            Active = active_;
         }
     }
 
@@ -99,6 +111,12 @@ public class MusicPlayer : MonoBehaviour
         beatInterval = (float) 60.0 / bpm;
         lastBeat = Time.time;
         songStart = Time.time + songStartDelay;
+
+        // Set activeness of columns
+        columns[0].Active = false;
+        columns[1].Active = true;
+        columns[2].Active = true;
+        columns[3].Active = false;
     }
 
     // Update is called once per frame
@@ -206,6 +224,17 @@ public class MusicPlayer : MonoBehaviour
                     }
                 }
             }
+        }
+
+        // If no notes left, request note serializer to send more notes
+        if (notes.Count == 0 && noteQueue.Count == 0)
+        {
+            songStart = Time.time + songStartDelay;
+
+            // Clear col blocks
+            foreach (Column col in columns) col.blockedTil = 0;
+
+            NoteSerializer.sing.genMap();
         }
     }
 
