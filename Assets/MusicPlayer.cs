@@ -94,7 +94,7 @@ public class MusicPlayer : MonoBehaviour
     public int score = 0;
 
     private List<NoteObj> notes;
-    private List<NoteSerializer.Map.Note> noteQueue;
+    private List<MapSerializer.Map.Note> noteQueue;
 
     public static MusicPlayer sing;
 
@@ -105,7 +105,7 @@ public class MusicPlayer : MonoBehaviour
         sing = this;
 
         notes = new List<NoteObj>();
-        noteQueue = new List<NoteSerializer.Map.Note>();
+        noteQueue = new List<MapSerializer.Map.Note>();
 
         scoreText.text = "0";
         beatInterval = (float) 60.0 / bpm;
@@ -132,8 +132,8 @@ public class MusicPlayer : MonoBehaviour
         }
 
         // Load in ready notes
-        List<NoteSerializer.Map.Note> dump = new List<NoteSerializer.Map.Note>();
-        foreach (NoteSerializer.Map.Note n in noteQueue)
+        List<MapSerializer.Map.Note> dump = new List<MapSerializer.Map.Note>();
+        foreach (MapSerializer.Map.Note n in noteQueue)
         {
             float bTime = songStart + (beatInterval * n.beat);
             
@@ -145,7 +145,7 @@ public class MusicPlayer : MonoBehaviour
             }
         }
 
-        foreach (NoteSerializer.Map.Note n in dump) noteQueue.Remove(n);
+        foreach (MapSerializer.Map.Note n in dump) noteQueue.Remove(n);
         dump.Clear();
 
 
@@ -227,14 +227,14 @@ public class MusicPlayer : MonoBehaviour
         }
 
         // If no notes left, request note serializer to send more notes
-        if (notes.Count == 0 && noteQueue.Count == 0)
+        if (notes.Count == 0 && noteQueue.Count == 0 && !MapSerializer.sing.loadQueued)
         {
             songStart = Time.time + songStartDelay;
 
             // Clear col blocks
             foreach (Column col in columns) col.blockedTil = 0;
 
-            NoteSerializer.sing.genMap();
+            MapSerializer.sing.genMap();
         }
     }
 
@@ -279,12 +279,12 @@ public class MusicPlayer : MonoBehaviour
         rend.color = c;
     }
 
-    public void enqueueNote(NoteSerializer.Map.Note note)
+    public void enqueueNote(MapSerializer.Map.Note note)
     {
         noteQueue.Add(note);
     }
 
-    private void spawnNote(NoteSerializer.Map.Note n)
+    private void spawnNote(MapSerializer.Map.Note n)
     {
         // Load in note
         float bTime = songStart + (beatInterval * n.beat);
@@ -294,7 +294,7 @@ public class MusicPlayer : MonoBehaviour
         notes.Add(new NoteObj(nObj, bTime, col));
     }
 
-    private void spawnHold(NoteSerializer.Map.Note n)
+    private void spawnHold(MapSerializer.Map.Note n)
     {
         if (!n.hold) Debug.LogError("Data pack does not designate a hold");
 

@@ -1,4 +1,6 @@
 mapname: Hello World
+track: track1uc.wav
+bpm: 120
 
 streamstart
 HL1

@@ -73,7 +73,7 @@ public class SkillTree : MonoBehaviour
     public void compile()
     {
         MusicPlayer mp = MusicPlayer.sing;
-        NoteSerializer ns = NoteSerializer.sing;
+        MapSerializer ns = MapSerializer.sing;
 
         mp.columns[0].Active = flags[(int) NODE.L_EXPAND];
         mp.columns[3].Active = flags[(int) NODE.R_EXPAND];
