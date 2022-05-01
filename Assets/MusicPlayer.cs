@@ -124,9 +124,15 @@ public class MusicPlayer : MonoBehaviour
     {
         currBeat = (Time.time - songStart) / beatInterval;
 
+        // Start song if ready
+        if (Time.time > songStart && !TrackPlayer.sing.audio.isPlaying)
+        {
+            TrackPlayer.sing.play();
+        }
+
         // If eclipsing the beat threshold, spawn a beat.
         if (Time.time > lastBeat + beatInterval)
-        {
+        { 
             lastBeat += beatInterval;
             onBeat();
         }
@@ -252,7 +258,7 @@ public class MusicPlayer : MonoBehaviour
 
     private void onBeat()
     {
-
+        // Handle holds
         foreach (NoteObj n in notes)
         {
             if (n is HoldObj)

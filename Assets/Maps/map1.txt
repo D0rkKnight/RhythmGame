@@ -3,11 +3,11 @@ track: track1uc.wav
 bpm: 120
 
 streamstart
-HL1
-L1~
-L2
-HL2~~
-R1
-R1~
-HR2
-R2~~
+>|HL1
+>|L1~
+>|L2
+>|HL2~~
+>|R1
+>|R1~
+>|HR2
+>|R2~~

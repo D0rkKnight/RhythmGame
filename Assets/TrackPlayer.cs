@@ -10,7 +10,7 @@ public class TrackPlayer : MonoBehaviour
 
     // Singleton
     public static TrackPlayer sing;
-    private AudioSource audio;
+    public AudioSource audio;
 
     public AudioClip clip;
     public bool clipLoading = false;
@@ -30,7 +30,7 @@ public class TrackPlayer : MonoBehaviour
         
     }
 
-    public void playTrack(string fname_)
+    public void loadTrack(string fname_)
     {
         clipLoading = true;
         string fname = fname_;
@@ -39,9 +39,16 @@ public class TrackPlayer : MonoBehaviour
         StartCoroutine(loadClip(fname, path));
     }
 
+    public void play()
+    {
+        audio.clip = clip;
+        audio.Play();
+    }
+
     public void resetTrack()
     {
         audio.time = 0;
+        audio.Stop();
     }
 
     private IEnumerator loadClip(string fname, string path)
@@ -51,10 +58,6 @@ public class TrackPlayer : MonoBehaviour
 
         clip = request.GetAudioClip();
         clip.name = fname;
-
-        // Play the audio on completion
-        audio.clip = clip;
-        audio.Play();
 
         clipLoading = false;
     }

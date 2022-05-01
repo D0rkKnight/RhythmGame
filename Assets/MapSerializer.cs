@@ -105,6 +105,7 @@ public class MapSerializer : MonoBehaviour
     List<char> catPool;
     List<char> lanePool;
     List<char> accentPool;
+    List<char> beatPool;
 
     float beat = 0;
     MusicPlayer mPlay;
@@ -135,6 +136,7 @@ public class MapSerializer : MonoBehaviour
         catPool = new List<char>();
         lanePool = new List<char>();
         accentPool = new List<char>();
+        beatPool = new List<char>();
 
         catPool.Add('L');
         catPool.Add('R');
@@ -142,6 +144,9 @@ public class MapSerializer : MonoBehaviour
         for (char c = '0'; c <= '9'; c++) lanePool.Add(c);
 
         accentPool.Add('~');
+        beatPool.Add('|');
+        beatPool.Add('<');
+        beatPool.Add('>');
 
         mPlay = GetComponent<MusicPlayer>();
 
@@ -193,7 +198,7 @@ public class MapSerializer : MonoBehaviour
         }
 
         // Start music
-        TrackPlayer.sing.playTrack(map.trackName);
+        TrackPlayer.sing.loadTrack(map.trackName);
         loadQueued = true;
     }
 
@@ -287,6 +292,7 @@ public class MapSerializer : MonoBehaviour
         StringScanner scanner = new StringScanner(tok);
 
         // Single note reader
+        string beatCode = scanner.getSegment(beatPool);
         string type = scanner.getSegment(typePool);
         string col = scanner.getSegment(catPool);
         string lane = scanner.getSegment(lanePool);
@@ -357,9 +363,35 @@ public class MapSerializer : MonoBehaviour
         }
 
         // Normally look for a beat specifier, just advance beat here
-        advanceBeat(1);
+        advanceBeat(beatCode);
 
         return ParseState.STREAM; // Persist state
+    }
+
+    void advanceBeat(string beatCode)
+    {
+        float b = 0;
+        float m = 1;
+        foreach (char c in beatCode)
+        {
+            switch (c)
+            {
+                case '|':
+                    b++;
+                    break;
+                case '>':
+                    m /= 2;
+                    break;
+                case '<':
+                    m *= 2;
+                    break;
+                default:
+                    Debug.LogError("Unrecognized beatcode: " + c);
+                    break;
+            }
+        }
+
+        advanceBeat(b * m);
     }
 
     void advanceBeat(float amt)
