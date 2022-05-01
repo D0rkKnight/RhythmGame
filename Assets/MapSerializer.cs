@@ -207,7 +207,7 @@ public class MapSerializer : MonoBehaviour
         if (loadQueued)
         {
             // Set music player bpm
-            mPlay.bpm = map.bpm;
+            mPlay.BPM = map.bpm;
 
             // Map is populated now, load into music player
             foreach (Map.Note n in map.notes)
@@ -289,6 +289,9 @@ public class MapSerializer : MonoBehaviour
 
     private ParseState parseSTREAM(string tok)
     {
+        // Ignore empty tokens
+        if (tok.Length == 0) return ParseState.STREAM;
+
         StringScanner scanner = new StringScanner(tok);
 
         // Single note reader
@@ -362,7 +365,6 @@ public class MapSerializer : MonoBehaviour
             map.addNote(new Map.Note(l, beat, hold, holdLen));
         }
 
-        // Normally look for a beat specifier, just advance beat here
         advanceBeat(beatCode);
 
         return ParseState.STREAM; // Persist state
@@ -371,7 +373,7 @@ public class MapSerializer : MonoBehaviour
     void advanceBeat(string beatCode)
     {
         float b = 0;
-        float m = 1;
+        Debug.Log(beatCode);
         foreach (char c in beatCode)
         {
             switch (c)
@@ -380,18 +382,19 @@ public class MapSerializer : MonoBehaviour
                     b++;
                     break;
                 case '>':
-                    m /= 2;
+                    b /= 2;
                     break;
                 case '<':
-                    m *= 2;
+                    b *= 2;
                     break;
                 default:
                     Debug.LogError("Unrecognized beatcode: " + c);
                     break;
             }
         }
+        Debug.Log(b);
 
-        advanceBeat(b * m);
+        advanceBeat(b);
     }
 
     void advanceBeat(float amt)

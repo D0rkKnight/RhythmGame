@@ -76,7 +76,16 @@ public class MusicPlayer : MonoBehaviour
     public GameObject notePrefab;
     public GameObject holdPrefab;
     public Column[] columns;
-    public float bpm = 60;
+    private float bpm = 60;
+    public float BPM
+    {
+        get { return bpm; }
+        set { 
+            bpm = value;
+            beatInterval = (float) 60.0 / value;
+        }
+    }
+
     private float beatInterval;
     private float currBeat;
     private float lastBeat;
