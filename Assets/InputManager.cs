@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class InputManager : MonoBehaviour
 {
-
     private void Update()
     {
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -21,6 +20,9 @@ public class InputManager : MonoBehaviour
 
                 if (clk.onOver() == 0) break;
             }
+
+            // Kill if click blocker
+            if (hit.transform.tag == "MouseBlocker") break;
         }
     }
 }

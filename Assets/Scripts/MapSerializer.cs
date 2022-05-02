@@ -11,60 +11,8 @@ public partial class MapSerializer : MonoBehaviour
         HEADER, STREAM, ERR
     }
 
-    public partial class Map
-    {
-        public string name;
-        public List<Note> notes;
-        public float endBeat;
-        public bool[] beatFrameOccupancy;
-        public string trackName;
-        public int bpm;
-
-        // Map is populated after creation
-        public Map(int width_)
-        {
-            notes = new List<Note>();
-            beatFrameOccupancy = new bool[width_];
-        }
-
-        public void addNote(Note n)
-        {
-            MusicPlayer.Column col = MusicPlayer.sing.columns[n.lane];
-
-
-            if (n.beat < col.blockedTil)
-            {
-                Debug.LogWarning("Spawning a note in a blocked segment: beat "
-                    +n.beat+" when blocked til "+col.blockedTil);
-
-                return;
-            }
-
-            if (beatFrameOccupancy[n.lane])
-            {
-                Debug.LogWarning("Lane " + n.lane + " occupied by another note on same frame");
-                return;
-            }
-
-            if(!col.Active)
-            {
-                Debug.LogWarning("Lane " + n.lane + " deactivated");
-                return;
-            }
-
-            notes.Add(n);
-
-            if (n.hold) {
-                // Update column blocking
-                col.blockedTil = Mathf.Max(col.blockedTil, n.beat + n.holdLen);
-            }
-        }
-
-    }
-
-
     public string currMapFname;
-    private Map map;
+    private Map activeMap;
 
     // Acceptable char pool for category data
     // L-left single R-right single
@@ -74,13 +22,13 @@ public partial class MapSerializer : MonoBehaviour
     List<char> accentPool;
     List<char> beatPool;
 
-    float beat = 0;
+    float readerBeat = 0;
     MusicPlayer mPlay;
 
     int lOff = 0;
     int rOff = 2;
     public int accentLim = 0;
-    public bool genHolds = false;
+    public bool[] genType = new bool[(int) Phrase.TYPE.SENTINEL];
 
     // Hacks for now
     int lDef = 1;
@@ -116,35 +64,41 @@ public partial class MapSerializer : MonoBehaviour
         beatPool.Add('>');
 
         mPlay = GetComponent<MusicPlayer>();
+        genType[(int) Phrase.TYPE.NOTE] = true;
     }
 
-    public void genMap()
+    public void playMap()
     {
-        genMap(currMapFname);
+        playMap(currMapFname);
     }
     // Called when new map needs to be loaded into the music player
-    public void genMap(string fname)
+    public void playMap(string fname)
     {
         currMapFname = fname;
 
-        resetBeat();
-        if (fname.Length > 0) parseMap(fname);
-        
+        if (fname.Length > 0)
+        {
+            activeMap = parseMap(fname);
+
+            // Start music
+            TrackPlayer.sing.loadTrack(activeMap.trackName);
+            loadQueued = true;
+        }
+
         // Don't do anything if we don't have a map to generate
     }
 
-    private void parseMap(string fname)
+    public Map parseMap(string fname)
     {
         string fpath = Application.streamingAssetsPath + "/Maps/" + fname;
         StreamReader reader = new StreamReader(fpath);
         string data = reader.ReadToEnd();
 
-        Debug.Log("Loading song at " + fpath);
-
         string[] tokens = data.Split('\n');
         ParseState state = ParseState.HEADER;
 
-        map = new Map(width);
+        Map map = new Map();
+        resetBeat();
 
         foreach (string tok in tokens)
         {
@@ -154,39 +108,35 @@ public partial class MapSerializer : MonoBehaviour
             switch (state)
             {
                 case ParseState.HEADER:
-                    state = parseHEADER(trimmed);
+                    state = parseHEADER(trimmed, map);
                     break;
                 case ParseState.STREAM:
-                    state = parseSTREAM(trimmed);
+                    state = parseSTREAM(trimmed, map);
                     break;
                 case ParseState.ERR:
                     Debug.LogError("Filereader state machine error");
-                    return;
+                    return null;
                 default:
                     Debug.LogError("Filereader state machine out of bounds");
-                    return;
+                    return null;
 
             }
         }
 
-        // Start music
-        TrackPlayer.sing.loadTrack(map.trackName);
-        loadQueued = true;
+        return map;
     }
 
     public void Update()
     {
         if (loadQueued)
         {
-            Debug.Log("Loading queue");
-
             // Set music player bpm
-            mPlay.BPM = map.bpm;
+            mPlay.BPM = activeMap.bpm;
 
             // Map is populated now, load into music player
-            foreach (Note n in map.notes)
+            foreach (Phrase p in activeMap.phrases)
             {
-                mPlay.enqueueNote(n);
+                mPlay.enqueuePhrase(p);
             }
 
             // Align music
@@ -195,10 +145,10 @@ public partial class MapSerializer : MonoBehaviour
         }
     }
 
-    private ParseState parseHEADER(string tok)
+    private ParseState parseHEADER(string tok, Map map)
     {
         if (tok.Equals("streamstart")) return ParseState.STREAM;
-        if (tok.Length == 0) return ParseState.HEADER; 
+        if (tok.Length == 0) return ParseState.HEADER;
 
         // Break up a selection of header tags
         string[] tokSplit = tok.Split(':');
@@ -223,7 +173,7 @@ public partial class MapSerializer : MonoBehaviour
                 case "":
                     break;
                 default:
-                    Debug.LogError("Unrecognized map header token: "+catName);
+                    Debug.LogError("Unrecognized map header token: " + catName);
                     break;
             }
 
@@ -261,7 +211,7 @@ public partial class MapSerializer : MonoBehaviour
         }
     }
 
-    private ParseState parseSTREAM(string tok)
+    private ParseState parseSTREAM(string tok, Map map)
     {
         // Ignore empty tokens
         if (tok.Length == 0) return ParseState.STREAM;
@@ -270,34 +220,62 @@ public partial class MapSerializer : MonoBehaviour
 
         // Single note reader
         string beatCode = scanner.getSegment(beatPool);
-        string type = scanner.getSegment(typePool);
-        string col = scanner.getSegment(catPool);
+        string typeCode = scanner.getSegment(typePool);
+        string part = scanner.getSegment(catPool);
         string lane = scanner.getSegment(lanePool);
         int accent = scanner.getSegment(accentPool).Length;
 
-
-
         // Write to note
-        bool hold = false;
+        Phrase.TYPE type = Phrase.TYPE.NONE;
         float holdLen = 0;
 
-        if (type.Equals("H") && genHolds)
+        // If there is a partition, the type defaults to note
+        if (part.Length > 0) type = Phrase.TYPE.NOTE;
+
+        switch(typeCode)
         {
-            hold = true;
-            holdLen = 2f;
+            case "H":
+                type = Phrase.TYPE.HOLD;
+                holdLen = 2;
+                break;
         }
 
+        float wait = getWait(beatCode);
+        int l = 1;
+        if (lane.Length > 0) l = int.Parse(lane);
+
+        Phrase p = new Phrase(l, part, readerBeat, accent, wait, type)
+        {
+            dur = holdLen
+        };
+
+        map.addPhrase(p);
+
+
+        advanceBeat(wait);
+
+        return ParseState.STREAM; // Persist state
+    }
+
+    public void spawnNotes(Phrase p)
+    {
+        // Takes a phrase and spawns its notes
+        // Don't use blocking frame, just check if it clashes with any notes in the buffer
+
+        // Collapse types
+        Phrase.TYPE type = p.type;
+        if (!genType[(int) p.type]) type = Phrase.TYPE.NOTE;
+
         // Limit accents
-        accent = Mathf.Min(accent, accentLim);
+        int accent = Mathf.Min(p.accent, accentLim);
 
         // Empty = no lane specifier, defaults to the left lane of the category
-        int l = 0;
-        if (lane.Length > 0) l = int.Parse(lane)-1;
+        int l = p.lane-1;
 
         // Given lane weights, calculate target lane
         int def = 0;
         bool hasElement = true; // Sometimes, we will get a beatcode but no element alongside it.
-        switch (col)
+        switch (p.partition)
         {
             case "R":
                 l += rOff;
@@ -311,7 +289,7 @@ public partial class MapSerializer : MonoBehaviour
                 hasElement = false;
                 break;
             default:
-                Debug.LogError("Lane marker " + col + " not recognized");
+                Debug.LogError("Lane marker " + p.partition + " not recognized");
                 break;
         }
 
@@ -324,7 +302,8 @@ public partial class MapSerializer : MonoBehaviour
         }
 
         // Double/triple up according to accents
-        if (accent > 0) {
+        if (accent > 0)
+        {
 
             // Count number of valid colums
             int validCols = 0;
@@ -337,20 +316,40 @@ public partial class MapSerializer : MonoBehaviour
 
             int sCol = Random.Range(leftValid, leftValid + validCols);
 
-            for (int j=0; j<=accent; j++) if (hasElement) 
-                    map.addNote(new Note(sCol + j, beat, hold, holdLen));
+            for (int j = 0; j <= accent; j++) if (hasElement)
+                {
+                    // Spawn note directly
+                    spawnIndNote(type, sCol + j, p.beat, p.dur);
+                }
 
-        } else {
-            if (hasElement) 
-                map.addNote(new Note(l, beat, hold, holdLen));
         }
-
-        advanceBeat(beatCode);
-
-        return ParseState.STREAM; // Persist state
+        else
+        {
+            if (hasElement)
+            {
+                spawnIndNote(type, l, p.beat, p.dur);
+            }
+        }
     }
 
-    void advanceBeat(string beatCode)
+    // Has some overloads
+    private void spawnIndNote(Phrase.TYPE type, int lane, float beat, float holdLen)
+    {
+        switch(type)
+        {
+            case Phrase.TYPE.NOTE:
+                MusicPlayer.sing.spawnNote(lane, beat);
+                break;
+            case Phrase.TYPE.HOLD:
+                MusicPlayer.sing.spawnHold(lane, beat, holdLen);
+                break;
+            default:
+                Debug.LogError("Unrecognized phrase code: " + type);
+                break;
+        }
+    }
+
+    float getWait(string beatCode)
     {
         float b = 0;
         foreach (char c in beatCode)
@@ -372,26 +371,16 @@ public partial class MapSerializer : MonoBehaviour
             }
         }
 
-        advanceBeat(b);
+        return b;
     }
 
     void advanceBeat(float amt)
     {
-        beat += amt;
-        
-        if (map != null) for (int i=0; i<map.beatFrameOccupancy.Length; i++)
-        {
-            map.beatFrameOccupancy[i] = false;
-        }
+        readerBeat += amt;
     }
 
     void resetBeat()
     {
-        beat = 0;
-
-        if (map != null) for (int i = 0; i < map.beatFrameOccupancy.Length; i++)
-        {
-            map.beatFrameOccupancy[i] = false;
-        }
+        readerBeat = 0;
     }
 }

@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 public class EleTypeButton : MonoBehaviour
 {
-    public MapEditor.ELEMENT ele;
+    public Phrase.TYPE ele;
 
     // Start is called before the first frame update
     void Start()
@@ -15,6 +15,6 @@ public class EleTypeButton : MonoBehaviour
 
     private void setElement()
     {
-        MapEditor.sing.activeEle = ele;
+        MapEditor.sing.activePhrase.type = ele;
     }
 }

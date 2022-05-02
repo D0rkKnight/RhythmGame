@@ -1,4 +1,4 @@
-mapname: playTemp
+mapname: Hello World
 track: track1uc.wav
 bpm: 120
 
@@ -12,8 +12,11 @@ streamstart
 |R1
 |L2
 |
-|<L1
-|
 |L1
-|<R1
-|<<L1
+|L1
+|L1
+|L1
+|L1
+|L1
+|
+|

@@ -11,34 +11,39 @@ public class BeatEditorSlot : MonoBehaviour, Clickable
     private SpriteRenderer rend;
 
     public BeatRow parent;
-    public MapEditor.ELEMENT noteEle = MapEditor.ELEMENT.NONE;
-    public string partition;
-    public int lane;
-    public float beatDur = 1f;
+    public Phrase phrase = null;
 
 
 
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
         rend = bg.GetComponent<SpriteRenderer>();
+        parent = transform.parent.GetComponent<BeatRow>();
     }
 
     private void updateGraphics()
     {
-        switch (noteEle)
+        // No phrase attached
+        if (phrase == null)
         {
-            case MapEditor.ELEMENT.NONE:
-                rend.color = Color.white;
-                break;
-            case MapEditor.ELEMENT.NOTE:
+            rend.color = Color.white;
+            return;
+        }
+
+        switch (phrase.type)
+        {
+            case Phrase.TYPE.NOTE:
                 rend.color = Color.cyan;
                 break;
-            case MapEditor.ELEMENT.HOLD:
+            case Phrase.TYPE.HOLD:
                 rend.color = Color.magenta;
                 break;
+            case Phrase.TYPE.NONE:
+                rend.color = Color.white;
+                break;
             default:
-                Debug.LogError("Behavior not defined for note type: " + noteEle);
+                Debug.LogError("Behavior not defined for note type: " + phrase.type);
                 break;
         }
 
@@ -47,66 +52,78 @@ public class BeatEditorSlot : MonoBehaviour, Clickable
 
     internal string serialize()
     {
-        if (noteEle == MapEditor.ELEMENT.NONE) return ""; // Short circuit
+        if (phrase == null) return ""; // Short circuit
         string o = "";
 
         // Rhythm
-        while (beatDur < 1 || beatDur - Mathf.Floor(beatDur) != 0)
+        float wait = phrase.wait;
+        while (wait < 1 || wait - Mathf.Floor(wait) != 0)
         {
             o = ">"+o; // Means the note is fast
-            beatDur *= 2;
+            wait *= 2;
         }
 
         // Working with effectively integer value now
-        while (beatDur > 1)
+        while (wait > 1)
         {
-            if (beatDur % 2 == 0)
+            if (wait % 2 == 0)
             {
                 o = "<" + o;
-                beatDur /= 2;
+                wait /= 2;
             } else
             {
                 o = "|" + o;
-                beatDur--;
+                wait--;
             }
         }
 
 
-        switch (noteEle)
+        switch (phrase.type)
         {
-            case MapEditor.ELEMENT.NOTE:
+            case Phrase.TYPE.NONE:
+                return o; // Short circuit
+            case Phrase.TYPE.NOTE:
                 break;
-            case MapEditor.ELEMENT.HOLD:
+            case Phrase.TYPE.HOLD:
                 o += "H";
                 break;
             default:
-                Debug.LogError("Behavior not defined for note type: " + noteEle);
+                Debug.LogError("Behavior not defined for note type: " + phrase.type);
                 break;
         }
 
-        o += partition;
-        o += lane;
+        o += phrase.partition;
+        o += phrase.lane;
+        for (int i=0; i<phrase.accent; i++)
+            o += "~";
 
         return o;
+    }
+
+    public void setPhrase(Phrase p)
+    {
+        phrase = p;
+        
+        if (phrase != null && phrase.type != Phrase.TYPE.NONE && 
+            parent.rowNum > MapEditor.sing.lastActiveRow)
+            MapEditor.sing.lastActiveRow = parent.rowNum;
+
+        updateGraphics();
     }
 
     int Clickable.onClick(int code)
     {
         switch (code) {
             case 0:
-                noteEle = MapEditor.sing.activeEle;
+                setPhrase(MapEditor.sing.activePhrase.clone());
                 break;
             case 1:
-                noteEle = MapEditor.ELEMENT.NONE;
+                Phrase p = MapEditor.sing.activePhrase.clone();
+                p.type = Phrase.TYPE.NONE;
+                setPhrase(p);
                 break;
         }
 
-        MapEditor ed = MapEditor.sing;
-        partition = ed.ActivePartition;
-        lane = ed.ActiveCol;
-        beatDur = ed.activeBeatDur;
-
-        updateGraphics();
         return 1;
     }
 

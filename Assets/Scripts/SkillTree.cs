@@ -82,14 +82,14 @@ public class SkillTree : MonoBehaviour
         mp.columns[3].Active = flags[(int) NODE.R_EXPAND];
 
         if (flags[(int)NODE.ACCENT_1]) ns.accentLim++;
-        if (flags[(int)NODE.HOLD]) ns.genHolds = true;
+        if (flags[(int)NODE.HOLD]) ns.genType[(int) Phrase.TYPE.HOLD] = true;
 
 
 
         // Activate new skills
         foreach (buttonPair bp in nodes)
         {
-            if (!bp.btn.gameObject.active)
+            if (!bp.btn.gameObject.activeSelf)
                 bp.checkPrereqs();
         }
     }

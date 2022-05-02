@@ -9,14 +9,16 @@ public class MusicPlayer : MonoBehaviour
     {
         public GameObject gameObj;
         public float hitTime; // In seconds, as Unity standard
-        public Column col;
+        public float beat; // Beat for hit
+        public Column lane;
         public bool dead;
 
-        public NoteObj(GameObject gameObj_, float hitTime_, Column col_)
+        public NoteObj(GameObject gameObj_, float beat_, float hitTime_, Column col_)
         {
             this.gameObj = gameObj_;
+            beat = beat_;
             this.hitTime = hitTime_;
-            this.col = col_;
+            this.lane = col_;
             dead = false;
         }
 
@@ -31,7 +33,8 @@ public class MusicPlayer : MonoBehaviour
         public float holdBeats;
         public bool held;
 
-        public HoldObj(GameObject gameObj_, float hitTime_, Column col_, float holdBeats_) : base(gameObj_, hitTime_, col_)
+        public HoldObj(GameObject gameObj_, float beat_, float hitTime_, Column col_, float holdBeats_) 
+            : base(gameObj_, beat_, hitTime_, col_)
         {
             holdBeats = holdBeats_;
             held = false;
@@ -103,7 +106,7 @@ public class MusicPlayer : MonoBehaviour
     public int score = 0;
 
     private List<NoteObj> notes;
-    private List<Note> noteQueue;
+    private List<Phrase> phraseQueue;
 
     // Pause functionality
     public enum STATE
@@ -127,7 +130,7 @@ public class MusicPlayer : MonoBehaviour
         sing = this;
 
         notes = new List<NoteObj>();
-        noteQueue = new List<Note>();
+        phraseQueue = new List<Phrase>();
 
         scoreText.text = "0";
         beatInterval = (float) 60.0 / bpm;
@@ -179,21 +182,19 @@ public class MusicPlayer : MonoBehaviour
             onBeat();
         }
 
-        // Load in ready notes
-        List<Note> dump = new List<Note>();
-        foreach (Note n in noteQueue)
+        List<Phrase> dump = new List<Phrase>();
+        foreach (Phrase p in phraseQueue)
         {
-            float bTime = beatInterval * n.beat;
+            float bTime = beatInterval * p.beat;
 
             if (songTime + noteAdvance > bTime)
             {
-                if (n.hold) spawnHold(n.lane, n.beat, n.holdLen);
-                else spawnNote(n.lane, n.beat);
-                dump.Add(n);
+                MapSerializer.sing.spawnNotes(p);
+                dump.Add(p);
             }
         }
 
-        foreach (Note n in dump) noteQueue.Remove(n);
+        foreach (Phrase n in dump) phraseQueue.Remove(n);
         dump.Clear();
 
 
@@ -202,7 +203,7 @@ public class MusicPlayer : MonoBehaviour
 
         foreach (NoteObj note in notes)
         {
-            GameObject col = note.col.gObj;
+            GameObject col = note.lane.gObj;
             Vector2 tPos = col.transform.Find("TriggerBox").position;
 
             float dt = note.hitTime - songTime;
@@ -230,7 +231,7 @@ public class MusicPlayer : MonoBehaviour
                 foreach (NoteObj note in notes)
                 {
                     if (note.dead) continue;
-                    if (!col.Equals(note.col)) continue;
+                    if (!col.Equals(note.lane)) continue;
 
                     if (Mathf.Abs(note.hitTime - songTime) < hitWindow)
                     {
@@ -266,7 +267,7 @@ public class MusicPlayer : MonoBehaviour
                 // Mark held holds as dead
                 foreach (NoteObj n in notes)
                 {
-                    if (n is HoldObj && n.col.Equals(col) && ((HoldObj)n).held)
+                    if (n is HoldObj && n.lane.Equals(col) && ((HoldObj)n).held)
                     {
                         n.dead = true;
                         n.highlight(Color.grey);
@@ -276,17 +277,17 @@ public class MusicPlayer : MonoBehaviour
         }
 
         // If no notes left, request note serializer to send more notes
-        if (notes.Count == 0 && noteQueue.Count == 0 && !MapSerializer.sing.loadQueued)
+        if (notes.Count == 0 && phraseQueue.Count == 0 && !MapSerializer.sing.loadQueued)
         {
             resetSongEnv();
-            MapSerializer.sing.genMap();
+            MapSerializer.sing.playMap();
         }
 
         // Reset key
         if (Input.GetKeyDown(resetKey))
         {
             resetSongEnv();
-            MapSerializer.sing.genMap(); // Same behavior as end of song
+            MapSerializer.sing.playMap(); // Same behavior as end of song
         }
 
         // State transitions
@@ -329,7 +330,7 @@ public class MusicPlayer : MonoBehaviour
             Destroy(n.gameObj);
         }
         notes.Clear();
-        noteQueue.Clear();
+        phraseQueue.Clear();
 
         // Any audio we'd be playing would be illegal
         TrackPlayer.sing.audio.Stop();
@@ -376,23 +377,35 @@ public class MusicPlayer : MonoBehaviour
         rend.color = c;
     }
 
-    public void enqueueNote(Note note)
+    public void enqueuePhrase(Phrase phrase)
     {
-        noteQueue.Add(note);
+        phraseQueue.Add(phrase);
     }
 
-    private void spawnNote(int lane, float beat)
+    public void spawnNote(int lane, float beat)
     {
+        if (!noteValid(lane, beat, -1))
+        {
+            Debug.LogWarning("Note spawn blocked at " + lane + ", " + beat);
+            return;
+        }
+
         // Load in note
         float bTime = beatInterval * beat;
         GameObject nObj = Instantiate(notePrefab);
         Column col = columns[lane];
 
-        notes.Add(new NoteObj(nObj, bTime, col));
+        notes.Add(new NoteObj(nObj, beat, bTime, col));
     }
 
-    private void spawnHold(int lane, float beat, float holdLen)
+    public void spawnHold(int lane, float beat, float holdLen)
     {
+        if (!noteValid(lane, beat, holdLen))
+        {
+            Debug.LogWarning("Note spawn blocked at " + lane + ", " + beat);
+            return;
+        }
+
         float bTime = beatInterval * beat;
 
         GameObject nObj = Instantiate(holdPrefab);
@@ -403,6 +416,43 @@ public class MusicPlayer : MonoBehaviour
             bg.localScale.z);
 
         Column col = columns[lane];
-        notes.Add(new HoldObj(nObj, bTime, col, holdLen));
+        notes.Add(new HoldObj(nObj, beat, bTime, col, holdLen));
     } 
+
+    private bool noteValid(int lane, float beat, float blockDur)
+    {
+        Column col = columns[lane];
+
+
+        if (beat < col.blockedTil)
+        {
+            Debug.LogWarning("Spawning a note in a blocked segment: beat "
+                + beat + " when blocked til " + col.blockedTil);
+
+            return false;
+        }
+
+        foreach (NoteObj n in notes)
+        {
+            if (n.beat == beat && n.lane == col)
+            {
+                Debug.LogWarning("Lane " + lane + " occupied by another note on same frame");
+                return false;
+            }
+        }
+
+        if (!col.Active)
+        {
+            Debug.LogWarning("Lane " + lane + " deactivated");
+            return false;
+        }
+
+        if (blockDur > 0)
+        {
+            // Update column blocking
+            col.blockedTil = Mathf.Max(col.blockedTil, beat + blockDur);
+        }
+
+        return true;
+    }
 }

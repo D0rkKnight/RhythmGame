@@ -7,11 +7,11 @@ using UnityEngine.UI;
 public class BeatRow : MonoBehaviour
 {
     public Text txt;
-    public int beat;
-    private List<BeatEditorSlot> slots;
+    public int rowNum;
+    public List<BeatEditorSlot> slots;
 
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
         // Collect slots from children
         slots = new List<BeatEditorSlot>();
@@ -19,16 +19,10 @@ public class BeatRow : MonoBehaviour
             slots.Add(b);
     }
 
-    // Update is called once per frame
-    void Update()
+    public void setData(int rowNum_)
     {
-        
-    }
-
-    public void setData(int beat_)
-    {
-        this.beat = beat_;
-        txt.text = ""+beat_;
+        rowNum = rowNum_;
+        txt.text = ""+rowNum_;
     }
 
     internal string serialize()

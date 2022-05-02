@@ -7,70 +7,83 @@ using UnityEngine.UI;
 public class MapEditor : MonoBehaviour, Clickable
 {
     public GameObject rowPrefab;
-    public Transform rowGenAnchor;
+    public Transform rowOrigin;
+    public Transform rowLimit;
+    public int lastActiveRow = 0;
+
+    private Canvas canv;
     private List<BeatRow> beatRows;
 
-    int visibleRows = 10;
     public float rowAdvance = 1.1f;
     public float scroll = 0f;
 
     public static MapEditor sing;
 
-    public enum ELEMENT{
-        NONE, NOTE, HOLD, SENTINEL
-    }
-
-    public ELEMENT activeEle = ELEMENT.NOTE;
-
-    private string activePartition = "L";
+    public Phrase activePhrase = new Phrase(1, "L", 0, 0, 1, Phrase.TYPE.NOTE);
     public string ActivePartition // Unity buttons can interface with delegates
     {
-        get { return activePartition; }
-        set { activePartition = value; }
+        get { return activePhrase.partition; }
+        set { activePhrase.partition = value; }
     }
-    private int activeCol = 1;
     public int ActiveCol
     {
-        get { return activeCol; }
-        set { activeCol = value; }
+        get { return activePhrase.lane; }
+        set { activePhrase.lane = value; }
     }
 
-    public float activeBeatDur = 1;
     public Text beatIndicator;
     public InputField songTitleField;
     public InputField audioFileField;
     public InputField BPMField;
+    public InputField importField;
 
     public bool songPlayQueued = false;
 
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
         if (sing != null) Debug.LogError("Singleton broken");
         sing = this;
 
         beatRows = new List<BeatRow>();
-        Transform canv = transform.Find("Canvas");
+        canv = transform.Find("Canvas").GetComponent<Canvas>();
 
-        Vector3 cPos = rowGenAnchor.position;
-        for (int i=0; i< visibleRows; i++)
+        Vector3 cPos = rowOrigin.position;
+        Debug.Log(cPos);
+
+        genRows();
+    }
+
+    private void Update()
+    {
+        genRows();
+    }
+
+    private void genRows()
+    {
+        genRows(-1);
+    }
+    private void genRows(int force)
+    {
+        while ((force > 0 && beatRows.Count < force) ||
+            beatRows.Count == 0 || 
+            beatRows[beatRows.Count - 1].transform.position.y > rowLimit.position.y)
         {
-            BeatRow row = Instantiate(rowPrefab, canv, false).GetComponent<BeatRow>();
-            row.transform.position = cPos + Vector3.up * scroll;
-            cPos += Vector3.down * rowAdvance;
+            BeatRow row = Instantiate(rowPrefab, rowOrigin, false).GetComponent<BeatRow>();
+            row.setData(beatRows.Count+1);
 
-            row.setData(i);
             beatRows.Add(row);
+            updateBeatRows();
         }
     }
 
     private void updateBeatRows()
     {
-        for (int i=0; i< visibleRows; i++)
+        for (int i=0; i< beatRows.Count; i++)
         {
             BeatRow r = beatRows[i];
 
-            r.transform.position = rowGenAnchor.transform.position + 
+            r.transform.position = rowOrigin.transform.position + 
                 Vector3.down * (-scroll + i * rowAdvance);
         }
     }
@@ -78,8 +91,12 @@ public class MapEditor : MonoBehaviour, Clickable
     public void play()
     {
         export(null, "playTemp");
+
+        // Safe because the song environment gets reset
+        MusicPlayer.sing.state = MusicPlayer.STATE.RUN;
         MusicPlayer.sing.resetSongEnv();
-        MapSerializer.sing.genMap("playTemp.txt");
+
+        MapSerializer.sing.playMap("playTemp.txt");
     }
 
     public void export()
@@ -109,9 +126,9 @@ public class MapEditor : MonoBehaviour, Clickable
 
         data.Add("\nstreamstart");
 
-        foreach (BeatRow row in beatRows)
+        for (int i=0; i<lastActiveRow; i++)
         {
-            data.Add(row.serialize());
+            data.Add(beatRows[i].serialize());
         }
 
 
@@ -122,14 +139,33 @@ public class MapEditor : MonoBehaviour, Clickable
         writer.Close();
     }
 
+    public void import()
+    {
+        string fname = importField.text;
+        Map map = MapSerializer.sing.parseMap(fname);
+
+        genRows(map.phrases.Count); // Get enough rows to contain every element
+
+        // Phrases are linearly laid out
+        for (int i=0; i<map.phrases.Count; i++)
+        {
+            // Hackity hack
+            beatRows[i].slots[0].setPhrase(map.phrases[i]);
+        }
+
+        songTitleField.text = map.name;
+        audioFileField.text = map.trackName;
+        BPMField.text = map.bpm.ToString();
+    }
+
     private void updateVisuals()
     {
-        beatIndicator.text = activeBeatDur.ToString();
+        beatIndicator.text = activePhrase.wait.ToString();
     }
 
     public void beatDurPow(int pow)
     {
-        float tmp = activeBeatDur;
+        float tmp = activePhrase.wait;
 
         while (pow > 0)
         {
@@ -144,15 +180,15 @@ public class MapEditor : MonoBehaviour, Clickable
         }
 
         // Set some reasonable bounds to avoid rounding errors and overflow
-        if (beatInBounds(tmp)) activeBeatDur = tmp;
+        if (beatInBounds(tmp)) activePhrase.wait = tmp;
 
         updateVisuals();
     }
 
     public void beatDurAdd(float amt)
     {
-        float tmp = activeBeatDur + amt;
-        if (beatInBounds(tmp)) activeBeatDur = tmp;
+        float tmp = activePhrase.wait + amt;
+        if (beatInBounds(tmp)) activePhrase.wait = tmp;
 
         updateVisuals();
     }
@@ -163,10 +199,15 @@ public class MapEditor : MonoBehaviour, Clickable
         return false;
     }
 
-    public void resetBeatDur() { activeBeatDur = 1; updateVisuals(); }
+    public void resetBeatDur() { activePhrase.wait = 1; updateVisuals(); }
     int Clickable.onClick(int code)
     {
         return 1;
+    }
+
+    public void addAccent(int amt)
+    {
+        activePhrase.accent = Mathf.Max(0, activePhrase.accent + amt);
     }
 
     int Clickable.onOver()
