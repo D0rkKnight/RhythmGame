@@ -4,48 +4,15 @@ using UnityEngine;
 using System.IO;
 
 [RequireComponent(typeof(MusicPlayer))]
-public class MapSerializer : MonoBehaviour
+public partial class MapSerializer : MonoBehaviour
 {
     private enum ParseState
     {
         HEADER, STREAM, ERR
     }
 
-    public class Map
+    public partial class Map
     {
-        public class Note
-        {
-            public int lane;
-            public float beat;
-
-            public bool hold;
-            public float holdLen;
-
-            public Note()
-            {
-                lane = 0;
-                beat = 0;
-                hold = false;
-                holdLen = 0;
-            }
-
-            public Note(int lane_, float beat_)
-            {
-                lane = lane_;
-                beat = beat_;
-                hold = false;
-                holdLen = 0;
-            }
-            public Note(int lane_, float beat_, bool hold_, float holdLen_)
-            {
-                lane = lane_;
-                beat = beat_;
-                hold = hold_;
-                holdLen = holdLen_;
-            }
-
-        }
-
         public string name;
         public List<Note> notes;
         public float endBeat;
@@ -96,7 +63,7 @@ public class MapSerializer : MonoBehaviour
     }
 
 
-    public string fnameOver;
+    public string currMapFname;
     private Map map;
 
     // Acceptable char pool for category data
@@ -149,25 +116,30 @@ public class MapSerializer : MonoBehaviour
         beatPool.Add('>');
 
         mPlay = GetComponent<MusicPlayer>();
-
-        genMap();
     }
 
-    // Called when new map needs to be loaded into the music player
     public void genMap()
     {
-        resetBeat();
+        genMap(currMapFname);
+    }
+    // Called when new map needs to be loaded into the music player
+    public void genMap(string fname)
+    {
+        currMapFname = fname;
 
-        if (fnameOver.Length > 0) parseMap(fnameOver);
+        resetBeat();
+        if (fname.Length > 0) parseMap(fname);
         
         // Don't do anything if we don't have a map to generate
     }
 
     private void parseMap(string fname)
     {
-        string fpath = Application.dataPath + "/Maps/" + fname;
+        string fpath = Application.streamingAssetsPath + "/Maps/" + fname;
         StreamReader reader = new StreamReader(fpath);
         string data = reader.ReadToEnd();
+
+        Debug.Log("Loading song at " + fpath);
 
         string[] tokens = data.Split('\n');
         ParseState state = ParseState.HEADER;
@@ -206,11 +178,13 @@ public class MapSerializer : MonoBehaviour
     {
         if (loadQueued)
         {
+            Debug.Log("Loading queue");
+
             // Set music player bpm
             mPlay.BPM = map.bpm;
 
             // Map is populated now, load into music player
-            foreach (Map.Note n in map.notes)
+            foreach (Note n in map.notes)
             {
                 mPlay.enqueueNote(n);
             }
@@ -322,6 +296,7 @@ public class MapSerializer : MonoBehaviour
 
         // Given lane weights, calculate target lane
         int def = 0;
+        bool hasElement = true; // Sometimes, we will get a beatcode but no element alongside it.
         switch (col)
         {
             case "R":
@@ -331,6 +306,9 @@ public class MapSerializer : MonoBehaviour
             case "L":
                 l += lOff;
                 def = rDef;
+                break;
+            case "": // There's just no note here
+                hasElement = false;
                 break;
             default:
                 Debug.LogError("Lane marker " + col + " not recognized");
@@ -359,10 +337,12 @@ public class MapSerializer : MonoBehaviour
 
             int sCol = Random.Range(leftValid, leftValid + validCols);
 
-            for (int j=0; j<=accent; j++) map.addNote(new Map.Note(sCol + j, beat, hold, holdLen));
+            for (int j=0; j<=accent; j++) if (hasElement) 
+                    map.addNote(new Note(sCol + j, beat, hold, holdLen));
 
         } else {
-            map.addNote(new Map.Note(l, beat, hold, holdLen));
+            if (hasElement) 
+                map.addNote(new Note(l, beat, hold, holdLen));
         }
 
         advanceBeat(beatCode);
@@ -373,7 +353,6 @@ public class MapSerializer : MonoBehaviour
     void advanceBeat(string beatCode)
     {
         float b = 0;
-        Debug.Log(beatCode);
         foreach (char c in beatCode)
         {
             switch (c)
@@ -392,7 +371,6 @@ public class MapSerializer : MonoBehaviour
                     break;
             }
         }
-        Debug.Log(b);
 
         advanceBeat(b);
     }

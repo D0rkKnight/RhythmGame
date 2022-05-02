@@ -1,0 +1,14 @@
+mapname: Testname
+track: testsong
+
+streamstart
+|L0
+|HR1
+|L0
+|HR1
+|HR1
+|L1
+|L1
+|
+|
+|

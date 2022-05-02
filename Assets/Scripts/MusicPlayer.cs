@@ -5,7 +5,6 @@ using UnityEngine.UI;
 
 public class MusicPlayer : MonoBehaviour
 {
-
     public class NoteObj
     {
         public GameObject gameObj;
@@ -91,6 +90,7 @@ public class MusicPlayer : MonoBehaviour
     private float lastBeat;
     private float songStart;
     private float songStartDelay = 3f;
+    private float songTime; // Time in seconds progressed through the song
 
     public float travelSpeed = 5; // In Unity units per second
     public Vector2 dir = new Vector2(0, -1);
@@ -103,7 +103,20 @@ public class MusicPlayer : MonoBehaviour
     public int score = 0;
 
     private List<NoteObj> notes;
-    private List<MapSerializer.Map.Note> noteQueue;
+    private List<Note> noteQueue;
+
+    // Pause functionality
+    public enum STATE
+    {
+        RUN, PAUSE
+    }
+
+    public KeyCode pauseKey = KeyCode.P;
+    private float pauseStart = 0f;
+    private float pausedTotal;
+    public STATE state = STATE.RUN;
+
+    public KeyCode resetKey = KeyCode.R;
 
     public static MusicPlayer sing;
 
@@ -114,7 +127,7 @@ public class MusicPlayer : MonoBehaviour
         sing = this;
 
         notes = new List<NoteObj>();
-        noteQueue = new List<MapSerializer.Map.Note>();
+        noteQueue = new List<Note>();
 
         scoreText.text = "0";
         beatInterval = (float) 60.0 / bpm;
@@ -122,45 +135,65 @@ public class MusicPlayer : MonoBehaviour
         songStart = Time.time + songStartDelay;
 
         // Set activeness of columns
-        columns[0].Active = false;
+        columns[0].Active = true;
         columns[1].Active = true;
         columns[2].Active = true;
-        columns[3].Active = false;
+        columns[3].Active = true;
+
+        SkillTree.sing.compile();
     }
 
     // Update is called once per frame
     void Update()
     {
+        switch (state)
+        {
+            case STATE.RUN:
+                stateRun();
+                break;
+            case STATE.PAUSE:
+                statePause();
+                break;
+            default:
+                Debug.LogError("Illegal game state");
+                break;
+        }
+    }
+
+    private void stateRun()
+    {
+        songTime = Time.time - songStart - pausedTotal;
         currBeat = (Time.time - songStart) / beatInterval;
 
         // Start song if ready
-        if (Time.time > songStart && !TrackPlayer.sing.audio.isPlaying)
+        if (songTime >= 0 && !TrackPlayer.sing.audio.isPlaying)
         {
             TrackPlayer.sing.play();
+            TrackPlayer.sing.audio.time = songTime;
         }
 
-        // If eclipsing the beat threshold, spawn a beat.
+        // If eclipsing the beat threshold, tick a beat.
         if (Time.time > lastBeat + beatInterval)
-        { 
+        {
             lastBeat += beatInterval;
             onBeat();
         }
 
         // Load in ready notes
-        List<MapSerializer.Map.Note> dump = new List<MapSerializer.Map.Note>();
-        foreach (MapSerializer.Map.Note n in noteQueue)
+        List<Note> dump = new List<Note>();
+        foreach (Note n in noteQueue)
         {
-            float bTime = songStart + (beatInterval * n.beat);
-            
-            if (Time.time + noteAdvance > bTime)
+            float bTime = beatInterval * n.beat;
+
+            if (songTime + noteAdvance > bTime)
             {
-                if (n.hold) spawnHold(n);
-                else spawnNote(n);
+                if (n.hold) spawnHold(n.lane, n.beat, n.holdLen);
+                else spawnNote(n.lane, n.beat);
                 dump.Add(n);
             }
         }
 
-        foreach (MapSerializer.Map.Note n in dump) noteQueue.Remove(n);
+        foreach (Note n in dump) noteQueue.Remove(n);
         dump.Clear();
 
 
@@ -172,7 +205,7 @@ public class MusicPlayer : MonoBehaviour
             GameObject col = note.col.gObj;
             Vector2 tPos = col.transform.Find("TriggerBox").position;
 
-            float dt = note.hitTime - Time.time;
+            float dt = note.hitTime - songTime;
 
             Vector2 dp = -dir * dt * travelSpeed;
             Vector2 p = tPos + dp;
@@ -199,7 +232,7 @@ public class MusicPlayer : MonoBehaviour
                     if (note.dead) continue;
                     if (!col.Equals(note.col)) continue;
 
-                    if (Mathf.Abs(note.hitTime - Time.time) < hitWindow)
+                    if (Mathf.Abs(note.hitTime - songTime) < hitWindow)
                     {
                         if (bestNote == null || note.hitTime < bestNote.hitTime)
                             bestNote = note;
@@ -231,8 +264,9 @@ public class MusicPlayer : MonoBehaviour
                 highlightCol(col, Color.white);
 
                 // Mark held holds as dead
-                foreach(NoteObj n in notes) {
-                    if (n is HoldObj && n.col.Equals(col) && ((HoldObj) n).held)
+                foreach (NoteObj n in notes)
+                {
+                    if (n is HoldObj && n.col.Equals(col) && ((HoldObj)n).held)
                     {
                         n.dead = true;
                         n.highlight(Color.grey);
@@ -244,13 +278,61 @@ public class MusicPlayer : MonoBehaviour
         // If no notes left, request note serializer to send more notes
         if (notes.Count == 0 && noteQueue.Count == 0 && !MapSerializer.sing.loadQueued)
         {
-            songStart = Time.time + songStartDelay;
-
-            // Clear col blocks
-            foreach (Column col in columns) col.blockedTil = 0;
-
+            resetSongEnv();
             MapSerializer.sing.genMap();
         }
+
+        // Reset key
+        if (Input.GetKeyDown(resetKey))
+        {
+            resetSongEnv();
+            MapSerializer.sing.genMap(); // Same behavior as end of song
+        }
+
+        // State transitions
+        if (Input.GetKeyDown(pauseKey))
+        {
+            state = STATE.PAUSE;
+            pauseStart = Time.time;
+            TrackPlayer.sing.audio.Stop();
+        }
+    }
+
+    private void statePause()
+    {
+        // State transitions
+        if (Input.GetKeyDown(pauseKey))
+        {
+            state = STATE.RUN;
+            pausedTotal += Time.time - pauseStart;
+
+            // Resync music (if music is to be played)
+            if (songTime >= 0)
+            {
+                TrackPlayer.sing.play();
+                TrackPlayer.sing.audio.time = songTime;
+            }
+        }
+    }
+
+    public void resetSongEnv()
+    {
+        songStart = Time.time + songStartDelay;
+        pausedTotal = 0;
+
+        // Clear col blocks
+        foreach (Column col in columns) col.blockedTil = 0;
+
+        // Clear out note queue and active notes
+        foreach (NoteObj n in notes)
+        {
+            Destroy(n.gameObj);
+        }
+        notes.Clear();
+        noteQueue.Clear();
+
+        // Any audio we'd be playing would be illegal
+        TrackPlayer.sing.audio.Stop();
     }
 
     private void kill(NoteObj note)
@@ -275,10 +357,10 @@ public class MusicPlayer : MonoBehaviour
                 HoldObj hn = (HoldObj)n;
 
                 // Don't give ticking when first hit
-                if (Mathf.Abs(hn.hitTime - Time.time) < hitWindow) continue;
+                if (Mathf.Abs(hn.hitTime - songTime) < hitWindow) continue;
 
                 // If still within point range
-                if (hn.held && Time.time < hn.hitTime + (hn.holdBeats * beatInterval))
+                if (hn.held && songTime < hn.hitTime + (hn.holdBeats * beatInterval))
                 {
                     addScore(10);
                 }
@@ -294,34 +376,33 @@ public class MusicPlayer : MonoBehaviour
         rend.color = c;
     }
 
-    public void enqueueNote(MapSerializer.Map.Note note)
+    public void enqueueNote(Note note)
     {
         noteQueue.Add(note);
     }
 
-    private void spawnNote(MapSerializer.Map.Note n)
+    private void spawnNote(int lane, float beat)
     {
         // Load in note
-        float bTime = songStart + (beatInterval * n.beat);
+        float bTime = beatInterval * beat;
         GameObject nObj = Instantiate(notePrefab);
-        Column col = columns[n.lane];
+        Column col = columns[lane];
 
         notes.Add(new NoteObj(nObj, bTime, col));
     }
 
-    private void spawnHold(MapSerializer.Map.Note n)
+    private void spawnHold(int lane, float beat, float holdLen)
     {
-        if (!n.hold) Debug.LogError("Data pack does not designate a hold");
-
-        float bTime = songStart + (beatInterval * n.beat);
+        float bTime = beatInterval * beat;
 
         GameObject nObj = Instantiate(holdPrefab);
         Transform bg = nObj.transform.Find("HoldBar");
 
         // Scale background bar appropriately
-        bg.localScale = new Vector3(bg.localScale.x, travelSpeed * beatInterval * n.holdLen, bg.localScale.z);
+        bg.localScale = new Vector3(bg.localScale.x, travelSpeed * beatInterval * holdLen, 
+            bg.localScale.z);
 
-        Column col = columns[n.lane];
-        notes.Add(new HoldObj(nObj, bTime, col, n.holdLen));
+        Column col = columns[lane];
+        notes.Add(new HoldObj(nObj, bTime, col, holdLen));
     } 
 }

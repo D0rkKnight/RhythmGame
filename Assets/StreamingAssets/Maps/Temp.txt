@@ -1,0 +1,14 @@
+mapname: Temp
+track: track1uc.wav
+
+streamstart
+|L1
+|L1
+|HL1
+|HL1
+|L1
+|L1
+|L1
+|L1
+|
+|
