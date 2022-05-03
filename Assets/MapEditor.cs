@@ -95,8 +95,30 @@ public class MapEditor : MonoBehaviour, Clickable
         // Safe because the song environment gets reset
         MusicPlayer.sing.state = MusicPlayer.STATE.RUN;
         MusicPlayer.sing.resetSongEnv();
-
         MapSerializer.sing.playMap("playTemp.txt");
+    }
+
+    public void hotswap()
+    {
+        List<string> data = exportString("tempname", audioFileField.text);
+        MapSerializer mapSer = MapSerializer.sing;
+
+        Map map = mapSer.parseTokens(data.ToArray());
+
+        // Hotswap kinda depends (bpm change or track change will restage map)
+        if (mapSer.activeMap == null || map.bpm != mapSer.activeMap.bpm || !map.trackName.Equals(mapSer.activeMap.trackName))
+            MapSerializer.sing.stageMap(map);
+        else
+        {
+            // delete all existing notes and then requeue new phrases
+            MusicPlayer.sing.clearNotes();
+            MusicPlayer.sing.clearPhraseQueue();
+
+            foreach (Phrase p in map.phrases) MusicPlayer.sing.enqueuePhrase(p);
+        }
+
+        // Pause the mplayer
+        MusicPlayer.sing.pause();
     }
 
     public void export()
@@ -105,17 +127,29 @@ public class MapEditor : MonoBehaviour, Clickable
     }
     public void export(string forceSongName, string forceFileName)
     {
-        // Write to header
         string mapName = songTitleField.text.Trim();
         string track = audioFileField.text.Trim();
-        int bpm = int.Parse(BPMField.text.Trim());
         if (forceSongName != null) track = forceSongName;
         if (forceFileName != null) mapName = forceFileName;
+
+        List<string> data = exportString(mapName, track);
+
+        string path = Application.streamingAssetsPath + "/Maps/" + mapName + ".txt";
+        StreamWriter writer = new StreamWriter(path);
+        
+        foreach (string s in data) writer.WriteLine(s);
+        writer.Close();
+    }
+
+    private List<string> exportString(string mapName, string track)
+    {
+        // Write to header
+        int bpm = int.Parse(BPMField.text.Trim());
 
         if (mapName.Length == 0 || track.Length == 0)
         {
             Debug.LogError("Invalid map/track name");
-            return;
+            return null;
         }
 
         List<string> data = new List<string>();
@@ -126,17 +160,12 @@ public class MapEditor : MonoBehaviour, Clickable
 
         data.Add("\nstreamstart");
 
-        for (int i=0; i<lastActiveRow; i++)
+        for (int i = 0; i < lastActiveRow; i++)
         {
             data.Add(beatRows[i].serialize());
         }
 
-
-        string path = Application.streamingAssetsPath + "/Maps/" + mapName + ".txt";
-        StreamWriter writer = new StreamWriter(path);
-        
-        foreach (string s in data) writer.WriteLine(s);
-        writer.Close();
+        return data;
     }
 
     public void import()

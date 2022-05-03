@@ -98,6 +98,8 @@ public class MusicPlayer : MonoBehaviour
     public float travelSpeed = 5; // In Unity units per second
     public Vector2 dir = new Vector2(0, -1);
     public float hitWindow = 0.5f;
+    public bool streamNotes = true;
+    public float scroll = 0f; // Custom time offset 
 
     public float noteAdvance = 5f;
     public float noteTimeout = 3f;
@@ -165,7 +167,8 @@ public class MusicPlayer : MonoBehaviour
 
     private void stateRun()
     {
-        songTime = Time.time - songStart - pausedTotal;
+        // This value anchors a lot of things
+        songTime = Time.time - songStart - pausedTotal + scroll;
         currBeat = (Time.time - songStart) / beatInterval;
 
         // Start song if ready
@@ -182,48 +185,23 @@ public class MusicPlayer : MonoBehaviour
             onBeat();
         }
 
-        List<Phrase> dump = new List<Phrase>();
-        foreach (Phrase p in phraseQueue)
-        {
-            float bTime = beatInterval * p.beat;
-
-            if (songTime + noteAdvance > bTime)
-            {
-                MapSerializer.sing.spawnNotes(p);
-                dump.Add(p);
-            }
-        }
-
-        foreach (Phrase n in dump) phraseQueue.Remove(n);
-        dump.Clear();
-
+        processPhraseQueue();
 
         // Kill passed notes
         List<NoteObj> passed = new List<NoteObj>();
 
         foreach (NoteObj note in notes)
         {
-            GameObject col = note.lane.gObj;
-            Vector2 tPos = col.transform.Find("TriggerBox").position;
-
-            float dt = note.hitTime - songTime;
-
-            Vector2 dp = -dir * dt * travelSpeed;
-            Vector2 p = tPos + dp;
-            note.gameObj.transform.position = new Vector3(p.x, p.y, -1);
-
-            float noteExtension = 0;
-            if (note is HoldObj) noteExtension += ((HoldObj)note).holdBeats * beatInterval;
-            if (dt < -(noteTimeout + noteExtension)) passed.Add(note);
+            updateNote(note, passed);
         }
 
         // Clean dead note buffer
-        foreach (NoteObj note in passed) kill(note);
+        foreach (NoteObj note in passed) if (streamNotes) kill(note);
 
         // Input
         foreach (Column col in columns)
         {
-            if (Input.GetKeyDown(col.key))
+            if (InputManager.checkKeyDown(col.key))
             {
                 // Get best note within the acceptable input range
                 NoteObj bestNote = null;
@@ -284,25 +262,33 @@ public class MusicPlayer : MonoBehaviour
         }
 
         // Reset key
-        if (Input.GetKeyDown(resetKey))
+        if (InputManager.checkKeyDown(resetKey))
         {
             resetSongEnv();
             MapSerializer.sing.playMap(); // Same behavior as end of song
         }
 
         // State transitions
-        if (Input.GetKeyDown(pauseKey))
+        if (InputManager.checkKeyDown(pauseKey))
         {
-            state = STATE.PAUSE;
-            pauseStart = Time.time;
-            TrackPlayer.sing.audio.Stop();
+            pause();
         }
     }
 
     private void statePause()
     {
+        // Local song time + scroll delta
+        // Write some kinda method that simplifies this...
+        songTime = pauseStart-songStart-pausedTotal + scroll ;
+
+        // Load in phrases that might be hotswapped
+        processPhraseQueue();
+
+        // Draw notes
+        foreach (NoteObj n in notes) updateNote(n, null);
+
         // State transitions
-        if (Input.GetKeyDown(pauseKey))
+        if (InputManager.checkKeyDown(pauseKey))
         {
             state = STATE.RUN;
             pausedTotal += Time.time - pauseStart;
@@ -316,24 +302,42 @@ public class MusicPlayer : MonoBehaviour
         }
     }
 
+    public void pause()
+    {
+        state = STATE.PAUSE;
+        pauseStart = Time.time;
+        TrackPlayer.sing.audio.Stop();
+
+    }
+
     public void resetSongEnv()
     {
         songStart = Time.time + songStartDelay;
         pausedTotal = 0;
+        scroll = 0;
 
         // Clear col blocks
         foreach (Column col in columns) col.blockedTil = 0;
 
+        clearNotes();
+        clearPhraseQueue();
+
+        // Any audio we'd be playing would be illegal
+        TrackPlayer.sing.audio.Stop();
+    }
+
+    public void clearNotes()
+    {
         // Clear out note queue and active notes
         foreach (NoteObj n in notes)
         {
             Destroy(n.gameObj);
         }
         notes.Clear();
+    }
+    public void clearPhraseQueue()
+    {
         phraseQueue.Clear();
-
-        // Any audio we'd be playing would be illegal
-        TrackPlayer.sing.audio.Stop();
     }
 
     private void kill(NoteObj note)
@@ -418,6 +422,43 @@ public class MusicPlayer : MonoBehaviour
         Column col = columns[lane];
         notes.Add(new HoldObj(nObj, beat, bTime, col, holdLen));
     } 
+
+    private void updateNote(NoteObj note, List<NoteObj> passed)
+    {
+        GameObject col = note.lane.gObj;
+        Vector2 tPos = col.transform.Find("TriggerBox").position;
+
+        float dt = note.hitTime - songTime;
+
+        Vector2 dp = -dir * dt * travelSpeed;
+        Vector2 p = tPos + dp;
+        note.gameObj.transform.position = new Vector3(p.x, p.y, -1);
+
+        if (passed != null)
+        {
+            float noteExtension = 0;
+            if (note is HoldObj) noteExtension += ((HoldObj)note).holdBeats * beatInterval;
+            if (dt < -(noteTimeout + noteExtension)) passed.Add(note);
+        }
+    }
+
+    private void processPhraseQueue()
+    {
+        List<Phrase> dump = new List<Phrase>();
+        foreach (Phrase p in phraseQueue)
+        {
+            float bTime = beatInterval * p.beat;
+
+            if (songTime + noteAdvance > bTime || !streamNotes)
+            {
+                MapSerializer.sing.spawnNotes(p);
+                dump.Add(p);
+            }
+        }
+
+        foreach (Phrase n in dump) phraseQueue.Remove(n);
+        dump.Clear();
+    }
 
     private bool noteValid(int lane, float beat, float blockDur)
     {

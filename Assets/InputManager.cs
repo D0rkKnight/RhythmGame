@@ -1,9 +1,18 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class InputManager : MonoBehaviour
 {
+    public bool focusedInField;
+    public List<InputField> fields = new List<InputField>();
+    public static InputManager sing;
+    private void Awake()
+    {
+        if (sing != null) Debug.LogError("Singleton broken");
+        sing = this;
+    }
     private void Update()
     {
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -24,5 +33,14 @@ public class InputManager : MonoBehaviour
             // Kill if click blocker
             if (hit.transform.tag == "MouseBlocker") break;
         }
+
+        focusedInField = false;
+        foreach (InputField f in fields) if (f.isFocused) focusedInField = true;
+    }
+
+    public static bool checkKeyDown(KeyCode c)
+    {
+        if (!sing.focusedInField && Input.GetKeyDown(c)) return true;
+        return false;
     }
 }

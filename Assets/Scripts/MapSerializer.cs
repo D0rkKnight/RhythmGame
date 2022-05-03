@@ -12,7 +12,7 @@ public partial class MapSerializer : MonoBehaviour
     }
 
     public string currMapFname;
-    private Map activeMap;
+    public Map activeMap;
 
     // Acceptable char pool for category data
     // L-left single R-right single
@@ -78,14 +78,19 @@ public partial class MapSerializer : MonoBehaviour
 
         if (fname.Length > 0)
         {
-            activeMap = parseMap(fname);
-
-            // Start music
-            TrackPlayer.sing.loadTrack(activeMap.trackName);
-            loadQueued = true;
+            stageMap(parseMap(fname));
         }
 
         // Don't do anything if we don't have a map to generate
+    }
+
+    public void stageMap(Map map)
+    {
+        activeMap = map;
+
+        // Start music
+        TrackPlayer.sing.loadTrack(activeMap.trackName);
+        loadQueued = true;
     }
 
     public Map parseMap(string fname)
@@ -95,6 +100,11 @@ public partial class MapSerializer : MonoBehaviour
         string data = reader.ReadToEnd();
 
         string[] tokens = data.Split('\n');
+        return parseTokens(tokens);
+    }
+
+    public Map parseTokens(string[] tokens)
+    {
         ParseState state = ParseState.HEADER;
 
         Map map = new Map();
@@ -132,6 +142,9 @@ public partial class MapSerializer : MonoBehaviour
         {
             // Set music player bpm
             mPlay.BPM = activeMap.bpm;
+
+            // Reset music player
+            mPlay.resetSongEnv();
 
             // Map is populated now, load into music player
             foreach (Phrase p in activeMap.phrases)

@@ -1,0 +1,11 @@
+mapname: TempName
+track: track1uc.wav
+bpm: 100
+
+streamstart
+|L1
+|L1
+|L1
+|L1
+|L1
+|L1

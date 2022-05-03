@@ -57,23 +57,27 @@ public class BeatEditorSlot : MonoBehaviour, Clickable
 
         // Rhythm
         float wait = phrase.wait;
-        while (wait < 1 || wait - Mathf.Floor(wait) != 0)
+        if (wait > 0)
         {
-            o = ">"+o; // Means the note is fast
-            wait *= 2;
-        }
+            while (wait < 1 || wait - Mathf.Floor(wait) != 0)
+            {
+                o = ">" + o; // Means the note is fast
+                wait *= 2;
+            }
 
-        // Working with effectively integer value now
-        while (wait > 1)
-        {
-            if (wait % 2 == 0)
+            // Working with effectively integer value now
+            while (wait > 1)
             {
-                o = "<" + o;
-                wait /= 2;
-            } else
-            {
-                o = "|" + o;
-                wait--;
+                if (wait % 2 == 0)
+                {
+                    o = "<" + o;
+                    wait /= 2;
+                }
+                else
+                {
+                    o = "|" + o;
+                    wait--;
+                }
             }
         }
 
@@ -109,6 +113,9 @@ public class BeatEditorSlot : MonoBehaviour, Clickable
             MapEditor.sing.lastActiveRow = parent.rowNum;
 
         updateGraphics();
+
+        // Hotswap the current note field
+        MapEditor.sing.hotswap();
     }
 
     int Clickable.onClick(int code)
