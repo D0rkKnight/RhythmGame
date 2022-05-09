@@ -235,6 +235,10 @@ public class MusicPlayer : MonoBehaviour
                 // Highlight trigger box
                 highlightCol(col, Color.yellow);
 
+                // Highlight BG
+                NoteColumn colComp = col.gObj.GetComponent<NoteColumn>();
+                colComp.highlight = 1;
+
             }
 
             if (Input.GetKeyUp(col.key))
