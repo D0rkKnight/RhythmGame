@@ -232,9 +232,6 @@ public class MusicPlayer : MonoBehaviour
                     }
                 }
 
-                // Highlight trigger box
-                highlightCol(col, Color.yellow);
-
                 // Highlight BG
                 NoteColumn colComp = col.gObj.GetComponent<NoteColumn>();
                 colComp.highlight = 1;
@@ -243,9 +240,6 @@ public class MusicPlayer : MonoBehaviour
 
             if (Input.GetKeyUp(col.key))
             {
-                // Reset color
-                highlightCol(col, Color.white);
-
                 // Mark held holds as dead
                 foreach (NoteObj n in notes)
                 {
@@ -376,13 +370,6 @@ public class MusicPlayer : MonoBehaviour
             }
         }
 
-    }
-
-    private void highlightCol(Column col, Color c)
-    {
-        Transform tBox = col.gObj.transform.Find("TriggerBox");
-        SpriteRenderer rend = tBox.GetComponent<SpriteRenderer>();
-        rend.color = c;
     }
 
     public void enqueuePhrase(Phrase phrase)

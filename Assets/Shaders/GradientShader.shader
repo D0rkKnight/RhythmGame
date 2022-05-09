@@ -4,6 +4,8 @@ Shader "Sprites/GradientShader"
     {
         _MainTex ("Texture", 2D) = "white" {}
         _Intensity ("Intensity", float) = 1.0
+        _Slope ("Slope", float) = 1.0
+        _Offset ("Gradient Offset", float) = 0.0 
     }
     SubShader
     {
@@ -50,6 +52,8 @@ Shader "Sprites/GradientShader"
             sampler2D _MainTex;
             float4 _MainTex_ST;
             float _Intensity;
+            float _Slope;
+            float _Offset;
 
             v2f vert (appdata v)
             {
@@ -69,7 +73,9 @@ Shader "Sprites/GradientShader"
                 fixed4 col = lerp(texCol, i.col, 0.5);
                 col.a = min(texCol.a, i.col.a);
 
-                float alphaRamp = 1 - i.uv.y;
+                float alphaRamp = 1 - i.uv.y*_Slope + _Offset;
+                alphaRamp = smoothstep(0, 1, alphaRamp);
+
                 alphaRamp *= alphaRamp;
                 col.a = min(col.a, alphaRamp);
                 col.a += _Intensity-1;
