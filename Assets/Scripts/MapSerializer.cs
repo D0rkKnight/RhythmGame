@@ -279,6 +279,9 @@ public partial class MapSerializer : MonoBehaviour
         Phrase.TYPE type = p.type;
         if (!genType[(int) p.type]) type = Phrase.TYPE.NOTE;
 
+        // Short circuit if none type
+        if (type == Phrase.TYPE.NONE) return;
+
         // Limit accents
         int accent = Mathf.Min(p.accent, accentLim);
 
@@ -292,11 +295,11 @@ public partial class MapSerializer : MonoBehaviour
         {
             case "R":
                 l += rOff;
-                def = lDef;
+                def = rDef;
                 break;
             case "L":
                 l += lOff;
-                def = rDef;
+                def = lDef;
                 break;
             case "": // There's just no note here
                 hasElement = false;
@@ -309,6 +312,7 @@ public partial class MapSerializer : MonoBehaviour
         // If lane isn't available, default to default lanes
         // Accents for example will stack up and block each other
         MusicPlayer.Column[] columns = MusicPlayer.sing.columns;
+
         if (!columns[l].Active)
         {
             l = def;
@@ -340,6 +344,7 @@ public partial class MapSerializer : MonoBehaviour
         {
             if (hasElement)
             {
+                Debug.Log(l);
                 spawnIndNote(type, l, p.beat, p.dur);
             }
         }

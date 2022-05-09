@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 public class MusicPlayer : MonoBehaviour
 {
-    public class NoteObj
+    /*public class NoteObj
     {
         public GameObject gameObj;
         public float hitTime; // In seconds, as Unity standard
@@ -15,10 +15,10 @@ public class MusicPlayer : MonoBehaviour
 
         public NoteObj(GameObject gameObj_, float beat_, float hitTime_, Column col_)
         {
-            this.gameObj = gameObj_;
+            gameObj = gameObj_;
             beat = beat_;
-            this.hitTime = hitTime_;
-            this.lane = col_;
+            hitTime = hitTime_;
+            lane = col_;
             dead = false;
         }
 
@@ -46,7 +46,7 @@ public class MusicPlayer : MonoBehaviour
             Transform bg = gameObj.transform.Find("HoldBar");
             bg.GetComponent<SpriteRenderer>().color = c;
         }
-    }
+    }*/
 
     [System.Serializable]
     public class Column
@@ -107,7 +107,7 @@ public class MusicPlayer : MonoBehaviour
     public Text scoreText;
     public int score = 0;
 
-    private List<NoteObj> notes;
+    private List<Note> notes;
     private List<Phrase> phraseQueue;
 
     // Pause functionality
@@ -131,7 +131,7 @@ public class MusicPlayer : MonoBehaviour
         if (sing != null) Debug.LogError("Singleton broken");
         sing = this;
 
-        notes = new List<NoteObj>();
+        notes = new List<Note>();
         phraseQueue = new List<Phrase>();
 
         scoreText.text = "0";
@@ -169,7 +169,7 @@ public class MusicPlayer : MonoBehaviour
     {
         // This value anchors a lot of things
         songTime = Time.time - songStart - pausedTotal + scroll;
-        currBeat = (Time.time - songStart) / beatInterval;
+        currBeat = songTime / beatInterval;
 
         // Start song if ready
         if (songTime >= 0 && !TrackPlayer.sing.audio.isPlaying)
@@ -188,15 +188,15 @@ public class MusicPlayer : MonoBehaviour
         processPhraseQueue();
 
         // Kill passed notes
-        List<NoteObj> passed = new List<NoteObj>();
+        List<Note> passed = new List<Note>();
 
-        foreach (NoteObj note in notes)
+        foreach (Note note in notes)
         {
             updateNote(note, passed);
         }
 
         // Clean dead note buffer
-        foreach (NoteObj note in passed) if (streamNotes) kill(note);
+        foreach (Note note in passed) if (streamNotes) kill(note);
 
         // Input
         foreach (Column col in columns)
@@ -204,9 +204,9 @@ public class MusicPlayer : MonoBehaviour
             if (InputManager.checkKeyDown(col.key))
             {
                 // Get best note within the acceptable input range
-                NoteObj bestNote = null;
+                Note bestNote = null;
 
-                foreach (NoteObj note in notes)
+                foreach (Note note in notes)
                 {
                     if (note.dead) continue;
                     if (!col.Equals(note.lane)) continue;
@@ -221,14 +221,15 @@ public class MusicPlayer : MonoBehaviour
                 if (bestNote != null)
                 {
                     addScore(100);
-                    if (bestNote is HoldObj)
+                    if (bestNote is HoldNote)
                     {
-                        ((HoldObj)bestNote).held = true;
+                        ((HoldNote)bestNote).held = true;
                         bestNote.highlight(Color.white);
                     }
                     else // Kill if regular note
                     {
-                        kill(bestNote);
+                        if (streamNotes) kill(bestNote);
+                        else bestNote.dead = true;
                     }
                 }
 
@@ -241,9 +242,9 @@ public class MusicPlayer : MonoBehaviour
             if (Input.GetKeyUp(col.key))
             {
                 // Mark held holds as dead
-                foreach (NoteObj n in notes)
+                foreach (Note n in notes)
                 {
-                    if (n is HoldObj && n.lane.Equals(col) && ((HoldObj)n).held)
+                    if (n is HoldNote && n.lane.Equals(col) && ((HoldNote)n).held)
                     {
                         n.dead = true;
                         n.highlight(Color.grey);
@@ -277,13 +278,14 @@ public class MusicPlayer : MonoBehaviour
     {
         // Local song time + scroll delta
         // Write some kinda method that simplifies this...
-        songTime = pauseStart-songStart-pausedTotal + scroll ;
+        songTime = pauseStart-songStart-pausedTotal + scroll;
+        currBeat = songTime / beatInterval;
 
         // Load in phrases that might be hotswapped
         processPhraseQueue();
 
         // Draw notes
-        foreach (NoteObj n in notes) updateNote(n, null);
+        foreach (Note n in notes) updateNote(n, null);
 
         // State transitions
         if (InputManager.checkKeyDown(pauseKey))
@@ -298,12 +300,18 @@ public class MusicPlayer : MonoBehaviour
                 TrackPlayer.sing.audio.time = songTime;
             }
         }
+
+        // Regenerate dead notes if scrolled past
+        foreach (Note n in notes)
+        {
+            if (n.dead && n.beat > currBeat) n.dead = false;
+        }
     }
 
     public void pause()
     {
+        if (state != STATE.PAUSE) pauseStart = Time.time;
         state = STATE.PAUSE;
-        pauseStart = Time.time;
         TrackPlayer.sing.audio.Stop();
 
     }
@@ -327,9 +335,9 @@ public class MusicPlayer : MonoBehaviour
     public void clearNotes()
     {
         // Clear out note queue and active notes
-        foreach (NoteObj n in notes)
+        foreach (Note n in notes)
         {
-            Destroy(n.gameObj);
+            Destroy(n.gameObject);
         }
         notes.Clear();
     }
@@ -338,10 +346,10 @@ public class MusicPlayer : MonoBehaviour
         phraseQueue.Clear();
     }
 
-    private void kill(NoteObj note)
+    private void kill(Note note)
     {
         notes.Remove(note);
-        Destroy(note.gameObj);
+        Destroy(note.gameObject);
     }
 
     private void addScore(int amount)
@@ -353,11 +361,11 @@ public class MusicPlayer : MonoBehaviour
     private void onBeat()
     {
         // Handle holds
-        foreach (NoteObj n in notes)
+        foreach (Note n in notes)
         {
-            if (n is HoldObj)
+            if (n is HoldNote)
             {
-                HoldObj hn = (HoldObj)n;
+                HoldNote hn = (HoldNote)n;
 
                 // Don't give ticking when first hit
                 if (Mathf.Abs(hn.hitTime - songTime) < hitWindow) continue;
@@ -387,10 +395,12 @@ public class MusicPlayer : MonoBehaviour
 
         // Load in note
         float bTime = beatInterval * beat;
-        GameObject nObj = Instantiate(notePrefab);
-        Column col = columns[lane];
+        Note nObj = Instantiate(notePrefab).GetComponent<Note>();
+        nObj.lane = columns[lane];
+        nObj.beat = beat;
+        nObj.hitTime = bTime;
 
-        notes.Add(new NoteObj(nObj, beat, bTime, col));
+        notes.Add(nObj);
     }
 
     public void spawnHold(int lane, float beat, float holdLen)
@@ -403,18 +413,21 @@ public class MusicPlayer : MonoBehaviour
 
         float bTime = beatInterval * beat;
 
-        GameObject nObj = Instantiate(holdPrefab);
+        HoldNote nObj = Instantiate(holdPrefab).GetComponent<HoldNote>();
         Transform bg = nObj.transform.Find("HoldBar");
 
         // Scale background bar appropriately
         bg.localScale = new Vector3(bg.localScale.x, travelSpeed * beatInterval * holdLen, 
             bg.localScale.z);
 
-        Column col = columns[lane];
-        notes.Add(new HoldObj(nObj, beat, bTime, col, holdLen));
+        nObj.lane = columns[lane];
+        nObj.beat = beat;
+        nObj.hitTime = bTime;
+
+        notes.Add(nObj);
     } 
 
-    private void updateNote(NoteObj note, List<NoteObj> passed)
+    private void updateNote(Note note, List<Note> passed)
     {
         GameObject col = note.lane.gObj;
         Vector2 tPos = col.transform.Find("TriggerBox").position;
@@ -423,12 +436,12 @@ public class MusicPlayer : MonoBehaviour
 
         Vector2 dp = -dir * dt * travelSpeed;
         Vector2 p = tPos + dp;
-        note.gameObj.transform.position = new Vector3(p.x, p.y, -1);
+        note.transform.position = new Vector3(p.x, p.y, -1);
 
         if (passed != null)
         {
             float noteExtension = 0;
-            if (note is HoldObj) noteExtension += ((HoldObj)note).holdBeats * beatInterval;
+            if (note is HoldNote) noteExtension += ((HoldNote)note).holdBeats * beatInterval;
             if (dt < -(noteTimeout + noteExtension)) passed.Add(note);
         }
     }
@@ -464,7 +477,7 @@ public class MusicPlayer : MonoBehaviour
             return false;
         }
 
-        foreach (NoteObj n in notes)
+        foreach (Note n in notes)
         {
             if (n.beat == beat && n.lane == col)
             {

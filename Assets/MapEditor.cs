@@ -36,6 +36,7 @@ public class MapEditor : MonoBehaviour, Clickable
     public InputField audioFileField;
     public InputField BPMField;
     public InputField importField;
+    public Text codeInd;
 
     public bool songPlayQueued = false;
 
@@ -56,6 +57,8 @@ public class MapEditor : MonoBehaviour, Clickable
 
     private void Update()
     {
+        if (activePhrase != null) 
+            codeInd.text = activePhrase.serialize();
         genRows();
     }
 

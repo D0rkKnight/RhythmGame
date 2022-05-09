@@ -52,56 +52,8 @@ public class BeatEditorSlot : MonoBehaviour, Clickable
 
     internal string serialize()
     {
-        if (phrase == null) return ""; // Short circuit
-        string o = "";
-
-        // Rhythm
-        float wait = phrase.wait;
-        if (wait > 0)
-        {
-            while (wait < 1 || wait - Mathf.Floor(wait) != 0)
-            {
-                o = ">" + o; // Means the note is fast
-                wait *= 2;
-            }
-
-            // Working with effectively integer value now
-            while (wait > 1)
-            {
-                if (wait % 2 == 0)
-                {
-                    o = "<" + o;
-                    wait /= 2;
-                }
-                else
-                {
-                    o = "|" + o;
-                    wait--;
-                }
-            }
-        }
-
-
-        switch (phrase.type)
-        {
-            case Phrase.TYPE.NONE:
-                return o; // Short circuit
-            case Phrase.TYPE.NOTE:
-                break;
-            case Phrase.TYPE.HOLD:
-                o += "H";
-                break;
-            default:
-                Debug.LogError("Behavior not defined for note type: " + phrase.type);
-                break;
-        }
-
-        o += phrase.partition;
-        o += phrase.lane;
-        for (int i=0; i<phrase.accent; i++)
-            o += "~";
-
-        return o;
+        if (phrase == null) return "";
+        return phrase.serialize();
     }
 
     public void setPhrase(Phrase p)

@@ -13,7 +13,8 @@ public class MPlayScroller : MonoBehaviour, Clickable
 
     int Clickable.onOver()
     {
-        MusicPlayer.sing.scroll += -Input.mouseScrollDelta.y*scrollSpeed;
+        if (MusicPlayer.sing.state == MusicPlayer.STATE.PAUSE) 
+            MusicPlayer.sing.scroll += Input.mouseScrollDelta.y*scrollSpeed;
         return 1;
     }
 }
