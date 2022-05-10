@@ -1,4 +1,4 @@
-mapname: tempname
+mapname: Pendulum
 track: pendulum2.wav
 bpm: 60
 

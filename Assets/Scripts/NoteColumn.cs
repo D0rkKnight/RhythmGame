@@ -9,6 +9,8 @@ public class NoteColumn : MonoBehaviour
     Material highlightGrad;
     Material buttonOverlay;
 
+    ParticleSystem burstSys;
+
     // Start is called before the first frame update
     void Awake()
     {
@@ -16,6 +18,7 @@ public class NoteColumn : MonoBehaviour
             GetComponent<SpriteRenderer>().material;
         buttonOverlay = transform.Find("TriggerBox/TBHitOverlay").
             GetComponent<SpriteRenderer>().material;
+        burstSys = transform.Find("HitBurst").GetComponent<ParticleSystem>();
     }
 
     // Update is called once per frame
@@ -31,5 +34,10 @@ public class NoteColumn : MonoBehaviour
         // Decrease highlight back to 0
         // highlight = Mathf.Lerp(highlight, 0, Time.deltaTime * decaySpeed);
         highlight = Mathf.Max(0, highlight - Time.deltaTime * decaySpeed);
+    }
+
+    public void hitBurst()
+    {
+        burstSys.Play();
     }
 }

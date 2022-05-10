@@ -161,7 +161,7 @@ public class MapEditor : MonoBehaviour, Clickable
     // Returns map that is hotswapped in
     public Map hotswap()
     {
-        List<string> data = exportString("tempname", audioFileField.text);
+        List<string> data = exportString(songTitleField.text+"_hotswap", audioFileField.text);
         MapSerializer mapSer = MapSerializer.sing;
 
         Map map = mapSer.parseTokens(data.ToArray());
@@ -181,6 +181,8 @@ public class MapEditor : MonoBehaviour, Clickable
         // Pause the mplayer
         MusicPlayer.sing.pause();
 
+        // Rename map to have the right name
+        map.name = songTitleField.text;
         return map;
     }
 

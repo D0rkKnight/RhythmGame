@@ -153,7 +153,7 @@ public class MusicPlayer : MonoBehaviour
         }
 
         // Clean dead note buffer
-        foreach (Note note in passed) if (streamNotes) kill(note);
+        foreach (Note note in passed) if (streamNotes) remove(note);
 
         // Input
         foreach (Column col in columns)
@@ -185,7 +185,7 @@ public class MusicPlayer : MonoBehaviour
                     }
                     else // Kill if regular note
                     {
-                        if (streamNotes) kill(bestNote);
+                        if (streamNotes) hit(bestNote);
                         else bestNote.dead = true;
                     }
                 }
@@ -303,10 +303,17 @@ public class MusicPlayer : MonoBehaviour
         phraseQueue.Clear();
     }
 
-    private void kill(Note note)
+    private void remove(Note note)
     {
         notes.Remove(note);
-        Destroy(note.gameObject);
+        note.remove();
+    }
+
+    private void hit(Note note)
+    {
+        notes.Remove(note);
+        note.hit();
+        note.lane.gObj.GetComponent<NoteColumn>().hitBurst();
     }
 
     private void addScore(int amount)
