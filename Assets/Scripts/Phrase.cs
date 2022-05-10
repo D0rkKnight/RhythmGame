@@ -10,7 +10,8 @@ public class Phrase
     public string partition;
     public int lane;
     public int accent;
-    public float beat;
+    public float beat; // Beat no. that the phrase spawns on.
+                       // Used in music player and in map editor but is regenerated every read/write cycle
 
     public TYPE type;
     public float dur; // beats persisted

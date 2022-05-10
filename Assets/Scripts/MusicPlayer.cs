@@ -5,49 +5,6 @@ using UnityEngine.UI;
 
 public class MusicPlayer : MonoBehaviour
 {
-    /*public class NoteObj
-    {
-        public GameObject gameObj;
-        public float hitTime; // In seconds, as Unity standard
-        public float beat; // Beat for hit
-        public Column lane;
-        public bool dead;
-
-        public NoteObj(GameObject gameObj_, float beat_, float hitTime_, Column col_)
-        {
-            gameObj = gameObj_;
-            beat = beat_;
-            hitTime = hitTime_;
-            lane = col_;
-            dead = false;
-        }
-
-        public virtual void highlight(Color c)
-        {
-            gameObj.GetComponent<SpriteRenderer>().color = c;
-        }
-    }
-
-    public class HoldObj : NoteObj
-    {
-        public float holdBeats;
-        public bool held;
-
-        public HoldObj(GameObject gameObj_, float beat_, float hitTime_, Column col_, float holdBeats_) 
-            : base(gameObj_, beat_, hitTime_, col_)
-        {
-            holdBeats = holdBeats_;
-            held = false;
-        }
-
-        public override void highlight(Color c)
-        {
-            base.highlight(c);
-            Transform bg = gameObj.transform.Find("HoldBar");
-            bg.GetComponent<SpriteRenderer>().color = c;
-        }
-    }*/
-
     [System.Serializable]
     public class Column
     {
@@ -500,4 +457,6 @@ public class MusicPlayer : MonoBehaviour
 
         return true;
     }
+
+    public float getCurrBeat() { return currBeat; }
 }

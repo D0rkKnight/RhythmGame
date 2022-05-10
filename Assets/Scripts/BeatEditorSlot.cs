@@ -66,8 +66,9 @@ public class BeatEditorSlot : MonoBehaviour, Clickable
 
         updateGraphics();
 
-        // Hotswap the current note field
-        MapEditor.sing.hotswap();
+        // Field has been edited
+        MapEditor.sing.edited = true;
+        MapEditor.sing.imageQueued = true;
     }
 
     int Clickable.onClick(int code)
@@ -88,6 +89,12 @@ public class BeatEditorSlot : MonoBehaviour, Clickable
 
     int Clickable.onOver()
     {
+        if (Input.GetKeyDown(MapEditor.sing.copyKey))
+        {
+            // Write phrase to active phrase
+            MapEditor.sing.activePhrase = phrase.clone();
+        }
+
         return 1;
     }
 }

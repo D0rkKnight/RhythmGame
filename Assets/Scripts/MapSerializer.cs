@@ -344,7 +344,6 @@ public partial class MapSerializer : MonoBehaviour
         {
             if (hasElement)
             {
-                Debug.Log(l);
                 spawnIndNote(type, l, p.beat, p.dur);
             }
         }

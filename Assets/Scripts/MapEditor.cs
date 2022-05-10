@@ -37,8 +37,15 @@ public class MapEditor : MonoBehaviour, Clickable
     public InputField BPMField;
     public InputField importField;
     public Text codeInd;
+    public Transform phraseMarker;
 
     public bool songPlayQueued = false;
+
+    Stack<Map> undoCache = new Stack<Map>(); // Includes the current state
+    public bool edited = false;
+    public bool imageQueued = false;
+
+    public KeyCode copyKey = KeyCode.C;
 
     // Start is called before the first frame update
     void Awake()
@@ -48,17 +55,58 @@ public class MapEditor : MonoBehaviour, Clickable
 
         beatRows = new List<BeatRow>();
         canv = transform.Find("Canvas").GetComponent<Canvas>();
+        phraseMarker = transform.Find("Canvas/PhraseMarker");
 
         Vector3 cPos = rowOrigin.position;
-        Debug.Log(cPos);
 
         genRows();
     }
 
+    private void Start()
+    {
+        List<string> data = exportString("tempname", audioFileField.text);
+        Map image = MapSerializer.sing.parseTokens(data.ToArray());
+
+        undoCache.Push(image);
+    }
+
     private void Update()
     {
+        // Display active phrase
         if (activePhrase != null) 
             codeInd.text = activePhrase.serialize();
+
+        // Show where the song is at on the phrase list
+        float currBeat = MusicPlayer.sing.getCurrBeat();
+        int markerIndex = -1;
+        for (int i=0; i<beatRows.Count-1; i++)
+        {
+            if (beatRows[i].slots[0].phrase.beat < currBeat &&
+                beatRows[i+1].slots[0].phrase.beat > currBeat) {
+
+                markerIndex = i;
+                break;
+            }
+        }
+        phraseMarker.position = rowOrigin.transform.position + 
+            Vector3.down * (-scroll + rowAdvance * (markerIndex+0.5f)) + Vector3.left * 0.8f;
+
+        // Process edits
+        Map image = null;
+        if (edited)
+        {
+            image = onEdit();
+            edited = false;
+        }
+        if (imageQueued)
+        {
+            undoCache.Push(image);
+            imageQueued = false;
+        }
+
+        // Check for undo input
+        if (Input.GetKeyDown(KeyCode.Z) /*&& Input.GetKey(KeyCode.LeftControl)*/) undo();
+
         genRows();
     }
 
@@ -101,7 +149,17 @@ public class MapEditor : MonoBehaviour, Clickable
         MapSerializer.sing.playMap("playTemp.txt");
     }
 
-    public void hotswap()
+    private Map onEdit()
+    {
+        Debug.Log("edited");
+
+        timestamp();
+        Map image = hotswap();
+        return image;
+    }
+
+    // Returns map that is hotswapped in
+    public Map hotswap()
     {
         List<string> data = exportString("tempname", audioFileField.text);
         MapSerializer mapSer = MapSerializer.sing;
@@ -122,6 +180,8 @@ public class MapEditor : MonoBehaviour, Clickable
 
         // Pause the mplayer
         MusicPlayer.sing.pause();
+
+        return map;
     }
 
     public void export()
@@ -171,15 +231,25 @@ public class MapEditor : MonoBehaviour, Clickable
         return data;
     }
 
-    public void import()
+    public void clear()
     {
-        string fname = importField.text;
-        Map map = MapSerializer.sing.parseMap(fname);
+        foreach (BeatRow br in beatRows)
+        {
+            Destroy(br.gameObject);
+        }
+        beatRows.Clear();
+        lastActiveRow = 0;
+    }
 
+    public void import(Map map)
+    {
+        clear(); // Clean slate
         genRows(map.phrases.Count); // Get enough rows to contain every element
 
+
+
         // Phrases are linearly laid out
-        for (int i=0; i<map.phrases.Count; i++)
+        for (int i = 0; i < map.phrases.Count; i++)
         {
             // Hackity hack
             beatRows[i].slots[0].setPhrase(map.phrases[i]);
@@ -188,6 +258,31 @@ public class MapEditor : MonoBehaviour, Clickable
         songTitleField.text = map.name;
         audioFileField.text = map.trackName;
         BPMField.text = map.bpm.ToString();
+
+        edited = true;
+    }
+
+    public void import()
+    {
+        string fname = importField.text;
+        Map map = MapSerializer.sing.parseMap(fname);
+
+        import(map);
+    }
+
+    public void undo()
+    {
+        Debug.Log("Undo");
+
+        if (undoCache.Count > 1)
+        {
+            undoCache.Pop();
+            Map lastImage = undoCache.Peek();
+            import(lastImage);
+        }
+
+        // You cannot undo an undo.
+        imageQueued = false;
     }
 
     private void updateVisuals()
@@ -249,5 +344,20 @@ public class MapEditor : MonoBehaviour, Clickable
 
         updateBeatRows();
         return 1;
+    }
+
+    // TODO: Use this to timestamp serializer phrases too
+    private void timestamp()
+    {
+        // Timestamp phrases (very simple algorithm)
+        float currBeat = 0;
+        for (int i = 0; i < beatRows.Count; i++)
+        {
+            Phrase p = beatRows[i].slots[0].phrase;
+            p.beat = currBeat;
+
+            // Advance beat
+            currBeat += p.wait;
+        }
     }
 }
