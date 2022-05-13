@@ -48,6 +48,21 @@ public class Phrase
         return p;
     }
 
+    public override string ToString()
+    {
+        string o = "Phrase: ";
+        o += "Lane: "+lane+"\n";
+        o += "Partition: " + partition + "\n";
+        o += "Beat: " + beat + "\n";
+        o += "Accent: " + accent + "\n";
+        o += "Wait: " + wait + "\n";
+        o += "Duration: " + dur + "\n";
+        o += "Type: " + type + "\n";
+
+        return o;
+    }
+
+    // Metadata is force fed
     public string serialize()
     {
         string o = "";
@@ -78,7 +93,7 @@ public class Phrase
             }
         }
 
-
+        List<string> meta = new List<string>();
         switch (type)
         {
             case Phrase.TYPE.NONE:
@@ -87,10 +102,23 @@ public class Phrase
                 break;
             case Phrase.TYPE.HOLD:
                 o += "H";
+                meta.Add(""+dur);
                 break;
             default:
                 Debug.LogError("Behavior not defined for note type: " + type);
                 break;
+        }
+
+        // Type metadata
+        if (meta.Count > 0)
+        {
+            o += '(';
+            for (int i=0; i<meta.Count; i++)
+            {
+                o += meta[i];
+                if (i < meta.Count - 1) o += ',';
+            }
+            o += ')';
         }
 
         o += partition;

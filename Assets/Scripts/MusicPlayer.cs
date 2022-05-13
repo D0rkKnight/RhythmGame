@@ -64,19 +64,21 @@ public class MusicPlayer : MonoBehaviour
     public Text scoreText;
     public int score = 0;
 
-    private List<Note> notes;
-    private List<Phrase> phraseQueue;
+    public List<Note> notes;
+    public List<Phrase> phraseQueue;
 
     // Pause functionality
     public enum STATE
     {
-        RUN, PAUSE
+        RUN, PAUSE, INTERIM
     }
 
     public KeyCode pauseKey = KeyCode.P;
     private float pauseStart = 0f;
     private float pausedTotal;
     public STATE state = STATE.RUN;
+
+    float interimTil = 0;
 
     public KeyCode resetKey = KeyCode.R;
 
@@ -115,6 +117,9 @@ public class MusicPlayer : MonoBehaviour
                 break;
             case STATE.PAUSE:
                 statePause();
+                break;
+            case STATE.INTERIM:
+                stateInter();
                 break;
             default:
                 Debug.LogError("Illegal game state");
@@ -213,8 +218,8 @@ public class MusicPlayer : MonoBehaviour
         // If no notes left, request note serializer to send more notes
         if (notes.Count == 0 && phraseQueue.Count == 0 && !MapSerializer.sing.loadQueued)
         {
-            resetSongEnv();
-            MapSerializer.sing.playMap();
+            state = STATE.INTERIM;
+            interimTil = Time.time + 1f;
         }
 
         // Reset key
@@ -265,6 +270,17 @@ public class MusicPlayer : MonoBehaviour
         }
     }
 
+    // Buffer period to avoid excessive flip flopping
+    private void stateInter()
+    {
+        if (Time.time > interimTil)
+        {
+            resetSongEnv();
+            MapSerializer.sing.playMap();
+
+            state = STATE.RUN;
+        }
+    }
     public void pause()
     {
         if (state != STATE.PAUSE) pauseStart = Time.time;

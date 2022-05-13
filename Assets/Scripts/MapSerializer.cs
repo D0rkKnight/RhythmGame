@@ -255,6 +255,8 @@ public partial class MapSerializer : MonoBehaviour
         Phrase.TYPE type = p.type;
         if (!genType[(int) p.type]) type = Phrase.TYPE.NOTE;
 
+        Debug.Log(p.ToString());
+
         // Short circuit if none type
         if (type == Phrase.TYPE.NONE) return;
 

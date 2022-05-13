@@ -20,6 +20,7 @@ public class MapEditor : MonoBehaviour, Clickable
     public static MapEditor sing;
 
     public Phrase activePhrase = new Phrase(1, "L", 0, 0, 1, Phrase.TYPE.NOTE);
+    public Phrase nonePhrase = new Phrase(1, "L", 0, 0, 1, Phrase.TYPE.NONE);
     public string ActivePartition // Unity buttons can interface with delegates
     {
         get { return activePhrase.partition; }
@@ -45,6 +46,8 @@ public class MapEditor : MonoBehaviour, Clickable
     public bool edited = false;
     public bool imageQueued = false;
 
+    public InputField metaField;
+
     public KeyCode copyKey = KeyCode.C;
 
     // Start is called before the first frame update
@@ -57,8 +60,6 @@ public class MapEditor : MonoBehaviour, Clickable
         canv = transform.Find("Canvas").GetComponent<Canvas>();
         phraseMarker = transform.Find("Canvas/PhraseMarker");
 
-        Vector3 cPos = rowOrigin.position;
-
         genRows();
     }
 
@@ -68,6 +69,9 @@ public class MapEditor : MonoBehaviour, Clickable
         Map image = MapSerializer.sing.parseTokens(data.ToArray());
 
         undoCache.Push(image);
+
+        // Visual init
+        updateMetaField();
     }
 
     private void Update()
@@ -106,6 +110,24 @@ public class MapEditor : MonoBehaviour, Clickable
 
         // Check for undo input
         if (Input.GetKeyDown(KeyCode.Z) /*&& Input.GetKey(KeyCode.LeftControl)*/) undo();
+
+        // Write field data to phrase
+        switch (activePhrase.type)
+        {
+            case Phrase.TYPE.NONE:
+                break;
+            case Phrase.TYPE.NOTE:
+                break;
+            case Phrase.TYPE.HOLD:
+                float tryRes;
+                bool succ = float.TryParse(metaField.text, out tryRes);
+
+                activePhrase.dur = 0;
+                if (succ) activePhrase.dur = tryRes; // Write in data
+                break;
+            default:
+                break;
+        }
 
         genRows();
     }
@@ -149,7 +171,7 @@ public class MapEditor : MonoBehaviour, Clickable
         MapSerializer.sing.playMap("playTemp.txt");
     }
 
-    private Map onEdit()
+    public Map onEdit()
     {
         Debug.Log("edited");
 
@@ -247,8 +269,6 @@ public class MapEditor : MonoBehaviour, Clickable
     {
         clear(); // Clean slate
         genRows(map.phrases.Count); // Get enough rows to contain every element
-
-
 
         // Phrases are linearly laid out
         for (int i = 0; i < map.phrases.Count; i++)
@@ -360,6 +380,40 @@ public class MapEditor : MonoBehaviour, Clickable
 
             // Advance beat
             currBeat += p.wait;
+        }
+    }
+
+    // Metadata editing stuff
+    private void activateField(string newName)
+    {
+        metaField.gameObject.SetActive(true);
+        metaField.placeholder.GetComponent<Text>().text = newName;
+    }
+
+    private void deactivateField()
+    {
+        metaField.gameObject.SetActive(false);
+    }
+
+    public void updateMetaField()
+    {
+        Debug.Log("activating");
+
+        // Flag metadata input fields
+        switch (activePhrase.type)
+        {
+            case Phrase.TYPE.NONE:
+                deactivateField();
+                break;
+            case Phrase.TYPE.NOTE:
+                deactivateField();
+                break;
+            case Phrase.TYPE.HOLD:
+                activateField("Hold Dur");
+                metaField.text = "" + activePhrase.dur; // Write in data
+                break;
+            default:
+                break;
         }
     }
 }
