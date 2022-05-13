@@ -4,3 +4,6 @@ bpm: 100
 
 streamstart
 |H(1)L1
+|L1
+|L1
+|L1

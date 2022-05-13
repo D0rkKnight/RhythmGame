@@ -1,4 +1,4 @@
-mapname: playTemp
+mapname: HoldTest
 track: track1uc.wav
 bpm: 100
 
