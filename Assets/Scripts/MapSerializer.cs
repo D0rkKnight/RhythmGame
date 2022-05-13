@@ -199,31 +199,6 @@ public partial class MapSerializer : MonoBehaviour
         return ParseState.ERR;
     }
 
-    class StringScanner {
-        public string str;
-        public int ptr;
-
-        public StringScanner(string str_)
-        {
-            this.str = str_;
-            ptr = 0;
-        }
-
-        public string getSegment(List<char> charlist)
-        {
-            string o = "";
-            while (ptr < str.Length)
-            {
-                if (charlist.Contains(str[ptr])) o += str[ptr];
-                else break;
-
-                ptr++;
-            }
-
-            return o;
-        }
-    }
-
     private ParseState parseSTREAM(string tok, Map map)
     {
         // Ignore empty tokens
@@ -234,6 +209,9 @@ public partial class MapSerializer : MonoBehaviour
         // Single note reader
         string beatCode = scanner.getSegment(beatPool);
         string typeCode = scanner.getSegment(typePool);
+        string[] typeMeta = null;
+        if (typeCode.Length > 0) typeMeta = scanner.getMeta();
+
         string part = scanner.getSegment(catPool);
         string lane = scanner.getSegment(lanePool);
         int accent = scanner.getSegment(accentPool).Length;
@@ -249,7 +227,7 @@ public partial class MapSerializer : MonoBehaviour
         {
             case "H":
                 type = Phrase.TYPE.HOLD;
-                holdLen = 2;
+                holdLen = float.Parse(typeMeta[0]); // Read the first meta value
                 break;
         }
 
@@ -263,8 +241,6 @@ public partial class MapSerializer : MonoBehaviour
         };
 
         map.addPhrase(p);
-
-
         advanceBeat(wait);
 
         return ParseState.STREAM; // Persist state
@@ -290,7 +266,6 @@ public partial class MapSerializer : MonoBehaviour
 
         // Given lane weights, calculate target lane
         int def = 0;
-        bool hasElement = true; // Sometimes, we will get a beatcode but no element alongside it.
         switch (p.partition)
         {
             case "R":
@@ -300,9 +275,6 @@ public partial class MapSerializer : MonoBehaviour
             case "L":
                 l += lOff;
                 def = lDef;
-                break;
-            case "": // There's just no note here
-                hasElement = false;
                 break;
             default:
                 Debug.LogError("Lane marker " + p.partition + " not recognized");
@@ -333,19 +305,14 @@ public partial class MapSerializer : MonoBehaviour
 
             int sCol = Random.Range(leftValid, leftValid + validCols);
 
-            for (int j = 0; j <= accent; j++) if (hasElement)
-                {
+            for (int j = 0; j <= accent; j++)
                     // Spawn note directly
                     spawnIndNote(type, sCol + j, p.beat, p.dur);
-                }
 
         }
         else
         {
-            if (hasElement)
-            {
-                spawnIndNote(type, l, p.beat, p.dur);
-            }
+            spawnIndNote(type, l, p.beat, p.dur);
         }
     }
 
@@ -358,6 +325,7 @@ public partial class MapSerializer : MonoBehaviour
                 MusicPlayer.sing.spawnNote(lane, beat);
                 break;
             case Phrase.TYPE.HOLD:
+                Debug.Log("Spawning hold");
                 MusicPlayer.sing.spawnHold(lane, beat, holdLen);
                 break;
             default:
