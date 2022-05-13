@@ -22,6 +22,7 @@ public class BeatEditorSlot : MonoBehaviour, Clickable
 
     private void Start()
     {
+        phrase = new NonePhrase(0, 1); // Random null phrase
         updateGraphics();
     }
 

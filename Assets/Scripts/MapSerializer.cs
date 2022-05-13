@@ -223,7 +223,7 @@ public partial class MapSerializer : MonoBehaviour
         // If there is a partition, the type defaults to note
         if (part.Length > 0) type = Phrase.TYPE.NOTE;
 
-        switch(typeCode)
+        switch (typeCode)
         {
             case "H":
                 type = Phrase.TYPE.HOLD;
@@ -235,10 +235,7 @@ public partial class MapSerializer : MonoBehaviour
         int l = 1;
         if (lane.Length > 0) l = int.Parse(lane);
 
-        Phrase p = new Phrase(l, part, readerBeat, accent, wait, type)
-        {
-            dur = holdLen
-        };
+        Phrase p = Phrase.staticCon(l, part, readerBeat, accent, wait, holdLen, type);
 
         map.addPhrase(p);
         advanceBeat(wait);

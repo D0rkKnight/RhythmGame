@@ -15,7 +15,8 @@ public class EleTypeButton : MonoBehaviour
 
     private void setElement()
     {
-        MapEditor.sing.activePhrase.type = ele;
+        Phrase p = MapEditor.sing.activePhrase;
+        MapEditor.sing.activePhrase = Phrase.staticCon(p.lane, p.partition, p.beat, p.accent, p.wait, p.dur, ele);
         MapEditor.sing.updateMetaField();
     }
 }
