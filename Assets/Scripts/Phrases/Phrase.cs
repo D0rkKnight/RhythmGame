@@ -14,7 +14,6 @@ public abstract class Phrase
                        // Used in music player and in map editor but is regenerated every read/write cycle
 
     public TYPE type;
-    public float dur; // beats persisted
     public float wait; // beats until next phrase
 
     // Zigzag values
@@ -23,7 +22,7 @@ public abstract class Phrase
 
     public enum TYPE
     {
-        NONE, NOTE, HOLD, SENTINEL
+        NONE, NOTE, HOLD, ZIGZAG, SENTINEL
     }
 
     public Phrase()
@@ -31,7 +30,6 @@ public abstract class Phrase
         lane = 0;
         beat = 0;
         type = TYPE.NOTE;
-        dur = 1f;
     }
 
     public Phrase(int lane_, string partition_, float beat_, int accent_, float wait_, TYPE type_)
@@ -54,7 +52,6 @@ public abstract class Phrase
         o += "Beat: " + beat + "\n";
         o += "Accent: " + accent + "\n";
         o += "Wait: " + wait + "\n";
-        o += "Duration: " + dur + "\n";
         o += "Type: " + type + "\n";
 
         return o;
@@ -170,6 +167,9 @@ public abstract class Phrase
             mutLane = def;
         }
 
+        // Get block frame
+        float blockFrame = getBlockFrame();
+
         // Double/triple up according to accents
         if (mutAccent > 0)
         {
@@ -188,19 +188,19 @@ public abstract class Phrase
             for (int j = 0; j <= mutAccent; j++)
             {
                 // Spawn note directly
-                spawn(MusicPlayer.sing, sCol + j, beat, dur, dur);
+                spawn(MusicPlayer.sing, sCol + j, beat, blockFrame);
             }
 
         }
         else
         {
-            spawn(MusicPlayer.sing, mutLane, beat, dur, dur);
+            spawn(MusicPlayer.sing, mutLane, beat, blockFrame);
         }
     }
 
     // Generates this phrase attached to the given music player
     // Accepts generic arguments for mutability between phrase types
-    public virtual void spawn(MusicPlayer mp, int spawnLane, float spawnBeat, float blockFrame, float duration)
+    public virtual void spawn(MusicPlayer mp, int spawnLane, float spawnBeat, float blockFrame)
     {
         if (!mp.noteValid(spawnLane, spawnBeat, blockFrame))
         {
@@ -217,20 +217,25 @@ public abstract class Phrase
         }
 
         Note nObj = instantiateNote(mp);
-        configNote(mp, nObj, spawnLane, spawnBeat, blockFrame, duration);
+        configNote(mp, nObj, spawnLane, spawnBeat, blockFrame);
 
         mp.addNote(nObj);
     }
 
     public abstract Note instantiateNote(MusicPlayer mp);
 
-    public virtual void configNote(MusicPlayer mp, Note nObj, int spawnLane, float spawnBeat, float blockFrame, float duration)
+    public virtual void configNote(MusicPlayer mp, Note nObj, int spawnLane, float spawnBeat, float blockFrame)
     {
         nObj.lane = mp.columns[spawnLane];
         nObj.beat = spawnBeat;
 
         float bTime = mp.beatInterval * spawnBeat;
         nObj.hitTime = bTime;
+    }
+
+    public virtual float getBlockFrame()
+    {
+        return 0; // Doesn't advance blocking frame
     }
 
     // Convert from typecode to type
@@ -240,6 +245,8 @@ public abstract class Phrase
         {
             case "H":
                 return TYPE.HOLD;
+            case "Z":
+                return TYPE.ZIGZAG;
         }
 
         return TYPE.SENTINEL; // Inconclusive
@@ -265,6 +272,20 @@ public abstract class Phrase
                 }
 
                 p = new HoldPhrase(lane_, partition_, beat_, accent_, wait_, dur_);
+                break;
+            case TYPE.ZIGZAG:
+                dur_ = 0;
+                int width_ = 2;
+                float rate_ = 1;
+
+                if (typeMeta != null)
+                {
+                    dur_ = float.Parse(typeMeta[0]);
+                    width_ = int.Parse(typeMeta[1]);
+                    rate_ = float.Parse(typeMeta[2]);
+                }
+
+                p = new ZigzagPhrase(lane_, partition_, beat_, accent_, wait_, dur_, width_, rate_);
                 break;
             default:
                 Debug.LogError("Illegal phrase type");

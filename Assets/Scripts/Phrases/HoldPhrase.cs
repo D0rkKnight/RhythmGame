@@ -6,6 +6,8 @@ using UnityEngine.UI;
 
 public class HoldPhrase : Phrase
 {
+    public float dur; // beats persisted
+
     public HoldPhrase(int lane_, string partition_, float beat_, int accent_, float wait_, float dur_) : base(lane_, partition_, beat_, accent_, wait_, TYPE.HOLD)
     {
         dur = dur_;
@@ -26,14 +28,18 @@ public class HoldPhrase : Phrase
     {
         return UnityEngine.Object.Instantiate(mp.holdPrefab).GetComponent<Note>();
     }
-    public override void configNote(MusicPlayer mp, Note nObj, int spawnLane, float spawnBeat, float blockFrame, float duration)
+    public override void configNote(MusicPlayer mp, Note nObj, int spawnLane, float spawnBeat, float blockFrame)
     {
-        base.configNote(mp, nObj, spawnLane, spawnBeat, blockFrame, duration);
+        base.configNote(mp, nObj, spawnLane, spawnBeat, blockFrame);
 
         Transform bg = nObj.transform.Find("HoldBar");
 
+        // Set hold length
+        HoldNote hn = (HoldNote)nObj;
+        hn.holdBeats = dur;
+
         // Scale background bar appropriately
-        bg.localScale = new Vector3(bg.localScale.x, mp.travelSpeed * mp.beatInterval * duration,
+        bg.localScale = new Vector3(bg.localScale.x, mp.travelSpeed * mp.beatInterval * hn.holdBeats,
             bg.localScale.z);
     }
 

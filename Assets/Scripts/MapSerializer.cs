@@ -53,9 +53,11 @@ public partial class MapSerializer : MonoBehaviour
         accentPool = new List<char>();
         beatPool = new List<char>();
 
+        // TODO: Read the typepool from Phrase's type-char listing
         catPool.Add('L');
         catPool.Add('R');
         typePool.Add('H');
+        typePool.Add('Z');
         for (char c = '0'; c <= '9'; c++) lanePool.Add(c);
 
         accentPool.Add('~');

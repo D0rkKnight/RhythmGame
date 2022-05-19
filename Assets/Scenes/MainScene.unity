@@ -626,6 +626,22 @@ PrefabInstance:
       propertyPath: m_Camera
       value: 
       objectReference: {fileID: 705287535}
+    - target: {fileID: 1121949245, guid: 3e5a8fe67b687dc4b81f154ed99e82af, type: 3}
+      propertyPath: flags.Array.data[0]
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1121949245, guid: 3e5a8fe67b687dc4b81f154ed99e82af, type: 3}
+      propertyPath: flags.Array.data[1]
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1121949245, guid: 3e5a8fe67b687dc4b81f154ed99e82af, type: 3}
+      propertyPath: flags.Array.data[2]
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1121949245, guid: 3e5a8fe67b687dc4b81f154ed99e82af, type: 3}
+      propertyPath: flags.Array.data[3]
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4911528580168923858, guid: 3e5a8fe67b687dc4b81f154ed99e82af,
         type: 3}
       propertyPath: EmissionModule.m_Bursts.Array.data[0].countCurve.scalar
