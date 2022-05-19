@@ -36,4 +36,24 @@ public class HoldPhrase : Phrase
         bg.localScale = new Vector3(bg.localScale.x, mp.travelSpeed * mp.beatInterval * duration,
             bg.localScale.z);
     }
+
+    public override void writeMetaFields(List<InputField> fields)
+    {
+        base.writeMetaFields(fields);
+
+        fields[0].gameObject.SetActive(true);
+        fields[0].placeholder.GetComponent<Text>().text = "Hold Dur";
+        fields[0].text = "" + dur; // Write in data
+    }
+
+    public override void readMetaFields(List<InputField> fields)
+    {
+        base.readMetaFields(fields);
+
+        float tryRes;
+        bool succ = float.TryParse(fields[0].text, out tryRes);
+
+        dur = 0;
+        if (succ) dur = tryRes; // Write in data
+    }
 }

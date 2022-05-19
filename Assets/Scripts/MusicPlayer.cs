@@ -85,7 +85,7 @@ public class MusicPlayer : MonoBehaviour
     public static MusicPlayer sing;
 
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
         if (sing != null) Debug.LogError("Singleton broken");
         sing = this;
@@ -104,6 +104,10 @@ public class MusicPlayer : MonoBehaviour
         columns[2].Active = true;
         columns[3].Active = true;
 
+    }
+
+    private void Start()
+    {
         SkillTree.sing.compile();
     }
 

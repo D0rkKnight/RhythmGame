@@ -209,6 +209,7 @@ public partial class MapSerializer : MonoBehaviour
         // Single note reader
         string beatCode = scanner.getSegment(beatPool);
         string typeCode = scanner.getSegment(typePool);
+
         string[] typeMeta = null;
         if (typeCode.Length > 0) typeMeta = scanner.getMeta();
 
@@ -218,24 +219,21 @@ public partial class MapSerializer : MonoBehaviour
 
         // Write to note
         Phrase.TYPE type = Phrase.TYPE.NONE;
-        float holdLen = 0;
 
         // If there is a partition, the type defaults to note
         if (part.Length > 0) type = Phrase.TYPE.NOTE;
 
-        switch (typeCode)
+        Phrase.TYPE codeOver = Phrase.codeToType(typeCode);
+        if (codeOver != Phrase.TYPE.SENTINEL)
         {
-            case "H":
-                type = Phrase.TYPE.HOLD;
-                holdLen = float.Parse(typeMeta[0]); // Read the first meta value
-                break;
+            type = codeOver;
         }
 
         float wait = getWait(beatCode);
         int l = 1;
         if (lane.Length > 0) l = int.Parse(lane);
 
-        Phrase p = Phrase.staticCon(l, part, readerBeat, accent, wait, holdLen, type);
+        Phrase p = Phrase.staticCon(l, part, readerBeat, accent, wait, typeMeta, type);
 
         map.addPhrase(p);
         advanceBeat(wait);

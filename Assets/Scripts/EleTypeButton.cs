@@ -15,8 +15,11 @@ public class EleTypeButton : MonoBehaviour
 
     private void setElement()
     {
+        // Rebuild the element
+        // All metadata will be nulled upon doing this
+
         Phrase p = MapEditor.sing.activePhrase;
-        MapEditor.sing.activePhrase = Phrase.staticCon(p.lane, p.partition, p.beat, p.accent, p.wait, p.dur, ele);
+        MapEditor.sing.activePhrase = Phrase.staticCon(p.lane, p.partition, p.beat, p.accent, p.wait, null, ele);
         MapEditor.sing.updateMetaField();
     }
 }

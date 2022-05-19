@@ -60,8 +60,8 @@ public class SkillTree : MonoBehaviour
     public bool[] flags = new bool[(int)NODE.SENTINEL];
     public static SkillTree sing;
 
-    // Start is called before the first frame update
-    void Start()
+    // separate initialize function
+    void Awake()
     {
         if (sing != null) Debug.LogError("Singleton broken");
         sing = this;

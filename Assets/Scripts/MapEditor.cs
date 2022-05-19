@@ -46,7 +46,8 @@ public class MapEditor : MonoBehaviour, Clickable
     public bool edited = false;
     public bool imageQueued = false;
 
-    public InputField metaField;
+    public GameObject metaFieldPrefab;
+    public List<InputField> metaFields;
 
     public KeyCode copyKey = KeyCode.C;
 
@@ -59,6 +60,16 @@ public class MapEditor : MonoBehaviour, Clickable
         beatRows = new List<BeatRow>();
         canv = transform.Find("Canvas").GetComponent<Canvas>();
         phraseMarker = transform.Find("Canvas/PhraseMarker");
+
+        // Create meta fields
+        metaFields = new List<InputField>();
+        Transform metaFieldAnchor = transform.Find("Canvas/MetaFieldAnchor");
+        for (int i=0; i<4; i++)
+        {
+            Transform field = Instantiate(metaFieldPrefab, metaFieldAnchor).transform;
+            field.position = metaFieldAnchor.position + Vector3.down * 1 * i;
+            metaFields.Add(field.GetComponent<InputField>());
+        }
 
         genRows();
     }
@@ -112,22 +123,7 @@ public class MapEditor : MonoBehaviour, Clickable
         if (Input.GetKeyDown(KeyCode.Z) /*&& Input.GetKey(KeyCode.LeftControl)*/) undo();
 
         // Write field data to phrase
-        switch (activePhrase.type)
-        {
-            case Phrase.TYPE.NONE:
-                break;
-            case Phrase.TYPE.NOTE:
-                break;
-            case Phrase.TYPE.HOLD:
-                float tryRes;
-                bool succ = float.TryParse(metaField.text, out tryRes);
-
-                activePhrase.dur = 0;
-                if (succ) activePhrase.dur = tryRes; // Write in data
-                break;
-            default:
-                break;
-        }
+        activePhrase.readMetaFields(metaFields);
 
         genRows();
     }
@@ -383,7 +379,7 @@ public class MapEditor : MonoBehaviour, Clickable
         }
     }
 
-    // Metadata editing stuff
+    /*// Metadata editing stuff
     private void activateField(string newName)
     {
         metaField.gameObject.SetActive(true);
@@ -393,27 +389,11 @@ public class MapEditor : MonoBehaviour, Clickable
     private void deactivateField()
     {
         metaField.gameObject.SetActive(false);
-    }
+    }*/
 
     public void updateMetaField()
     {
-        Debug.Log("activating");
-
         // Flag metadata input fields
-        switch (activePhrase.type)
-        {
-            case Phrase.TYPE.NONE:
-                deactivateField();
-                break;
-            case Phrase.TYPE.NOTE:
-                deactivateField();
-                break;
-            case Phrase.TYPE.HOLD:
-                activateField("Hold Dur");
-                metaField.text = "" + activePhrase.dur; // Write in data
-                break;
-            default:
-                break;
-        }
+        activePhrase.writeMetaFields(metaFields);
     }
 }

@@ -136,7 +136,7 @@ public abstract class Phrase
         if (!ms.genType[(int)type]) mutType = Phrase.TYPE.NOTE;
 
         // Short circuit if none type
-        if (type == Phrase.TYPE.NONE) return;
+        if (mutType == Phrase.TYPE.NONE) return;
 
         // Limit accents
         int mutAccent = Mathf.Min(accent, ms.accentLim);
@@ -171,7 +171,7 @@ public abstract class Phrase
         }
 
         // Double/triple up according to accents
-        if (accent > 0)
+        if (mutAccent > 0)
         {
 
             // Count number of valid colums
@@ -226,15 +226,26 @@ public abstract class Phrase
 
     public virtual void configNote(MusicPlayer mp, Note nObj, int spawnLane, float spawnBeat, float blockFrame, float duration)
     {
-        nObj.lane = mp.columns[lane];
-        nObj.beat = beat;
+        nObj.lane = mp.columns[spawnLane];
+        nObj.beat = spawnBeat;
 
-        float bTime = mp.beatInterval * beat;
+        float bTime = mp.beatInterval * spawnBeat;
         nObj.hitTime = bTime;
     }
 
+    // Convert from typecode to type
+    public static TYPE codeToType(string code)
+    {
+        switch (code)
+        {
+            case "H":
+                return TYPE.HOLD;
+        }
+
+        return TYPE.SENTINEL; // Inconclusive
+    }
     // Generates a phrase object given a universal list of parameters
-    public static Phrase staticCon(int lane_, string partition_, float beat_, int accent_, float wait_, float dur_, TYPE type_)
+    public static Phrase staticCon(int lane_, string partition_, float beat_, int accent_, float wait_, string[] typeMeta, TYPE type_)
     {
         Phrase p = null;
         switch (type_)
@@ -246,6 +257,13 @@ public abstract class Phrase
                 p = new NotePhrase(lane_, partition_, beat_, accent_, wait_);
                 break;
             case TYPE.HOLD:
+                float dur_ = 0;
+
+                if (typeMeta != null)
+                {
+                    dur_ = float.Parse(typeMeta[0]);
+                }
+
                 p = new HoldPhrase(lane_, partition_, beat_, accent_, wait_, dur_);
                 break;
             default:
@@ -254,6 +272,19 @@ public abstract class Phrase
         }
 
         return p;
+    }
+
+    // Writes meta contents to input field
+    public virtual void writeMetaFields(List<InputField> fields)
+    {
+        // No fields
+        foreach (InputField f in fields) f.gameObject.SetActive(false);
+    }
+
+    // Read meta contents to phrase
+    public virtual void readMetaFields(List<InputField> fields)
+    {
+        // Don't do anything by default
     }
 }
 
