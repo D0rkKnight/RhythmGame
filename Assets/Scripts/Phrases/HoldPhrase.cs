@@ -1,0 +1,39 @@
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
+
+public class HoldPhrase : Phrase
+{
+    public HoldPhrase(int lane_, string partition_, float beat_, int accent_, float wait_, float dur_) : base(lane_, partition_, beat_, accent_, wait_, TYPE.HOLD)
+    {
+        dur = dur_;
+    }
+
+    public override Phrase clone()
+    {
+        return new HoldPhrase(lane, partition, beat, accent, wait, dur);
+    }
+    protected override bool genTypeBlock(out string res, List<string> meta)
+    {
+        res = "H";
+        meta.Add("" + dur);
+        return true;
+    }
+
+    public override Note instantiateNote(MusicPlayer mp)
+    {
+        return UnityEngine.Object.Instantiate(mp.holdPrefab).GetComponent<Note>();
+    }
+    public override void configNote(MusicPlayer mp, Note nObj, int spawnLane, float spawnBeat, float blockFrame, float duration)
+    {
+        base.configNote(mp, nObj, spawnLane, spawnBeat, blockFrame, duration);
+
+        Transform bg = nObj.transform.Find("HoldBar");
+
+        // Scale background bar appropriately
+        bg.localScale = new Vector3(bg.localScale.x, mp.travelSpeed * mp.beatInterval * duration,
+            bg.localScale.z);
+    }
+}

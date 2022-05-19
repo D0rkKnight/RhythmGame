@@ -45,12 +45,12 @@ public class MusicPlayer : MonoBehaviour
         }
     }
 
-    private float beatInterval;
-    private float currBeat;
-    private float lastBeat;
-    private float songStart;
-    private float songStartDelay = 3f;
-    private float songTime; // Time in seconds progressed through the song
+    public float beatInterval;
+    public float currBeat;
+    public float lastBeat;
+    public float songStart;
+    public float songStartDelay = 3f;
+    public float songTime; // Time in seconds progressed through the song
 
     public float travelSpeed = 5; // In Unity units per second
     public Vector2 dir = new Vector2(0, -1);
@@ -365,6 +365,11 @@ public class MusicPlayer : MonoBehaviour
         phraseQueue.Add(phrase);
     }
 
+    public void addNote(Note n)
+    {
+        notes.Add(n);
+    }
+
     public void spawnNote(int lane, float beat)
     {
         if (!noteValid(lane, beat, -1))
@@ -394,11 +399,6 @@ public class MusicPlayer : MonoBehaviour
         float bTime = beatInterval * beat;
 
         HoldNote nObj = Instantiate(holdPrefab).GetComponent<HoldNote>();
-        Transform bg = nObj.transform.Find("HoldBar");
-
-        // Scale background bar appropriately
-        bg.localScale = new Vector3(bg.localScale.x, travelSpeed * beatInterval * holdLen, 
-            bg.localScale.z);
 
         nObj.lane = columns[lane];
         nObj.beat = beat;
@@ -444,8 +444,14 @@ public class MusicPlayer : MonoBehaviour
         dump.Clear();
     }
 
-    private bool noteValid(int lane, float beat, float blockDur)
+    public bool noteValid(int lane, float beat, float blockDur)
     {
+        if (lane < 0 || lane >= 4)
+        {
+            // Catch it
+            Debug.Log("Catch");
+        }
+
         Column col = columns[lane];
 
 
@@ -470,12 +476,6 @@ public class MusicPlayer : MonoBehaviour
         {
             Debug.LogWarning("Lane " + lane + " deactivated");
             return false;
-        }
-
-        if (blockDur > 0)
-        {
-            // Update column blocking
-            col.blockedTil = Mathf.Max(col.blockedTil, beat + blockDur);
         }
 
         return true;

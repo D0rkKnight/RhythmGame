@@ -96,24 +96,7 @@ public abstract class Phrase
 
         if (!genTypeBlock(out typeStr, meta)) return o;
 
-        Debug.Log(this.GetType());
-
         o += typeStr;
-
-        /*switch (type)
-        {
-            case Phrase.TYPE.NONE:
-                return o; // Short circuit
-            case Phrase.TYPE.NOTE:
-                break;
-            case Phrase.TYPE.HOLD:
-                o += "H";
-                meta.Add(""+dur);
-                break;
-            default:
-                Debug.LogError("Behavior not defined for note type: " + type);
-                break;
-        }*/
 
         // Type metadata
         if (meta.Count > 0)
@@ -142,6 +125,114 @@ public abstract class Phrase
         return true;
     }
 
+    // Converts to notes
+    public void rasterize(MapSerializer ms)
+    {
+        // Takes a phrase and spawns its notes
+        // TODO: Don't use blocking frame, just check if it clashes with any notes in the buffer
+
+        // Collapse types
+        TYPE mutType = type;
+        if (!ms.genType[(int)type]) mutType = Phrase.TYPE.NOTE;
+
+        // Short circuit if none type
+        if (type == Phrase.TYPE.NONE) return;
+
+        // Limit accents
+        int mutAccent = Mathf.Min(accent, ms.accentLim);
+
+        // Empty = no lane specifier, defaults to the left lane of the category
+        int mutLane = lane - 1;
+
+        // Given lane weights, calculate target lane
+        int def = 0;
+        switch (partition)
+        {
+            case "R":
+                mutLane += ms.rOff;
+                def = ms.rDef;
+                break;
+            case "L":
+                mutLane += ms.lOff;
+                def = ms.lDef;
+                break;
+            default:
+                Debug.LogError("Lane marker " + partition + " not recognized");
+                break;
+        }
+
+        // If lane isn't available, default to default lanes
+        // Accents for example will stack up and block each other
+        MusicPlayer.Column[] columns = MusicPlayer.sing.columns;
+
+        if (!columns[mutLane].Active)
+        {
+            mutLane = def;
+        }
+
+        // Double/triple up according to accents
+        if (accent > 0)
+        {
+
+            // Count number of valid colums
+            int validCols = 0;
+            int leftValid = Mathf.Max(0, mutLane - mutAccent);
+            for (int j = leftValid; j <= mutLane; j++)
+            {
+                if (j + mutAccent >= ms.width) break;
+                validCols++;
+            }
+
+            int sCol = UnityEngine.Random.Range(leftValid, leftValid + validCols);
+
+            for (int j = 0; j <= mutAccent; j++)
+            {
+                // Spawn note directly
+                spawn(MusicPlayer.sing, sCol + j, beat, dur, dur);
+            }
+
+        }
+        else
+        {
+            spawn(MusicPlayer.sing, mutLane, beat, dur, dur);
+        }
+    }
+
+    // Generates this phrase attached to the given music player
+    // Accepts generic arguments for mutability between phrase types
+    public virtual void spawn(MusicPlayer mp, int spawnLane, float spawnBeat, float blockFrame, float duration)
+    {
+        if (!mp.noteValid(spawnLane, spawnBeat, blockFrame))
+        {
+            Debug.LogWarning("Note spawn blocked at " + lane + ", " + beat);
+            return;
+        }
+
+        // Update column blocking
+        MusicPlayer.Column col = mp.columns[spawnLane];
+        if (blockFrame > 0)
+        {
+            // Update column blocking
+            col.blockedTil = Mathf.Max(col.blockedTil, beat + blockFrame);
+        }
+
+        Note nObj = instantiateNote(mp);
+        configNote(mp, nObj, spawnLane, spawnBeat, blockFrame, duration);
+
+        mp.addNote(nObj);
+    }
+
+    public abstract Note instantiateNote(MusicPlayer mp);
+
+    public virtual void configNote(MusicPlayer mp, Note nObj, int spawnLane, float spawnBeat, float blockFrame, float duration)
+    {
+        nObj.lane = mp.columns[lane];
+        nObj.beat = beat;
+
+        float bTime = mp.beatInterval * beat;
+        nObj.hitTime = bTime;
+    }
+
     // Generates a phrase object given a universal list of parameters
     public static Phrase staticCon(int lane_, string partition_, float beat_, int accent_, float wait_, float dur_, TYPE type_)
     {
@@ -166,20 +257,6 @@ public abstract class Phrase
     }
 }
 
-// Fields are stored in parent class for serialization
-public class NotePhrase : Phrase
-{
-    public NotePhrase(int lane_, string partition_, float beat_, int accent_, float wait_) : base(lane_, partition_, beat_, accent_, wait_, TYPE.NOTE)
-    {
-
-    }
-
-    public override Phrase clone()
-    {
-        return new NotePhrase(lane, partition, beat, accent, wait);
-    }
-}
-
 public class NonePhrase : Phrase
 {
     public NonePhrase(float beat_, float wait_) : base(1, "L", beat_, 0, wait_, TYPE.NONE)
@@ -197,24 +274,10 @@ public class NonePhrase : Phrase
         res = "";
         return false;
     }
-}
 
-public class HoldPhrase : Phrase
-{
-    public HoldPhrase(int lane_, string partition_, float beat_, int accent_, float wait_, float dur_) : base(lane_, partition_, beat_, accent_, wait_, TYPE.HOLD)
+    public override Note instantiateNote(MusicPlayer mp)
     {
-        dur = dur_;
+        Debug.LogError("Cannot instantiate none phrase");
+        return null;
     }
-
-    public override Phrase clone()
-    {
-        return new HoldPhrase(lane, partition, beat, accent, wait, dur);
-    }
-    protected override bool genTypeBlock(out string res, List<string> meta)
-    {
-        res = "H";
-        meta.Add("" + dur);
-        return true;
-    }
-
 }

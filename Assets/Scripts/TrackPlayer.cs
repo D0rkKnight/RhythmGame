@@ -15,6 +15,8 @@ public class TrackPlayer : MonoBehaviour
     public AudioClip clip;
     public bool clipLoading = false;
 
+    public float vol = 0.2f;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -22,6 +24,7 @@ public class TrackPlayer : MonoBehaviour
         sing = this;
 
         audio = GetComponent<AudioSource>();
+        audio.volume = vol;
     }
 
     // Update is called once per frame

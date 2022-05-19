@@ -2117,6 +2117,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6973395804611573917, guid: 3e5a8fe67b687dc4b81f154ed99e82af,
+        type: 3}
+      propertyPath: vol
+      value: 0.2
+      objectReference: {fileID: 0}
     - target: {fileID: 6973395805865704509, guid: 3e5a8fe67b687dc4b81f154ed99e82af,
         type: 3}
       propertyPath: m_AnchoredPosition.x
@@ -5080,22 +5085,6 @@ MonoBehaviour:
   lastActiveRow: 0
   rowAdvance: 1.2
   scroll: 0
-  activePhrase:
-    partition: L
-    lane: 1
-    accent: 0
-    beat: 0
-    type: 1
-    dur: 0
-    wait: 1
-  nonePhrase:
-    partition: L
-    lane: 1
-    accent: 0
-    beat: 0
-    type: 0
-    dur: 0
-    wait: 1
   beatIndicator: {fileID: 315794178}
   songTitleField: {fileID: 751055546}
   audioFileField: {fileID: 176996577}
