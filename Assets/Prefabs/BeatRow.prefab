@@ -130,7 +130,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   txt: {fileID: 6233068596254145650}
-  beat: 0
+  rowNum: 0
+  slots: []
 --- !u!1 &7454184764216876752
 GameObject:
   m_ObjectHideFlags: 0
@@ -259,9 +260,15 @@ MonoBehaviour:
   bg: {fileID: 8196941906520223747}
   txt: {fileID: 2579437850736446102}
   parent: {fileID: 0}
-  noteEle: 0
-  partition: 
-  lane: 0
+  phrase:
+    partition: 
+    lane: 0
+    accent: 0
+    beat: 0
+    type: 1
+    dur: 1
+    wait: 0
+  miscData: {fileID: 0}
 --- !u!1 &7938965181791284849
 GameObject:
   m_ObjectHideFlags: 0

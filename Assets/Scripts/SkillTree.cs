@@ -60,11 +60,8 @@ public class SkillTree : MonoBehaviour
     public bool[] flags = new bool[(int)NODE.SENTINEL];
     public static SkillTree sing;
 
-    public GameObject lineRendPrefab;
-    public List<LineRenderer> lineRends;
-
-    // Start is called before the first frame update
-    void Start()
+    // separate initialize function
+    void Awake()
     {
         if (sing != null) Debug.LogError("Singleton broken");
         sing = this;
@@ -73,8 +70,6 @@ public class SkillTree : MonoBehaviour
         {
             nodes[i].init(this);
         }
-
-        lineRends = new List<LineRenderer>();
     }
 
     // Recompiles the game state depending on the given skill flags
@@ -89,55 +84,13 @@ public class SkillTree : MonoBehaviour
         if (flags[(int)NODE.ACCENT_1]) ns.accentLim++;
         if (flags[(int)NODE.HOLD]) ns.genType[(int) Phrase.TYPE.HOLD] = true;
 
-        // Cleanup lines
-        foreach (LineRenderer lr in lineRends) Destroy(lr);
-        lineRends.Clear();
 
-        // Update buttons
+
+        // Activate new skills
         foreach (buttonPair bp in nodes)
         {
-            // Activate new buttons
             if (!bp.btn.gameObject.activeSelf)
                 bp.checkPrereqs();
-        }
-
-        foreach (buttonPair bp in nodes)
-        {
-            if (bp.btn.IsActive())
-            {
-
-                // Draw lines between active skills (from an active skill to its parent)
-                // 4 points: base, turn 1, turn 2, end
-
-                RectTransform bpBounds = bp.btn.GetComponent<RectTransform>();
-                Vector3 bpBase = bpBounds.position;
-
-                foreach (NODE prereq in bp.prereqs)
-                {
-                    // Find node to hook to
-                    Button target = null;
-                    foreach (buttonPair search in nodes) if (search.node == prereq)
-                        {
-                            target = search.btn;
-                            break;
-                        }
-
-                    RectTransform endBounds = target.GetComponent<RectTransform>();
-                    Vector3 bpEnd = endBounds.position;
-                    Vector3 turn1 = new Vector3(bpBase.x, (bpBase.y + bpEnd.y) * 0.5f, bpBase.z);
-                    Vector3 turn2 = new Vector3(bpEnd.x, (bpBase.y + bpEnd.y) * 0.5f, bpEnd.z);
-
-                    // Draw a line between the 2 for now
-                    LineRenderer lr = Instantiate(lineRendPrefab, transform).GetComponent<LineRenderer>();
-                    lr.positionCount = 4;
-                    lr.SetPosition(0, bpBase);
-                    lr.SetPosition(1, turn1);
-                    lr.SetPosition(2, turn2);
-                    lr.SetPosition(3, bpEnd);
-
-                    lineRends.Add(lr);
-                }
-            }
         }
     }
 }

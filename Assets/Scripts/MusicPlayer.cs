@@ -45,12 +45,12 @@ public class MusicPlayer : MonoBehaviour
         }
     }
 
-    private float beatInterval;
-    private float currBeat;
-    private float lastBeat;
-    private float songStart;
-    private float songStartDelay = 3f;
-    private float songTime; // Time in seconds progressed through the song
+    public float beatInterval;
+    public float currBeat;
+    public float lastBeat;
+    public float songStart;
+    public float songStartDelay = 3f;
+    public float songTime; // Time in seconds progressed through the song
 
     public float travelSpeed = 5; // In Unity units per second
     public Vector2 dir = new Vector2(0, -1);
@@ -64,13 +64,13 @@ public class MusicPlayer : MonoBehaviour
     public Text scoreText;
     public int score = 0;
 
-    private List<Note> notes;
-    private List<Phrase> phraseQueue;
+    public List<Note> notes;
+    public List<Phrase> phraseQueue;
 
     // Pause functionality
     public enum STATE
     {
-        RUN, PAUSE
+        RUN, PAUSE, INTERIM
     }
 
     public KeyCode pauseKey = KeyCode.P;
@@ -78,12 +78,14 @@ public class MusicPlayer : MonoBehaviour
     private float pausedTotal;
     public STATE state = STATE.RUN;
 
+    float interimTil = 0;
+
     public KeyCode resetKey = KeyCode.R;
 
     public static MusicPlayer sing;
 
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
         if (sing != null) Debug.LogError("Singleton broken");
         sing = this;
@@ -102,6 +104,10 @@ public class MusicPlayer : MonoBehaviour
         columns[2].Active = true;
         columns[3].Active = true;
 
+    }
+
+    private void Start()
+    {
         SkillTree.sing.compile();
     }
 
@@ -115,6 +121,9 @@ public class MusicPlayer : MonoBehaviour
                 break;
             case STATE.PAUSE:
                 statePause();
+                break;
+            case STATE.INTERIM:
+                stateInter();
                 break;
             default:
                 Debug.LogError("Illegal game state");
@@ -213,8 +222,8 @@ public class MusicPlayer : MonoBehaviour
         // If no notes left, request note serializer to send more notes
         if (notes.Count == 0 && phraseQueue.Count == 0 && !MapSerializer.sing.loadQueued)
         {
-            resetSongEnv();
-            MapSerializer.sing.playMap();
+            state = STATE.INTERIM;
+            interimTil = Time.time + 1f;
         }
 
         // Reset key
@@ -265,6 +274,17 @@ public class MusicPlayer : MonoBehaviour
         }
     }
 
+    // Buffer period to avoid excessive flip flopping
+    private void stateInter()
+    {
+        if (Time.time > interimTil)
+        {
+            resetSongEnv();
+            MapSerializer.sing.playMap();
+
+            state = STATE.RUN;
+        }
+    }
     public void pause()
     {
         if (state != STATE.PAUSE) pauseStart = Time.time;
@@ -349,6 +369,11 @@ public class MusicPlayer : MonoBehaviour
         phraseQueue.Add(phrase);
     }
 
+    public void addNote(Note n)
+    {
+        notes.Add(n);
+    }
+
     public void spawnNote(int lane, float beat)
     {
         if (!noteValid(lane, beat, -1))
@@ -378,11 +403,6 @@ public class MusicPlayer : MonoBehaviour
         float bTime = beatInterval * beat;
 
         HoldNote nObj = Instantiate(holdPrefab).GetComponent<HoldNote>();
-        Transform bg = nObj.transform.Find("HoldBar");
-
-        // Scale background bar appropriately
-        bg.localScale = new Vector3(bg.localScale.x, travelSpeed * beatInterval * holdLen, 
-            bg.localScale.z);
 
         nObj.lane = columns[lane];
         nObj.beat = beat;
@@ -428,8 +448,14 @@ public class MusicPlayer : MonoBehaviour
         dump.Clear();
     }
 
-    private bool noteValid(int lane, float beat, float blockDur)
+    public bool noteValid(int lane, float beat, float blockDur)
     {
+        if (lane < 0 || lane >= 4)
+        {
+            // Catch it
+            Debug.Log("Catch");
+        }
+
         Column col = columns[lane];
 
 
@@ -454,12 +480,6 @@ public class MusicPlayer : MonoBehaviour
         {
             Debug.LogWarning("Lane " + lane + " deactivated");
             return false;
-        }
-
-        if (blockDur > 0)
-        {
-            // Update column blocking
-            col.blockedTil = Mathf.Max(col.blockedTil, beat + blockDur);
         }
 
         return true;
