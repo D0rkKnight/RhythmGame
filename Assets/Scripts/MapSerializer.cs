@@ -25,16 +25,16 @@ public partial class MapSerializer : MonoBehaviour
     float readerBeat = 0;
     MusicPlayer mPlay;
 
-    public int lOff = 0;
-    public int rOff = 2;
+    int lOff = 0;
+    int rOff = 2;
     public int accentLim = 0;
     public bool[] genType = new bool[(int) Phrase.TYPE.SENTINEL];
 
     // Hacks for now
-    public int lDef = 1;
-    public int rDef = 2;
+    int lDef = 1;
+    int rDef = 2;
 
-    public int width = 4;
+    int width = 4;
 
     public static MapSerializer sing;
     public bool loadQueued = false;
@@ -53,11 +53,9 @@ public partial class MapSerializer : MonoBehaviour
         accentPool = new List<char>();
         beatPool = new List<char>();
 
-        // TODO: Read the typepool from Phrase's type-char listing
         catPool.Add('L');
         catPool.Add('R');
         typePool.Add('H');
-        typePool.Add('Z');
         for (char c = '0'; c <= '9'; c++) lanePool.Add(c);
 
         accentPool.Add('~');
@@ -211,7 +209,6 @@ public partial class MapSerializer : MonoBehaviour
         // Single note reader
         string beatCode = scanner.getSegment(beatPool);
         string typeCode = scanner.getSegment(typePool);
-
         string[] typeMeta = null;
         if (typeCode.Length > 0) typeMeta = scanner.getMeta();
 
@@ -221,21 +218,27 @@ public partial class MapSerializer : MonoBehaviour
 
         // Write to note
         Phrase.TYPE type = Phrase.TYPE.NONE;
+        float holdLen = 0;
 
         // If there is a partition, the type defaults to note
         if (part.Length > 0) type = Phrase.TYPE.NOTE;
 
-        Phrase.TYPE codeOver = Phrase.codeToType(typeCode);
-        if (codeOver != Phrase.TYPE.SENTINEL)
+        switch(typeCode)
         {
-            type = codeOver;
+            case "H":
+                type = Phrase.TYPE.HOLD;
+                holdLen = float.Parse(typeMeta[0]); // Read the first meta value
+                break;
         }
 
         float wait = getWait(beatCode);
         int l = 1;
         if (lane.Length > 0) l = int.Parse(lane);
 
-        Phrase p = Phrase.staticCon(l, part, readerBeat, accent, wait, typeMeta, type);
+        Phrase p = new Phrase(l, part, readerBeat, accent, wait, type)
+        {
+            dur = holdLen
+        };
 
         map.addPhrase(p);
         advanceBeat(wait);
@@ -245,7 +248,90 @@ public partial class MapSerializer : MonoBehaviour
 
     public void spawnNotes(Phrase p)
     {
-        p.rasterize(this);
+        // Takes a phrase and spawns its notes
+        // Don't use blocking frame, just check if it clashes with any notes in the buffer
+
+        // Collapse types
+        Phrase.TYPE type = p.type;
+        if (!genType[(int) p.type]) type = Phrase.TYPE.NOTE;
+
+        // Short circuit if none type
+        if (type == Phrase.TYPE.NONE) return;
+
+        // Limit accents
+        int accent = Mathf.Min(p.accent, accentLim);
+
+        // Empty = no lane specifier, defaults to the left lane of the category
+        int l = p.lane-1;
+
+        // Given lane weights, calculate target lane
+        int def = 0;
+        switch (p.partition)
+        {
+            case "R":
+                l += rOff;
+                def = rDef;
+                break;
+            case "L":
+                l += lOff;
+                def = lDef;
+                break;
+            default:
+                Debug.LogError("Lane marker " + p.partition + " not recognized");
+                break;
+        }
+
+        // If lane isn't available, default to default lanes
+        // Accents for example will stack up and block each other
+        MusicPlayer.Column[] columns = MusicPlayer.sing.columns;
+
+        if (!columns[l].Active)
+        {
+            l = def;
+        }
+
+        // Double/triple up according to accents
+        if (accent > 0)
+        {
+
+            // Count number of valid colums
+            int validCols = 0;
+            int leftValid = Mathf.Max(0, l - accent);
+            for (int j = leftValid; j <= l; j++)
+            {
+                if (j + accent >= width) break;
+                validCols++;
+            }
+
+            int sCol = Random.Range(leftValid, leftValid + validCols);
+
+            for (int j = 0; j <= accent; j++)
+                    // Spawn note directly
+                    spawnIndNote(type, sCol + j, p.beat, p.dur);
+
+        }
+        else
+        {
+            spawnIndNote(type, l, p.beat, p.dur);
+        }
+    }
+
+    // Has some overloads
+    private void spawnIndNote(Phrase.TYPE type, int lane, float beat, float holdLen)
+    {
+        switch(type)
+        {
+            case Phrase.TYPE.NOTE:
+                MusicPlayer.sing.spawnNote(lane, beat);
+                break;
+            case Phrase.TYPE.HOLD:
+                Debug.Log("Spawning hold");
+                MusicPlayer.sing.spawnHold(lane, beat, holdLen);
+                break;
+            default:
+                Debug.LogError("Unrecognized phrase code: " + type);
+                break;
+        }
     }
 
     float getWait(string beatCode)
