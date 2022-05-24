@@ -64,6 +64,8 @@ public class SkillTree : MonoBehaviour
     public GameObject lineRendPrefab;
     public List<LineRenderer> lineRends;
 
+    public bool activateAll;
+
     // separate initialize function
     void Awake()
     {
@@ -74,6 +76,9 @@ public class SkillTree : MonoBehaviour
         {
             nodes[i].init(this);
         }
+
+        if (activateAll) for (int i = 0; i < flags.Length; i++) flags[i] = true;
+
         lineRends = new List<LineRenderer>();
     }
 

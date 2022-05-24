@@ -123,6 +123,36 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &476063123
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 476063124}
+  m_Layer: 0
+  m_Name: PopupAnchor
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &476063124
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 476063123}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -346, y: 204, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 1030259687}
+  m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!850595691 &543450230
 LightingSettings:
   m_ObjectHideFlags: 0
@@ -658,6 +688,12 @@ MonoBehaviour:
 --- !u!224 &951486380 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 1121949244, guid: 3e5a8fe67b687dc4b81f154ed99e82af,
+    type: 3}
+  m_PrefabInstance: {fileID: 6973395804644566473}
+  m_PrefabAsset: {fileID: 0}
+--- !u!224 &1030259687 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 566459000, guid: 3e5a8fe67b687dc4b81f154ed99e82af,
     type: 3}
   m_PrefabInstance: {fileID: 6973395804644566473}
   m_PrefabAsset: {fileID: 0}
@@ -1582,6 +1618,22 @@ PrefabInstance:
       propertyPath: tpOffset
       value: 0.3
       objectReference: {fileID: 0}
+    - target: {fileID: 6973395804611573912, guid: 3e5a8fe67b687dc4b81f154ed99e82af,
+        type: 3}
+      propertyPath: perfectWindow
+      value: 0.05
+      objectReference: {fileID: 0}
+    - target: {fileID: 6973395804611573912, guid: 3e5a8fe67b687dc4b81f154ed99e82af,
+        type: 3}
+      propertyPath: accuracyPopupLoc
+      value: 
+      objectReference: {fileID: 476063124}
+    - target: {fileID: 6973395804611573912, guid: 3e5a8fe67b687dc4b81f154ed99e82af,
+        type: 3}
+      propertyPath: accuracyPopupPrefab
+      value: 
+      objectReference: {fileID: 7099239638739727420, guid: 48089a94e0dd7b043b7b4b6b703c989e,
+        type: 3}
     - target: {fileID: 6973395804611573913, guid: 3e5a8fe67b687dc4b81f154ed99e82af,
         type: 3}
       propertyPath: m_Name

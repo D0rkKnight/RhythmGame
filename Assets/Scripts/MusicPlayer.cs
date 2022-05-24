@@ -66,7 +66,10 @@ public class MusicPlayer : MonoBehaviour
 
     public float travelSpeed = 5; // In Unity units per second
     public Vector2 dir = new Vector2(0, -1);
+
     public float hitWindow = 0.5f;
+    public float perfectWindow = 0.25f;
+
     public bool streamNotes = true;
     public float scroll = 0f; // Custom time offset 
 
@@ -93,7 +96,10 @@ public class MusicPlayer : MonoBehaviour
     private float pausedTotal;
     public STATE state = STATE.RUN;
 
-    float interimTil = 0;
+    float interimTil = 0; // Deadline for interim period between songs
+
+    public GameObject accuracyPopupPrefab;
+    public Transform accuracyPopupLoc;
 
     public KeyCode resetKey = KeyCode.R;
 
@@ -197,7 +203,7 @@ public class MusicPlayer : MonoBehaviour
 
                     if (Mathf.Abs(note.hitTime - songTime) < hitWindow)
                     {
-                        if (bestNote == null || note.hitTime < bestNote.hitTime)
+                        if (bestNote == null || note.hitTime < bestNote.hitTime) // Hits first available note in the window
                             bestNote = note;
                     }
                 }
@@ -215,6 +221,10 @@ public class MusicPlayer : MonoBehaviour
                         if (streamNotes) hit(bestNote);
                         else bestNote.dead = true;
                     }
+
+                    // Check accuracy of hit
+                    float delta = Mathf.Abs(bestNote.hitTime - songTime);
+                    broadCastHitAcc(delta);
                 }
 
                 // Highlight BG
@@ -504,4 +514,23 @@ public class MusicPlayer : MonoBehaviour
     }
 
     public float getCurrBeat() { return currBeat; }
+
+    public void broadCastHitAcc(float delta)
+    {
+        Transform canv = transform.Find("Canvas");
+        GameObject popup = Instantiate(accuracyPopupPrefab, canv);
+        popup.transform.position = accuracyPopupLoc.position;
+
+        if (delta < perfectWindow)
+        {
+            // Perfect hit
+            popup.GetComponent<Text>().text = "Perfect!";
+        }
+        else
+        {
+            // Regular hit
+            popup.GetComponent<Text>().text = "OK!";
+        }
+
+    }
 }
