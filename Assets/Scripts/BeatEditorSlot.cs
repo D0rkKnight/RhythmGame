@@ -13,13 +13,17 @@ public class BeatEditorSlot : MonoBehaviour, Clickable
     public BeatRow parent;
     public Phrase phrase = null;
 
-
-
     // Start is called before the first frame update
     void Awake()
     {
         rend = bg.GetComponent<SpriteRenderer>();
         parent = transform.parent.GetComponent<BeatRow>();
+    }
+
+    private void Start()
+    {
+        phrase = new NonePhrase(0, 1); // Random null phrase
+        updateGraphics();
     }
 
     private void updateGraphics()
@@ -93,6 +97,7 @@ public class BeatEditorSlot : MonoBehaviour, Clickable
         {
             // Write phrase to active phrase
             MapEditor.sing.activePhrase = phrase.clone();
+            MapEditor.sing.updateMetaField();
         }
 
         return 1;

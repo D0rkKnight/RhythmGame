@@ -1,6 +1,9 @@
-mapname: playTemp
+mapname: HoldTest
 track: track1uc.wav
 bpm: 100
 
 streamstart
-|Z(5,4,8)L1
+|H(1)L1
+|L1
+|L1
+|L1
