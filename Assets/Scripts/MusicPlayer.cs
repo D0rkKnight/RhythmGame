@@ -11,6 +11,7 @@ public class MusicPlayer : MonoBehaviour
         public GameObject gObj;
         public KeyCode key;
         public float blockedTil; // in beats
+        public Column reroute; // Whether to substitute input for other columns
 
         private bool active = true;
         public bool Active
@@ -20,6 +21,17 @@ public class MusicPlayer : MonoBehaviour
             {
                 active = value;
                 gObj.SetActive(value);
+            }
+        }
+
+        private bool streamOn = true;
+        public bool StreamOn
+        {
+            get { return streamOn; }
+            set
+            {
+                streamOn = value;
+                gObj.GetComponent<NoteColumn>().setStreaming(value);
             }
         }
 
@@ -102,11 +114,11 @@ public class MusicPlayer : MonoBehaviour
         songStart = Time.time + songStartDelay;
 
         // Set activeness of columns
-        columns[0].Active = true;
-        columns[1].Active = true;
-        columns[2].Active = true;
-        columns[3].Active = true;
-
+        foreach (Column c in columns)
+        {
+            c.Active = true;
+            c.StreamOn = true;
+        }
     }
 
     private void Start()
@@ -179,7 +191,9 @@ public class MusicPlayer : MonoBehaviour
                 foreach (Note note in notes)
                 {
                     if (note.dead) continue;
-                    if (!col.Equals(note.lane)) continue;
+
+                    // Check both assigned column and reroute for validity
+                    if (!note.lane.Equals(col) && !note.lane.Equals(col.reroute)) continue;
 
                     if (Mathf.Abs(note.hitTime - songTime) < hitWindow)
                     {
@@ -480,9 +494,9 @@ public class MusicPlayer : MonoBehaviour
             }
         }
 
-        if (!col.Active)
+        if (!col.StreamOn)
         {
-            Debug.LogWarning("Lane " + lane + " deactivated");
+            Debug.LogWarning("Lane " + lane + " does not accept notes");
             return false;
         }
 

@@ -168,7 +168,7 @@ public abstract class Phrase
         // Accents for example will stack up and block each other
         MusicPlayer.Column[] columns = MusicPlayer.sing.columns;
 
-        if (!columns[mutLane].Active)
+        if (!columns[mutLane].StreamOn)
         {
             mutLane = def;
         }
@@ -244,6 +244,7 @@ public abstract class Phrase
         return 0; // Doesn't advance blocking frame
     }
 
+    // --------------------------------------- EDIT BELOW 2 FUNCTIONS WHEN ADDING A NEW NOTE TYPE
     // Convert from typecode to type
     public static TYPE codeToType(string code)
     {

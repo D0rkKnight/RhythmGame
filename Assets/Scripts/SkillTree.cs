@@ -9,7 +9,8 @@ public class SkillTree : MonoBehaviour
 {
     public enum NODE
     {
-        L_EXPAND, R_EXPAND, ACCENT_1, ACCENT_2, ACCENT_3, HOLD, IN_BTWN, SENTINEL
+        L_EXPAND, R_EXPAND, ACCENT_1, ACCENT_2, ACCENT_3, HOLD, L_REROUTE, R_REROUTE, QUANT_1, QUANT_2, QUANT_3,
+        SENTINEL
     }
 
     [System.Serializable]
@@ -78,12 +79,15 @@ public class SkillTree : MonoBehaviour
         MusicPlayer mp = MusicPlayer.sing;
         MapSerializer ns = MapSerializer.sing;
 
-        mp.columns[0].Active = flags[(int) NODE.L_EXPAND];
-        mp.columns[3].Active = flags[(int) NODE.R_EXPAND];
+        mp.columns[0].StreamOn = flags[(int)NODE.L_EXPAND];
+        mp.columns[3].StreamOn = flags[(int)NODE.R_EXPAND];
+
+        // Whether to reroute input on the two columns
+        mp.columns[0].reroute = flags[(int)NODE.L_EXPAND] ? null : mp.columns[1];
+        mp.columns[3].reroute = flags[(int)NODE.R_EXPAND] ? null : mp.columns[2];
 
         if (flags[(int)NODE.ACCENT_1]) ns.accentLim++;
         if (flags[(int)NODE.HOLD]) ns.genType[(int) Phrase.TYPE.HOLD] = true;
-
 
 
         // Activate new skills

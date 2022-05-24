@@ -62,4 +62,9 @@ public class HoldPhrase : Phrase
         dur = 0;
         if (succ) dur = tryRes; // Write in data
     }
+
+    public override float getBlockFrame()
+    {
+        return dur;
+    }
 }

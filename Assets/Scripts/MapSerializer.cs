@@ -33,8 +33,10 @@ public partial class MapSerializer : MonoBehaviour
     // Hacks for now
     public int lDef = 1;
     public int rDef = 2;
-
     public int width = 4;
+
+    // # of beats that notes block for
+    public float noteBlockLen = 0.25f;
 
     public static MapSerializer sing;
     public bool loadQueued = false;

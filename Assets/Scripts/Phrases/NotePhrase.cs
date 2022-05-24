@@ -16,4 +16,9 @@ public class NotePhrase : Phrase
         return UnityEngine.Object.Instantiate(mp.notePrefab).GetComponent<Note>();
 
     }
+
+    public override float getBlockFrame()
+    {
+        return MapSerializer.sing.noteBlockLen;
+    }
 }

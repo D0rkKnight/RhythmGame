@@ -40,4 +40,12 @@ public class NoteColumn : MonoBehaviour
     {
         burstSys.Play();
     }
+
+    public void setStreaming(bool val)
+    {
+        // Assign value to background and lights
+        transform.Find("ColumnBG").gameObject.SetActive(val);
+        transform.Find("HitLight").gameObject.SetActive(val);
+        transform.Find("HitBurst").gameObject.SetActive(val);
+    }
 }
