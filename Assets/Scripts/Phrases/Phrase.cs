@@ -130,10 +130,16 @@ public abstract class Phrase
 
         // Collapse types
         TYPE mutType = type;
-        if (!ms.genType[(int)type]) mutType = Phrase.TYPE.NOTE;
+        if (!ms.genType[(int)type])
+        {
+            // Create a ghost phrase and rasterize that phrase instead
+            NotePhrase ghost = (NotePhrase) staticCon(lane, partition, beat, accent, wait, null, TYPE.NOTE);
+            ghost.rasterize(ms);
+            return;
+        }
 
         // Short circuit if none type
-        if (mutType == Phrase.TYPE.NONE) return;
+        if (mutType == TYPE.NONE) return;
 
         // Limit accents
         int mutAccent = Mathf.Min(accent, ms.accentLim);
