@@ -61,6 +61,9 @@ public class SkillTree : MonoBehaviour
     public bool[] flags = new bool[(int)NODE.SENTINEL];
     public static SkillTree sing;
 
+    public GameObject lineRendPrefab;
+    public List<LineRenderer> lineRends;
+
     // separate initialize function
     void Awake()
     {
@@ -71,6 +74,7 @@ public class SkillTree : MonoBehaviour
         {
             nodes[i].init(this);
         }
+        lineRends = new List<LineRenderer>();
     }
 
     // Recompiles the game state depending on the given skill flags
@@ -79,15 +83,25 @@ public class SkillTree : MonoBehaviour
         MusicPlayer mp = MusicPlayer.sing;
         MapSerializer ns = MapSerializer.sing;
 
+        mp.columns[0].Active = flags[(int)NODE.L_REROUTE];
+        mp.columns[3].Active = flags[(int)NODE.R_REROUTE];
+
         mp.columns[0].StreamOn = flags[(int)NODE.L_EXPAND];
         mp.columns[3].StreamOn = flags[(int)NODE.R_EXPAND];
 
         // Whether to reroute input on the two columns
-        mp.columns[0].reroute = flags[(int)NODE.L_EXPAND] ? null : mp.columns[1];
-        mp.columns[3].reroute = flags[(int)NODE.R_EXPAND] ? null : mp.columns[2];
+        mp.columns[0].reroute = flags[(int)NODE.L_REROUTE] ? null : mp.columns[1];
+        mp.columns[3].reroute = flags[(int)NODE.R_REROUTE] ? null : mp.columns[2];
 
         if (flags[(int)NODE.ACCENT_1]) ns.accentLim++;
+        if (flags[(int)NODE.ACCENT_2]) ns.accentLim++;
+
         if (flags[(int)NODE.HOLD]) ns.genType[(int) Phrase.TYPE.HOLD] = true;
+
+        ns.noteBlockLen = 0.5f;
+        if (flags[(int)NODE.QUANT_1]) ns.noteBlockLen = 0.25f;
+        if (flags[(int)NODE.QUANT_2]) ns.noteBlockLen = 0.125f;
+        if (flags[(int)NODE.QUANT_3]) ns.noteBlockLen = 0f;
 
 
         // Activate new skills
@@ -95,6 +109,55 @@ public class SkillTree : MonoBehaviour
         {
             if (!bp.btn.gameObject.activeSelf)
                 bp.checkPrereqs();
+        }
+
+        regenLines();
+    }
+
+    private void regenLines()
+    {
+        // Clear old lines
+        foreach (LineRenderer lr in lineRends) Destroy(lr);
+        lineRends.Clear();
+
+        // Gen new lines
+        foreach (buttonPair bp in nodes)
+        {
+            if (bp.btn.IsActive())
+            {
+
+                // Draw lines between active skills (from an active skill to its parent)
+                // 4 points: base, turn 1, turn 2, end
+
+                RectTransform bpBounds = bp.btn.GetComponent<RectTransform>();
+                Vector3 bpBase = bpBounds.position;
+
+                foreach (NODE prereq in bp.prereqs)
+                {
+                    // Find node to hook to
+                    Button target = null;
+                    foreach (buttonPair search in nodes) if (search.node == prereq)
+                        {
+                            target = search.btn;
+                            break;
+                        }
+
+                    RectTransform endBounds = target.GetComponent<RectTransform>();
+                    Vector3 bpEnd = endBounds.position;
+                    Vector3 turn1 = new Vector3(bpBase.x, (bpBase.y + bpEnd.y) * 0.5f, bpBase.z);
+                    Vector3 turn2 = new Vector3(bpEnd.x, (bpBase.y + bpEnd.y) * 0.5f, bpEnd.z);
+
+                    // Draw a line between the 2 for now
+                    LineRenderer lr = Instantiate(lineRendPrefab, transform).GetComponent<LineRenderer>();
+                    lr.positionCount = 4;
+                    lr.SetPosition(0, bpBase);
+                    lr.SetPosition(1, turn1);
+                    lr.SetPosition(2, turn2);
+                    lr.SetPosition(3, bpEnd);
+
+                    lineRends.Add(lr);
+                }
+            }
         }
     }
 }
