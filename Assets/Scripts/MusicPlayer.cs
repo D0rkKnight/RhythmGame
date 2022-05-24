@@ -67,6 +67,9 @@ public class MusicPlayer : MonoBehaviour
     private List<Note> notes;
     private List<Phrase> phraseQueue;
 
+    public float tpOffset = 1f; // # of seconds off the music is vs the game
+                                 // positive -> music plays first
+
     // Pause functionality
     public enum STATE
     {
@@ -129,10 +132,11 @@ public class MusicPlayer : MonoBehaviour
         currBeat = songTime / beatInterval;
 
         // Start song if ready
-        if (songTime >= 0 && !TrackPlayer.sing.audio.isPlaying)
+        float tpTime = songTime + tpOffset;
+        if (tpTime >= 0 && !TrackPlayer.sing.audio.isPlaying)
         {
             TrackPlayer.sing.play();
-            TrackPlayer.sing.audio.time = songTime;
+            TrackPlayer.sing.audio.time = tpTime; // Sync song time
         }
 
         // If eclipsing the beat threshold, tick a beat.
