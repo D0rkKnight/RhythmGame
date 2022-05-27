@@ -29,7 +29,7 @@ public class AccuracyPopup : MonoBehaviour
         } else
         {
             // Decay to zero linearly
-            transform.localScale = Vector3.Max(transform.localScale - Vector3.one * Time.deltaTime * 2, Vector3.zero);
+            transform.localScale = Vector3.Max(transform.localScale - Vector3.one * Time.deltaTime * 0.5f, Vector3.zero);
 
             // Ramp alpha too
             Text txt = GetComponent<Text>();

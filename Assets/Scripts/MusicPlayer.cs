@@ -77,13 +77,35 @@ public class MusicPlayer : MonoBehaviour
     public float noteTimeout = 3f;
 
     public Text scoreText;
-    public int score = 0;
+    private int score = 0;
+    public int Score
+    {
+        get { return score; }
+        set
+        {
+            score = value;
+            scoreText.text = value.ToString();
+        }
+    }
 
     public List<Note> notes;
     public List<Phrase> phraseQueue;
 
     public float tpOffset = 1f; // # of seconds off the music is vs the game
-                                 // positive -> music plays first
+                                // positive -> music plays first
+
+    // Combo
+    public Text comboCounter;
+    private float combo;
+    public float Combo
+    {
+        get { return combo; }
+        set
+        {
+            combo = value;
+            comboCounter.text = "x"+combo.ToString();
+        }
+    }
 
     // Pause functionality
     public enum STATE
@@ -125,6 +147,8 @@ public class MusicPlayer : MonoBehaviour
             c.Active = true;
             c.StreamOn = true;
         }
+
+        Combo = 0;
     }
 
     private void Start()
@@ -210,7 +234,7 @@ public class MusicPlayer : MonoBehaviour
 
                 if (bestNote != null)
                 {
-                    addScore(100);
+                    addNoteScore();
                     if (bestNote is HoldNote)
                     {
                         ((HoldNote)bestNote).held = true;
@@ -252,6 +276,13 @@ public class MusicPlayer : MonoBehaviour
         {
             state = STATE.INTERIM;
             interimTil = Time.time + 1f;
+
+            // Convert score to tokens
+            SkillTree.sing.Tokens += score / 1000;
+
+            // Zero out other stuff
+            Score = 0;
+            Combo = 0;
         }
 
         // Reset key
@@ -362,12 +393,15 @@ public class MusicPlayer : MonoBehaviour
         notes.Remove(note);
         note.hit();
         note.lane.gObj.GetComponent<NoteColumn>().hitBurst();
+
+        // Increment combo
+        Combo++;
     }
 
-    private void addScore(int amount)
+    private void addNoteScore()
     {
-        score += amount;
-        scoreText.text = "" + score;
+        int amt = 100 * (int) (1 + combo / 10f);
+        Score += amt;
     }
 
     private void onBeat()
@@ -385,7 +419,7 @@ public class MusicPlayer : MonoBehaviour
                 // If still within point range
                 if (hn.held && songTime < hn.hitTime + (hn.holdBeats * beatInterval))
                 {
-                    addScore(10);
+                    Score += 10;
                 }
             }
         }
@@ -450,6 +484,14 @@ public class MusicPlayer : MonoBehaviour
         Vector2 p = tPos + dp;
         note.transform.position = new Vector3(p.x, p.y, -1);
 
+        // Check if strictly unhittable
+        if (dt < -hitWindow && !note.dead)
+        {
+            note.dead = true;
+            Combo = 0;
+        }
+
+        // Sort into discard pile
         if (passed != null)
         {
             float noteExtension = 0;

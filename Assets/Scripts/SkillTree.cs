@@ -19,6 +19,7 @@ public class SkillTree : MonoBehaviour
         public NODE node;
         public Button btn;
         public NODE[] prereqs;
+        public int cost = 100;
 
         private SkillTree owner;
 
@@ -60,6 +61,18 @@ public class SkillTree : MonoBehaviour
     public buttonPair[] nodes = new buttonPair[(int) NODE.SENTINEL];
     public bool[] flags = new bool[(int)NODE.SENTINEL];
     public static SkillTree sing;
+
+    public Text tokenText;
+    private int tokens = 0;
+    public int Tokens
+    {
+        get { return tokens; }
+        set
+        {
+            tokens = value;
+            tokenText.text = "$"+value.ToString();
+        }
+    }
 
     public GameObject lineRendPrefab;
     public List<LineRenderer> lineRends;
