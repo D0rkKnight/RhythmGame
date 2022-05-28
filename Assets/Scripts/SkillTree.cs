@@ -109,7 +109,7 @@ public class SkillTree : MonoBehaviour
     public bool purchaseAll;
 
     // separate initialize function
-    void Awake()
+    public virtual void Awake()
     {
         if (sing != null) Debug.LogError("Singleton broken");
         sing = this;
