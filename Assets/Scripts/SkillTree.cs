@@ -79,7 +79,8 @@ public class SkillTree : MonoBehaviour
         set
         {
             tokens = value;
-            tokenText.text = "$"+value.ToString();
+            if (tokenText != null)
+                tokenText.text = "$"+value.ToString();
         }
     }
 
@@ -114,31 +115,25 @@ public class SkillTree : MonoBehaviour
         if (sing != null) Debug.LogError("Singleton broken");
         sing = this;
 
-        for (int i=0; i<nodes.Length; i++)
-        {
-            nodes[i].init(this);
-        }
+        init();
 
         if (purchaseAll) for (int i = 0; i < purchasedFlags.Length-1; i++) purchasedFlags[i] = true;
 
         lineRends = new List<LineRenderer>();
     }
 
+    public virtual void init()
+    {
+        for (int i = 0; i < nodes.Length; i++)
+        {
+            nodes[i].init(this);
+        }
+    }
+
     // Recompiles the game state depending on the given skill flags
     public void compile()
     {
-        // Find active flags
-        for (int i = 0; i < (int)NODE.SENTINEL - 1; i++)
-        {
-            buttonPair nodeData = nodes[i];
-            int index = (int)nodeData.node;
-            activeFlags[index] = nodeData.heatReq <= HeatController.sing.Heat || activateAll;
-
-            // Set opacity of buttons
-            float opacity = activeFlags[index] ? 1 : 0.5f;
-            Image img = nodeData.btn.GetComponent<Image>();
-            img.color = new Color(img.color.r, img.color.g, img.color.b, opacity);
-        }
+        setActiveFlags();
 
         MusicPlayer mp = MusicPlayer.sing;
         MapSerializer ns = MapSerializer.sing;
@@ -163,7 +158,31 @@ public class SkillTree : MonoBehaviour
         if (activeFlags[(int)NODE.QUANT_2]) ns.noteBlockLen = 0.125f;
         if (activeFlags[(int)NODE.QUANT_3]) ns.noteBlockLen = 0f;
 
+        enableNewOptions();
+    }
 
+    protected virtual void setActiveFlags()
+    {
+        // Find active flags
+        for (int i = 0; i < (int)NODE.SENTINEL - 1; i++)
+        {
+            buttonPair nodeData = nodes[i];
+            int index = (int)nodeData.node;
+
+            // Skip unpurchased nodes
+            if (!purchasedFlags[index]) continue;
+
+            activeFlags[index] = nodeData.heatReq <= HeatController.sing.Heat || activateAll;
+
+            // Set opacity of buttons
+            float opacity = activeFlags[index] ? 1 : 0.5f;
+            Image img = nodeData.btn.GetComponent<Image>();
+            img.color = new Color(img.color.r, img.color.g, img.color.b, opacity);
+        }
+    }
+
+    protected virtual void enableNewOptions()
+    {
         // Activate new skills
         foreach (buttonPair bp in nodes)
         {
