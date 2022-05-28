@@ -359,13 +359,18 @@ public class MusicPlayer : MonoBehaviour
         scroll = 0;
 
         // Clear col blocks
-        foreach (Column col in columns) col.blockedTil = 0;
+        resetColumnBlocking();
 
         clearNotes();
         clearPhraseQueue();
 
         // Any audio we'd be playing would be illegal
         TrackPlayer.sing.audio.Stop();
+    }
+
+    public void resetColumnBlocking()
+    {
+        foreach (Column col in columns) col.blockedTil = 0;
     }
 
     public void clearNotes()
@@ -523,6 +528,8 @@ public class MusicPlayer : MonoBehaviour
             {
                 MapSerializer.sing.spawnNotes(p);
                 dump.Add(p);
+
+                Debug.Log(p.ToString());
             }
         }
 

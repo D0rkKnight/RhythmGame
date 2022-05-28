@@ -11,7 +11,7 @@ public class MapEditor : MonoBehaviour, Clickable
     public Transform rowLimit;
     public int lastActiveRow = 0;
 
-    private Canvas canv;
+    [SerializeField]
     private List<BeatRow> beatRows;
 
     public float rowAdvance = 1.1f;
@@ -51,6 +51,9 @@ public class MapEditor : MonoBehaviour, Clickable
 
     public KeyCode copyKey = KeyCode.C;
 
+    public GameObject addPhraseEle;
+    public int addPhraseIndex = 0;
+
     // Start is called before the first frame update
     void Awake()
     {
@@ -58,7 +61,6 @@ public class MapEditor : MonoBehaviour, Clickable
         sing = this;
 
         beatRows = new List<BeatRow>();
-        canv = transform.Find("Canvas").GetComponent<Canvas>();
         phraseMarker = transform.Find("Canvas/PhraseMarker");
 
         // Create meta fields
@@ -122,6 +124,29 @@ public class MapEditor : MonoBehaviour, Clickable
         // Check for undo input
         if (Input.GetKeyDown(KeyCode.Z) /*&& Input.GetKey(KeyCode.LeftControl)*/) undo();
 
+        // Move add phrase button
+        Vector2 mPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        float mY = mPos.y;
+        for (int i=0; i<beatRows.Count-1; i++)
+        {
+            float bY1 = beatRows[i].transform.position.y;
+            float bY2 = beatRows[i+1].transform.position.y;
+
+            if (mY < bY1 && mY > bY2)
+            {
+                addPhraseIndex = i;
+                break;
+            }
+        }
+
+        // snap add button to inbetween
+        float y1 = beatRows[addPhraseIndex].transform.position.y;
+        float y2 = beatRows[addPhraseIndex+1].transform.position.y;
+
+        addPhraseEle.transform.position = new Vector3(addPhraseEle.transform.position.x,
+            (y1 + y2) / 2, addPhraseEle.transform.position.z);
+
+
         // Write field data to phrase
         activePhrase.readMetaFields(metaFields);
 
@@ -169,8 +194,6 @@ public class MapEditor : MonoBehaviour, Clickable
 
     public Map onEdit()
     {
-        Debug.Log("edited");
-
         timestamp();
         Map image = hotswap();
         return image;
@@ -192,6 +215,7 @@ public class MapEditor : MonoBehaviour, Clickable
             // delete all existing notes and then requeue new phrases
             MusicPlayer.sing.clearNotes();
             MusicPlayer.sing.clearPhraseQueue();
+            MusicPlayer.sing.resetColumnBlocking();
 
             foreach (Phrase p in map.phrases) MusicPlayer.sing.enqueuePhrase(p);
         }
@@ -379,17 +403,37 @@ public class MapEditor : MonoBehaviour, Clickable
         }
     }
 
-    /*// Metadata editing stuff
-    private void activateField(string newName)
+    public void insertPhraseAtMarker()
     {
-        metaField.gameObject.SetActive(true);
-        metaField.placeholder.GetComponent<Text>().text = newName;
+        BeatRow row = Instantiate(rowPrefab, rowOrigin, false).GetComponent<BeatRow>();
+
+        // Reset row data
+        beatRows.Insert(addPhraseIndex+1, row);
+
+        for (int i=0; i<beatRows.Count; i++)
+            beatRows[i].setData(i + 1);
+
+        updateBeatRows();
+
+        // Push onto undo stack
+        sing.edited = true;
+        sing.imageQueued = true;
     }
 
-    private void deactivateField()
+    public void removeBeatRow(BeatRow caller)
     {
-        metaField.gameObject.SetActive(false);
-    }*/
+        Destroy(caller.gameObject);
+        beatRows.Remove(caller);
+
+        for (int i = 0; i < beatRows.Count; i++)
+            beatRows[i].setData(i + 1);
+
+        updateBeatRows();
+
+        // Push onto undo stack
+        sing.edited = true;
+        sing.imageQueued = true;
+    }
 
     public void updateMetaField()
     {

@@ -4,6 +4,7 @@ bpm: 100
 
 streamstart
 |L1
+|
 |L1
-|L1
+|
 |L1

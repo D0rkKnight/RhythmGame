@@ -42,4 +42,9 @@ public class BeatRow : MonoBehaviour
 
         return o;
     }
+
+    public void removeSelf()
+    {
+        MapEditor.sing.removeBeatRow(this);
+    }
 }

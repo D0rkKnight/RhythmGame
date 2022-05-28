@@ -18,12 +18,10 @@ public class BeatEditorSlot : MonoBehaviour, Clickable
     {
         rend = bg.GetComponent<SpriteRenderer>();
         parent = transform.parent.GetComponent<BeatRow>();
-    }
 
-    private void Start()
-    {
         phrase = new NonePhrase(0, 1); // Random null phrase
         updateGraphics();
+
     }
 
     private void updateGraphics()
