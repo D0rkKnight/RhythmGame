@@ -20,6 +20,7 @@ public class SkillTree : MonoBehaviour
         public Button btn;
         public NODE[] prereqs;
         public int cost = 100;
+        public float heatReq = 0;
 
         private SkillTree owner;
 
@@ -45,7 +46,7 @@ public class SkillTree : MonoBehaviour
             if (owner.tokens < cost) return; // Not enough money :(
             owner.tokens -= cost;
 
-            owner.flags[(int)node] = true;
+            owner.purchasedFlags[(int)node] = true;
             owner.compile();
         }
 
@@ -54,7 +55,7 @@ public class SkillTree : MonoBehaviour
             bool fulfilled = true;
             foreach (NODE n in prereqs)
             {
-                if (!owner.flags[(int)n])
+                if (!owner.purchasedFlags[(int)n])
                 {
                     fulfilled = false;
                     break;
@@ -65,7 +66,9 @@ public class SkillTree : MonoBehaviour
     }
 
     public buttonPair[] nodes = new buttonPair[(int) NODE.SENTINEL];
-    public bool[] flags = new bool[(int)NODE.SENTINEL];
+    public bool[] purchasedFlags = new bool[(int)NODE.SENTINEL];
+    public bool[] activeFlags = new bool[(int)NODE.SENTINEL];
+
     public static SkillTree sing;
 
     public Text tokenText;
@@ -103,6 +106,7 @@ public class SkillTree : MonoBehaviour
     public List<LineRenderer> lineRends;
 
     public bool activateAll;
+    public bool purchaseAll;
 
     // separate initialize function
     void Awake()
@@ -115,7 +119,7 @@ public class SkillTree : MonoBehaviour
             nodes[i].init(this);
         }
 
-        if (activateAll) for (int i = 0; i < flags.Length; i++) flags[i] = true;
+        if (purchaseAll) for (int i = 0; i < purchasedFlags.Length-1; i++) purchasedFlags[i] = true;
 
         lineRends = new List<LineRenderer>();
     }
@@ -123,28 +127,41 @@ public class SkillTree : MonoBehaviour
     // Recompiles the game state depending on the given skill flags
     public void compile()
     {
+        // Find active flags
+        for (int i = 0; i < (int)NODE.SENTINEL - 1; i++)
+        {
+            buttonPair nodeData = nodes[i];
+            int index = (int)nodeData.node;
+            activeFlags[index] = nodeData.heatReq <= HeatController.sing.Heat || activateAll;
+
+            // Set opacity of buttons
+            float opacity = activeFlags[index] ? 1 : 0.5f;
+            Image img = nodeData.btn.GetComponent<Image>();
+            img.color = new Color(img.color.r, img.color.g, img.color.b, opacity);
+        }
+
         MusicPlayer mp = MusicPlayer.sing;
         MapSerializer ns = MapSerializer.sing;
 
-        mp.columns[0].Active = flags[(int)NODE.L_REROUTE];
-        mp.columns[3].Active = flags[(int)NODE.R_REROUTE];
+        mp.columns[0].Active = activeFlags[(int)NODE.L_REROUTE];
+        mp.columns[3].Active = activeFlags[(int)NODE.R_REROUTE];
 
-        mp.columns[0].StreamOn = flags[(int)NODE.L_EXPAND];
-        mp.columns[3].StreamOn = flags[(int)NODE.R_EXPAND];
+        mp.columns[0].StreamOn = activeFlags[(int)NODE.L_EXPAND];
+        mp.columns[3].StreamOn = activeFlags[(int)NODE.R_EXPAND];
 
         // Whether to reroute input on the two columns
-        mp.columns[0].reroute = flags[(int)NODE.L_REROUTE] ? null : mp.columns[1];
-        mp.columns[3].reroute = flags[(int)NODE.R_REROUTE] ? null : mp.columns[2];
+        mp.columns[0].reroute = activeFlags[(int)NODE.L_REROUTE] ? mp.columns[1] : null;
+        mp.columns[3].reroute = activeFlags[(int)NODE.R_REROUTE] ? mp.columns[2] : null;
 
-        if (flags[(int)NODE.ACCENT_1]) ns.accentLim++;
-        if (flags[(int)NODE.ACCENT_2]) ns.accentLim++;
+        if (activeFlags[(int)NODE.ACCENT_1]) ns.accentLim++;
+        if (activeFlags[(int)NODE.ACCENT_2]) ns.accentLim++;
 
-        if (flags[(int)NODE.HOLD]) ns.genType[(int) Phrase.TYPE.HOLD] = true;
+        if (activeFlags[(int)NODE.HOLD]) ns.genType[(int) Phrase.TYPE.HOLD] = true;
 
         ns.noteBlockLen = 0.5f;
-        if (flags[(int)NODE.QUANT_1]) ns.noteBlockLen = 0.25f;
-        if (flags[(int)NODE.QUANT_2]) ns.noteBlockLen = 0.125f;
-        if (flags[(int)NODE.QUANT_3]) ns.noteBlockLen = 0f;
+        if (activeFlags[(int)NODE.QUANT_1]) ns.noteBlockLen = 0.25f;
+        if (activeFlags[(int)NODE.QUANT_2]) ns.noteBlockLen = 0.125f;
+        if (activeFlags[(int)NODE.QUANT_3]) ns.noteBlockLen = 0f;
 
 
         // Activate new skills

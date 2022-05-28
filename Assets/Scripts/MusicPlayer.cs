@@ -396,6 +396,18 @@ public class MusicPlayer : MonoBehaviour
 
         // Increment combo
         Combo++;
+
+        // Gain heat
+        HeatController.sing.Heat++;
+    }
+
+    private void miss(Note note)
+    {
+        note.dead = true;
+        Combo = 0;
+
+        // Lose heat
+        HeatController.sing.Heat -= 5;
     }
 
     private void addNoteScore()
@@ -488,8 +500,7 @@ public class MusicPlayer : MonoBehaviour
         // Check if strictly unhittable
         if (dt < -hitWindow && !note.dead)
         {
-            note.dead = true;
-            Combo = 0;
+            miss(note);
         }
 
         // Sort into discard pile
