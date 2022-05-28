@@ -31,14 +31,20 @@ public class SkillTree : MonoBehaviour
 
         public void init(SkillTree owner_)
         {
-            this.owner = owner_;
+            owner = owner_;
             btn.onClick.AddListener(onClick);
+
+            // Set label text
+            btn.GetComponentInChildren<Text>().text += " $" + cost.ToString();
 
             checkPrereqs();
         }
 
         private void onClick()
         {
+            if (owner.tokens < cost) return; // Not enough money :(
+            owner.tokens -= cost;
+
             owner.flags[(int)node] = true;
             owner.compile();
         }
@@ -71,6 +77,25 @@ public class SkillTree : MonoBehaviour
         {
             tokens = value;
             tokenText.text = "$"+value.ToString();
+        }
+    }
+
+    private int subToken;
+    public int pointsPerToken = 1000;
+    public int SubToken
+    {
+        get { return subToken; }
+        set
+        {
+            subToken = value;
+
+            int newToks = Tokens;
+            while (subToken > pointsPerToken)
+            {
+                subToken -= pointsPerToken;
+                newToks += 1;
+            }
+            Tokens = newToks;
         }
     }
 

@@ -278,7 +278,7 @@ public class MusicPlayer : MonoBehaviour
             interimTil = Time.time + 1f;
 
             // Convert score to tokens
-            SkillTree.sing.Tokens += score / 1000;
+            SkillTree.sing.SubToken += score / 2;
 
             // Zero out other stuff
             Score = 0;
@@ -402,6 +402,7 @@ public class MusicPlayer : MonoBehaviour
     {
         int amt = 100 * (int) (1 + combo / 10f);
         Score += amt;
+        SkillTree.sing.SubToken += amt / 2; // Get tokens while playing too
     }
 
     private void onBeat()
