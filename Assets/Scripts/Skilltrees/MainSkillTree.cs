@@ -5,13 +5,8 @@ using UnityEngine.UI;
 using UnityEngine.Events;
 using System;
 
-public class SkillTree : MonoBehaviour
+public class MainSkillTree : SkillTree
 {
-    public enum NODE
-    {
-        L_EXPAND, R_EXPAND, ACCENT_1, ACCENT_2, ACCENT_3, HOLD, L_REROUTE, R_REROUTE, QUANT_1, QUANT_2, QUANT_3,
-        SENTINEL
-    }
 
     [System.Serializable]
     public class buttonPair
@@ -22,7 +17,7 @@ public class SkillTree : MonoBehaviour
         public int cost = 100;
         public float heatReq = 0;
 
-        private SkillTree owner;
+        private MainSkillTree owner;
 
         public buttonPair(NODE node_, Button btn_)
         {
@@ -30,7 +25,7 @@ public class SkillTree : MonoBehaviour
             btn = btn_;
         }
 
-        public void init(SkillTree owner_)
+        public void init(MainSkillTree owner_)
         {
             owner = owner_;
             btn.onClick.AddListener(onClick);
@@ -66,10 +61,6 @@ public class SkillTree : MonoBehaviour
     }
 
     public buttonPair[] nodes = new buttonPair[(int) NODE.SENTINEL];
-    public bool[] purchasedFlags = new bool[(int)NODE.SENTINEL];
-    public bool[] activeFlags = new bool[(int)NODE.SENTINEL];
-
-    public static SkillTree sing;
 
     public Text tokenText;
     private int tokens = 0;
@@ -106,62 +97,19 @@ public class SkillTree : MonoBehaviour
     public GameObject lineRendPrefab;
     public List<LineRenderer> lineRends;
 
-    public bool activateAll;
-    public bool purchaseAll;
-
-    // separate initialize function
-    public virtual void Awake()
+    public override void init()
     {
-        if (sing != null) Debug.LogError("Singleton broken");
-        sing = this;
+        base.init();
 
-        init();
-
-        if (purchaseAll) for (int i = 0; i < purchasedFlags.Length-1; i++) purchasedFlags[i] = true;
-
-        lineRends = new List<LineRenderer>();
-    }
-
-    public virtual void init()
-    {
         for (int i = 0; i < nodes.Length; i++)
         {
             nodes[i].init(this);
         }
+
+        lineRends = new List<LineRenderer>();
     }
 
-    // Recompiles the game state depending on the given skill flags
-    public void compile()
-    {
-        setActiveFlags();
-
-        MusicPlayer mp = MusicPlayer.sing;
-        MapSerializer ns = MapSerializer.sing;
-
-        mp.columns[0].Active = activeFlags[(int)NODE.L_REROUTE];
-        mp.columns[3].Active = activeFlags[(int)NODE.R_REROUTE];
-
-        mp.columns[0].StreamOn = activeFlags[(int)NODE.L_EXPAND];
-        mp.columns[3].StreamOn = activeFlags[(int)NODE.R_EXPAND];
-
-        // Whether to reroute input on the two columns
-        mp.columns[0].reroute = activeFlags[(int)NODE.L_REROUTE] ? mp.columns[1] : null;
-        mp.columns[3].reroute = activeFlags[(int)NODE.R_REROUTE] ? mp.columns[2] : null;
-
-        if (activeFlags[(int)NODE.ACCENT_1]) ns.accentLim++;
-        if (activeFlags[(int)NODE.ACCENT_2]) ns.accentLim++;
-
-        if (activeFlags[(int)NODE.HOLD]) ns.genType[(int) Phrase.TYPE.HOLD] = true;
-
-        ns.noteBlockLen = 0.5f;
-        if (activeFlags[(int)NODE.QUANT_1]) ns.noteBlockLen = 0.25f;
-        if (activeFlags[(int)NODE.QUANT_2]) ns.noteBlockLen = 0.125f;
-        if (activeFlags[(int)NODE.QUANT_3]) ns.noteBlockLen = 0f;
-
-        enableNewOptions();
-    }
-
-    protected virtual void setActiveFlags()
+    protected override void setActiveFlags()
     {
         // Find active flags
         for (int i = 0; i < (int)NODE.SENTINEL - 1; i++)
@@ -181,7 +129,7 @@ public class SkillTree : MonoBehaviour
         }
     }
 
-    protected virtual void enableNewOptions()
+    protected override void enableNewOptions()
     {
         // Activate new skills
         foreach (buttonPair bp in nodes)

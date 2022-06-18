@@ -45,6 +45,7 @@ public class MapEditor : MonoBehaviour, Clickable
     Stack<Map> undoCache = new Stack<Map>(); // Includes the current state
     public bool edited = false;
     public bool imageQueued = false;
+    public bool hotswapQueued = false;
 
     public GameObject metaFieldPrefab;
     public List<InputField> metaFields;
@@ -119,6 +120,11 @@ public class MapEditor : MonoBehaviour, Clickable
         {
             undoCache.Push(image);
             imageQueued = false;
+        }
+        if (hotswapQueued)
+        {
+            hotswap();
+            hotswapQueued = false;
         }
 
         // Check for undo input

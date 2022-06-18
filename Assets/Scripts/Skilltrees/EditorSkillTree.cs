@@ -11,7 +11,8 @@ public class EditorSkillTree : SkillTree
 
     public override void init()
     {
-        // Don't do base init
+        base.init();
+
         Transform par = transform.Find("Canvas/Scroll View/Viewport/Content");
 
         // Generate toggles
@@ -31,6 +32,10 @@ public class EditorSkillTree : SkillTree
             toggles[i].onValueChanged.AddListener(delegate
             {
                 compile();
+
+                // If the map editor is alive, queue up a hotswap
+                Debug.Log("Hello");
+                if (MapEditor.sing != null) MapEditor.sing.hotswapQueued = true;
             });
         }
     }
@@ -39,10 +44,5 @@ public class EditorSkillTree : SkillTree
     {
         for (int i = 0; i < (int)NODE.SENTINEL-1; i++)
             activeFlags[i] = toggles[i].isOn;
-    }
-
-    protected override void enableNewOptions()
-    {
-        // Do nothing
     }
 }
