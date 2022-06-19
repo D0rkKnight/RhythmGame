@@ -7,7 +7,7 @@ public class SkillTree : MonoBehaviour
     public enum NODE
     {
         L_EXPAND, R_EXPAND, ACCENT_1, ACCENT_2, ACCENT_3, HOLD, L_REROUTE, R_REROUTE, QUANT_1, QUANT_2, QUANT_3,
-        SENTINEL
+        CORE_L, CORE_R, SENTINEL,
     }
 
     public bool[] purchasedFlags = new bool[(int)NODE.SENTINEL];
@@ -49,6 +49,12 @@ public class SkillTree : MonoBehaviour
         MusicPlayer mp = MusicPlayer.sing;
         MapSerializer ns = MapSerializer.sing;
 
+        // Set core elements
+        mp.columns[1].Active = activeFlags[(int)NODE.CORE_L];
+        mp.columns[2].Active = activeFlags[(int)NODE.CORE_R];
+        mp.columns[1].StreamOn = activeFlags[(int)NODE.CORE_L];
+        mp.columns[2].StreamOn = activeFlags[(int)NODE.CORE_R];
+
         mp.columns[0].Active = activeFlags[(int)NODE.L_REROUTE];
         mp.columns[3].Active = activeFlags[(int)NODE.R_REROUTE];
 
@@ -70,5 +76,10 @@ public class SkillTree : MonoBehaviour
         if (activeFlags[(int)NODE.QUANT_3]) ns.noteBlockLen = 0f;
 
         enableNewOptions();
+    }
+
+    public void loadSave(string name)
+    {
+
     }
 }

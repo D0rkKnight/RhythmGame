@@ -41,13 +41,16 @@ public partial class MapSerializer : MonoBehaviour
     public static MapSerializer sing;
     public bool loadQueued = false;
 
-    // Start is called before the first frame update
-    void Start()
+    private void Awake()
     {
         // Setup singleton
         if (sing != null) Debug.LogError("Singleton broken");
         sing = this;
+    }
 
+    // Start is called before the first frame update
+    void Start()
+    {
         // Generate charpools
         typePool = new List<char>();
         catPool = new List<char>();

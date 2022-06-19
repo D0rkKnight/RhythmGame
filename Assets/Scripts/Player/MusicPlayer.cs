@@ -112,11 +112,6 @@ public class MusicPlayer : MonoBehaviour
         Combo = 0;
     }
 
-    private void Start()
-    {
-        SkillTree.sing.compile();
-    }
-
     // Update is called once per frame
     void Update()
     {
