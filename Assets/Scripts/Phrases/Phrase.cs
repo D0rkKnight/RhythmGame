@@ -166,7 +166,7 @@ public abstract class Phrase
 
         // If lane isn't available, default to default lanes
         // Accents for example will stack up and block each other
-        MusicPlayer.Column[] columns = MusicPlayer.sing.columns;
+        NoteColumn[] columns = MusicPlayer.sing.columns;
 
         if (!columns[mutLane].StreamOn)
         {
@@ -215,7 +215,7 @@ public abstract class Phrase
         }
 
         // Update column blocking
-        MusicPlayer.Column col = mp.columns[spawnLane];
+        NoteColumn col = mp.columns[spawnLane];
         if (blockFrame > 0)
         {
             // Update column blocking

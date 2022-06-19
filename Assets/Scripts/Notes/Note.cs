@@ -6,7 +6,7 @@ public class Note : MonoBehaviour
 {
     public float hitTime; // In seconds, as Unity standard
     public float beat = 0; // Beat for hit
-    public MusicPlayer.Column lane;
+    public NoteColumn lane;
     public bool dead = false;
 
     public Color defaultColor = Color.cyan;
@@ -59,7 +59,7 @@ public class Note : MonoBehaviour
     public void hit()
     {
         // Lock to column?
-        transform.position = lane.gObj.transform.position;
+        transform.position = lane.gameObject.transform.position;
 
         // Is released from the music player already
         killTime = Time.time + killDelay;

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 public class NoteColumn : MonoBehaviour
 {
@@ -10,6 +11,48 @@ public class NoteColumn : MonoBehaviour
     Material buttonOverlay;
 
     ParticleSystem burstSys;
+    public GameObject charTxt;
+
+    [SerializeField]
+    private KeyCode key;
+    public KeyCode Key
+    {
+        get { return key;  }
+        set
+        {
+            key = value;
+
+            charTxt.GetComponent<TextMeshProUGUI>().SetText(key.ToString());
+        }
+    }
+    public float blockedTil; // in beats
+    public NoteColumn reroute; // Whether to substitute input for other columns
+
+    private bool active = true;
+    public bool Active
+    {
+        get { return active; }
+        set
+        {
+            active = value;
+            gameObject.SetActive(value);
+        }
+    }
+
+    private bool streamOn = true;
+    public bool StreamOn
+    {
+        get { return streamOn; }
+        set
+        {
+            streamOn = value;
+
+            // Assign value to background and lights
+            transform.Find("ColumnBG").gameObject.SetActive(value);
+            transform.Find("HitLight").gameObject.SetActive(value);
+            transform.Find("HitBurst").gameObject.SetActive(value);
+        }
+    }
 
     // Start is called before the first frame update
     void Awake()
@@ -19,6 +62,8 @@ public class NoteColumn : MonoBehaviour
         buttonOverlay = transform.Find("TriggerBox/TBHitOverlay").
             GetComponent<SpriteRenderer>().material;
         burstSys = transform.Find("HitBurst").GetComponent<ParticleSystem>();
+
+        Key = Key; // Update graphics
     }
 
     // Update is called once per frame
@@ -39,13 +84,5 @@ public class NoteColumn : MonoBehaviour
     public void hitBurst()
     {
         burstSys.Play();
-    }
-
-    public void setStreaming(bool val)
-    {
-        // Assign value to background and lights
-        transform.Find("ColumnBG").gameObject.SetActive(val);
-        transform.Find("HitLight").gameObject.SetActive(val);
-        transform.Find("HitBurst").gameObject.SetActive(val);
     }
 }

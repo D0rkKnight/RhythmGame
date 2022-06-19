@@ -5,48 +5,9 @@ using UnityEngine.UI;
 
 public class MusicPlayer : MonoBehaviour
 {
-    [System.Serializable]
-    public class Column
-    {
-        public GameObject gObj;
-        public KeyCode key;
-        public float blockedTil; // in beats
-        public Column reroute; // Whether to substitute input for other columns
-
-        private bool active = true;
-        public bool Active
-        {
-            get { return active; }
-            set
-            {
-                active = value;
-                gObj.SetActive(value);
-            }
-        }
-
-        private bool streamOn = true;
-        public bool StreamOn
-        {
-            get { return streamOn; }
-            set
-            {
-                streamOn = value;
-                gObj.GetComponent<NoteColumn>().setStreaming(value);
-            }
-        }
-
-        public Column(GameObject gObj_, KeyCode key_, bool active_)
-        {
-            this.gObj = gObj_;
-            this.key = key_;
-            blockedTil = 0;
-            Active = active_;
-        }
-    }
-
     public GameObject notePrefab;
     public GameObject holdPrefab;
-    public Column[] columns;
+    public NoteColumn[] columns;
     private float bpm = 60;
     public float BPM
     {
@@ -142,7 +103,7 @@ public class MusicPlayer : MonoBehaviour
         songStart = Time.time + songStartDelay;
 
         // Set activeness of columns
-        foreach (Column c in columns)
+        foreach (NoteColumn c in columns)
         {
             c.Active = true;
             c.StreamOn = true;
@@ -215,9 +176,9 @@ public class MusicPlayer : MonoBehaviour
         foreach (Note note in passed) if (streamNotes) remove(note);
 
         // Input
-        foreach (Column col in columns)
+        foreach (NoteColumn col in columns)
         {
-            if (InputManager.checkKeyDown(col.key))
+            if (InputManager.checkKeyDown(col.Key))
             {
                 // Get best note within the acceptable input range
                 Note bestNote = null;
@@ -256,12 +217,12 @@ public class MusicPlayer : MonoBehaviour
                 }
 
                 // Highlight BG
-                NoteColumn colComp = col.gObj.GetComponent<NoteColumn>();
+                NoteColumn colComp = col.gameObject.GetComponent<NoteColumn>();
                 colComp.highlight = 1;
 
             }
 
-            if (Input.GetKeyUp(col.key))
+            if (Input.GetKeyUp(col.Key))
             {
                 // Mark held holds as dead
                 foreach (Note n in notes)
@@ -378,7 +339,7 @@ public class MusicPlayer : MonoBehaviour
 
     public void resetColumnBlocking()
     {
-        foreach (Column col in columns) col.blockedTil = 0;
+        foreach (NoteColumn col in columns) col.blockedTil = 0;
     }
 
     public void clearNotes()
@@ -405,7 +366,7 @@ public class MusicPlayer : MonoBehaviour
     {
         notes.Remove(note);
         note.hit();
-        note.lane.gObj.GetComponent<NoteColumn>().hitBurst();
+        note.lane.hitBurst();
 
         // Increment combo
         Combo++;
@@ -502,7 +463,7 @@ public class MusicPlayer : MonoBehaviour
 
     private void updateNote(Note note, List<Note> passed)
     {
-        GameObject col = note.lane.gObj;
+        GameObject col = note.lane.gameObject;
         Vector2 tPos = col.transform.Find("TriggerBox").position;
 
         float dt = note.hitTime - songTime;
@@ -552,7 +513,7 @@ public class MusicPlayer : MonoBehaviour
             Debug.Log("Catch");
         }
 
-        Column col = columns[lane];
+        NoteColumn col = columns[lane];
 
 
         if (beat < col.blockedTil)
