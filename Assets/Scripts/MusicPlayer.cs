@@ -190,6 +190,10 @@ public class MusicPlayer : MonoBehaviour
             TrackPlayer.sing.audio.time = tpTime; // Sync song time
         }
 
+        // Resync on lagspike
+        if (Time.deltaTime > 0.01 && tpTime >= 0 && TrackPlayer.sing.audio.isPlaying)
+            TrackPlayer.sing.audio.time = tpTime;
+
         // If eclipsing the beat threshold, tick a beat.
         if (Time.time > lastBeat + beatInterval)
         {

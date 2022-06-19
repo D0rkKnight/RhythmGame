@@ -23,7 +23,7 @@ public class BarAudioInitializer : MonoBehaviour
             bars[i] = _bar.GetComponent<BarAudioVisualizer>();
             bars[i].bias = i/(float) barCount * 2.0f;
             bars[i].beatScale.y = 1 + (i/(float) barCount);
-            bars[i].freqBand = i * 4 / barCount;
+            bars[i].freqBand = i * 12 / barCount;
 
             SpriteRenderer _sr = _bar.GetComponent<SpriteRenderer>();
             var _col = _sr.color;

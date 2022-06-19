@@ -46,9 +46,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bias: 1
-  timeStep: 0.15
+  timeStep: 0.25
   timeToBeat: 0.05
   restSmoothTime: 2
+  freqBand: 0
   beatScale: {x: 1, y: 2, z: 1}
   restScale: {x: 1, y: 0.5, z: 1}
 --- !u!212 &5917969496051405134

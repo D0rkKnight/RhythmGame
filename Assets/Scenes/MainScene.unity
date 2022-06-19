@@ -304,7 +304,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e4f2115b557695a4ab568d7bb4322993, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  barCount: 30
+  barCount: 24
   barPrefab: {fileID: 5917969496051405135, guid: 8cba11fdc0ffc624e959d2063b2f425e,
     type: 3}
 --- !u!4 &1462649740
