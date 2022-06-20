@@ -102,7 +102,7 @@ public partial class MapSerializer : MonoBehaviour
 
     public Map parseMap(string fname)
     {
-        string fpath = Application.streamingAssetsPath + "/Maps/" + fname;
+        string fpath = Path.Combine(Application.streamingAssetsPath, "Maps", fname);
         StreamReader reader = new StreamReader(fpath);
         string data = reader.ReadToEnd();
 

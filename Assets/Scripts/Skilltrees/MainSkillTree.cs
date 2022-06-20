@@ -97,6 +97,8 @@ public class MainSkillTree : SkillTree
     public GameObject lineRendPrefab;
     public List<LineRenderer> lineRends;
 
+    public GameObject audViz;
+
     public override void init()
     {
         base.init();
@@ -111,8 +113,10 @@ public class MainSkillTree : SkillTree
 
     protected override void setActiveFlags()
     {
+        bool[] nodeMask = new bool[(int) NODE.SENTINEL];
+
         // Find active flags
-        for (int i = 0; i < (int)NODE.SENTINEL - 1; i++)
+        for (int i = 0; i < nodes.Length; i++)
         {
             buttonPair nodeData = nodes[i];
             int index = (int)nodeData.node;
@@ -121,12 +125,37 @@ public class MainSkillTree : SkillTree
             if (!purchasedFlags[index]) continue;
 
             activeFlags[index] = nodeData.heatReq <= HeatController.sing.Heat || activateAll;
+            nodeMask[index] = true;
 
             // Set opacity of buttons
             float opacity = activeFlags[index] ? 1 : 0.5f;
             Image img = nodeData.btn.GetComponent<Image>();
             img.color = new Color(img.color.r, img.color.g, img.color.b, opacity);
         }
+
+        // Fill in values not dictated by buttons
+        for (int i=0; i<(int) NODE.SENTINEL; i++)
+        {
+            if (!nodeMask[i] && purchasedFlags[i]) activeFlags[i] = true;
+        }
+    }
+
+    protected override void compileMech()
+    {
+        base.compileMech();
+
+        // Meta elements
+        transform.Find("Canvas").gameObject.SetActive(activeFlags[(int)NODE.SKILLTREE]);
+
+        if (audViz != null)
+            audViz.SetActive(activeFlags[(int)NODE.AUD_VIZ]);
+
+        // Config Musicplayer widgets
+        Transform mpTrans = MusicPlayer.sing.transform;
+
+        mpTrans.Find("Canvas/Score").gameObject.SetActive(activeFlags[(int)NODE.SCORE]);
+        mpTrans.Find("Canvas/Combo").gameObject.SetActive(activeFlags[(int)NODE.COMBO]);
+        mpTrans.Find("HeatMeter").gameObject.SetActive(activeFlags[(int)NODE.HEAT]);
     }
 
     protected override void enableNewOptions()
