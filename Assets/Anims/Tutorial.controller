@@ -7,7 +7,7 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Unveil1Lane
+  m_Name: Sleeping
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions:
@@ -34,7 +34,7 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: New State
+  m_Name: Unveil1
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions: []
@@ -89,10 +89,10 @@ AnimatorStateMachine:
   m_ChildStates:
   - serializedVersion: 1
     m_State: {fileID: -7493745337723583001}
-    m_Position: {x: 160, y: 130, z: 0}
+    m_Position: {x: -60, y: 190, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -4404255604338309060}
-    m_Position: {x: 400, y: 130, z: 0}
+    m_Position: {x: -60, y: 260, z: 0}
   m_ChildStateMachines: []
   m_AnyStateTransitions: []
   m_EntryTransitions: []
