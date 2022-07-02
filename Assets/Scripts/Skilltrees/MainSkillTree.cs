@@ -39,7 +39,7 @@ public class MainSkillTree : SkillTree
         private void onClick()
         {
             if (owner.tokens < cost) return; // Not enough money :(
-            owner.tokens -= cost;
+            owner.Tokens -= cost;
 
             owner.purchasedFlags[(int)node] = true;
             owner.compile();
@@ -121,15 +121,33 @@ public class MainSkillTree : SkillTree
             buttonPair nodeData = nodes[i];
             int index = (int)nodeData.node;
 
+            float opacity = 0; // Unpurchased items have an opacity of 0
+
             // Skip unpurchased nodes
-            if (!purchasedFlags[index]) continue;
+            if (purchasedFlags[index])
+            {
+                activeFlags[index] = nodeData.heatReq <= HeatController.sing.Heat || activateAll;
+                nodeMask[index] = true;
 
-            activeFlags[index] = nodeData.heatReq <= HeatController.sing.Heat || activateAll;
-            nodeMask[index] = true;
+                // Set opacity of purchased buttons
+                opacity = activeFlags[index] ? 1 : 0.5f;
+            }
 
-            // Set opacity of buttons
-            float opacity = activeFlags[index] ? 1 : 0.5f;
-            Image img = nodeData.btn.GetComponent<Image>();
+            // Check if node is an adjacent element
+            else
+            {
+                bool adj = nodeData.prereqs.Length == 0; // No prereqs
+                foreach (NODE prereq in nodeData.prereqs) // Purchased prereq
+                    if (purchasedFlags[(int)prereq])
+                    {
+                        adj = true; // Set to quarter opacity
+                        break;
+                    }
+
+                if (adj) opacity = 0.25f;
+            }
+
+            Image img = nodeData.btn.transform.Find("BG").GetComponent<Image>();
             img.color = new Color(img.color.r, img.color.g, img.color.b, opacity);
         }
 
@@ -190,7 +208,7 @@ public class MainSkillTree : SkillTree
 
                 foreach (NODE prereq in bp.prereqs)
                 {
-                    // Find node to hook to
+                    // Find node to hook to (going upstream)
                     Button target = null;
                     foreach (buttonPair search in nodes) if (search.node == prereq)
                         {
@@ -199,6 +217,15 @@ public class MainSkillTree : SkillTree
                         }
 
                     RectTransform endBounds = target.GetComponent<RectTransform>();
+                    Vector3[] sCorn = new Vector3[4];
+                    Vector3[] eCorn = new Vector3[4];
+
+                    endBounds.GetWorldCorners(eCorn);
+                    bpBounds.GetWorldCorners(sCorn);
+
+                    float endY = eCorn[0].y;
+                    float startY = sCorn[2].y;
+
                     Vector3 bpEnd = endBounds.position;
                     Vector3 turn1 = new Vector3(bpBase.x, (bpBase.y + bpEnd.y) * 0.5f, bpBase.z);
                     Vector3 turn2 = new Vector3(bpEnd.x, (bpBase.y + bpEnd.y) * 0.5f, bpEnd.z);
@@ -206,10 +233,17 @@ public class MainSkillTree : SkillTree
                     // Draw a line between the 2 for now
                     LineRenderer lr = Instantiate(lineRendPrefab, transform).GetComponent<LineRenderer>();
                     lr.positionCount = 4;
-                    lr.SetPosition(0, bpBase);
+                    lr.SetPosition(0, new Vector3(bpBase.x, startY, bpBase.z));
                     lr.SetPosition(1, turn1);
                     lr.SetPosition(2, turn2);
-                    lr.SetPosition(3, bpEnd);
+                    lr.SetPosition(3, new Vector3(bpEnd.x, endY, bpEnd.z));
+
+                    // set lr opacity to source btn opacity
+                    Color col = Color.white * bp.btn.transform.Find("BG").GetComponent<Image>().color.a;
+                    col.a = 1f;
+
+                    lr.startColor = col;
+                    lr.endColor = col;
 
                     lineRends.Add(lr);
                 }

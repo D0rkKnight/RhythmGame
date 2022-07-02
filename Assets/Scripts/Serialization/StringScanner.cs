@@ -31,7 +31,6 @@ class StringScanner
     {
         string segment = "";
         // Look for meta start symbol
-        Debug.Log(str[ptr]);
         if (ptr < str.Length && str[ptr] == '(')
         {
             ptr++;

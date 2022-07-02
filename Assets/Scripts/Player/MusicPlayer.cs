@@ -510,13 +510,15 @@ public class MusicPlayer : MonoBehaviour
 
         NoteColumn col = columns[lane];
 
-
-        if (beat < col.blockedTil)
+        foreach(Note n in notes)
         {
-            Debug.LogWarning("Spawning a note in a blocked segment: beat "
+            if (beat >= n.beat && beat <= n.beat + blockDur)
+            {
+                Debug.LogWarning("Spawning a note in a blocked segment: beat "
                 + beat + " when blocked til " + col.blockedTil);
 
-            return false;
+                return false;
+            }
         }
 
         foreach (Note n in notes)

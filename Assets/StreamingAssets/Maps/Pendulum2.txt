@@ -1,4 +1,4 @@
-mapname: playTemp
+mapname: Pendulum2
 track: pendulum2.wav
 bpm: 60
 
@@ -27,7 +27,7 @@ streamstart
 |>>>R2
 |>L1
 |>>L1~
-|<|>>Z(0.75,2,8)R1
+|<|>>Z(0.625,2,8)R1
 |>>>L2
 |>>>R1
 |>>>R2

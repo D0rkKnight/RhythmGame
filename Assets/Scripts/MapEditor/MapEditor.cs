@@ -431,6 +431,8 @@ public class MapEditor : MonoBehaviour, Clickable
         Destroy(caller.gameObject);
         beatRows.Remove(caller);
 
+        lastActiveRow--;
+
         for (int i = 0; i < beatRows.Count; i++)
             beatRows[i].setData(i + 1);
 

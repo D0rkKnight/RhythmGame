@@ -42,7 +42,7 @@ public class EditorSkillTree : SkillTree
 
     protected override void setActiveFlags()
     {
-        for (int i = 0; i < (int)NODE.SENTINEL-1; i++)
-            activeFlags[i] = toggles[i].isOn;
+        for (int i = 0; i < (int)NODE.SENTINEL - 1; i++)
+            activeFlags[i] = toggles[i] != null ? toggles[i].isOn : false;
     }
 }

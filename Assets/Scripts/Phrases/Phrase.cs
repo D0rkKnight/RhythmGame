@@ -125,6 +125,7 @@ public abstract class Phrase
     // Converts to notes
     public void rasterize(MapSerializer ms)
     {
+
         // Takes a phrase and spawns its notes
         // TODO: Don't use blocking frame, just check if it clashes with any notes in the buffer
 

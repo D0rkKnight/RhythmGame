@@ -77,6 +77,8 @@ public class ZigzagPhrase : Phrase
         int zzLane = spawnLane;
         float zzBeat = spawnBeat;
 
+        Debug.Log("Calling ZZ spawner");
+
         // Zigzag pattern!
         for(int i=0; i<steps; i++)
         {
