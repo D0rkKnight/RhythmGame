@@ -11,11 +11,6 @@ public class SkillButton : MonoBehaviour
     public Text txt;
     public Button btn;
 
-    private void Awake()
-    {
-        btn = GetComponent<Button>();   
-    }
-
     public float Opacity {
         get { return bg.color.a; }
         set { 

@@ -512,22 +512,24 @@ public class MusicPlayer : MonoBehaviour
 
         foreach(Note n in notes)
         {
-            if (beat >= n.beat && beat <= n.beat + blockDur)
+            if (beat >= n.beat && beat <= n.beat + blockDur && col == n.lane)
             {
                 Debug.LogWarning("Spawning a note in a blocked segment: beat "
                 + beat + " when blocked til " + col.blockedTil);
 
                 return false;
             }
-        }
 
-        foreach (Note n in notes)
-        {
             if (n.beat == beat && n.lane == col)
             {
                 Debug.LogWarning("Lane " + lane + " occupied by another note on same frame");
                 return false;
             }
+        }
+
+        foreach (Note n in notes)
+        {
+
         }
 
         if (!col.StreamOn)

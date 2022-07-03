@@ -152,6 +152,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   bg: {fileID: 4243657837158066272}
   txt: {fileID: 1499167765397858576}
+  btn: {fileID: 1499167765283888352}
 --- !u!1 &1499167765397858582
 GameObject:
   m_ObjectHideFlags: 0

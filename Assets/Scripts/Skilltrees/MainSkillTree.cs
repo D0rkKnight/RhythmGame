@@ -28,6 +28,8 @@ public class MainSkillTree : SkillTree
         public void init(MainSkillTree owner_)
         {
             owner = owner_;
+
+            Debug.Log(btn.btn);
             btn.btn.onClick.AddListener(onClick);
 
             // Set label text

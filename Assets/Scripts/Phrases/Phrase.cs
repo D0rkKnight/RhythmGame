@@ -20,6 +20,8 @@ public abstract class Phrase
     public int leftLane;
     public int rightLane;
 
+    public bool active = true; // Whether this phrase is to be rasterized, or just a reference phrase
+
     public enum TYPE
     {
         NONE, NOTE, HOLD, ZIGZAG, SENTINEL
@@ -125,6 +127,11 @@ public abstract class Phrase
     // Converts to notes
     public void rasterize(MapSerializer ms)
     {
+        if (!active)
+        {
+            Debug.LogWarning("Note rasterization blocked by inactivity");
+            return;
+        }
 
         // Takes a phrase and spawns its notes
         // TODO: Don't use blocking frame, just check if it clashes with any notes in the buffer
@@ -285,15 +292,17 @@ public abstract class Phrase
                 dur_ = 0;
                 int width_ = 2;
                 float rate_ = 1;
+                bool recurse_ = false;
 
                 if (typeMeta != null)
                 {
                     dur_ = float.Parse(typeMeta[0]);
                     width_ = int.Parse(typeMeta[1]);
                     rate_ = float.Parse(typeMeta[2]);
+                    recurse_ = typeMeta[3].Equals("T");
                 }
 
-                p = new ZigzagPhrase(lane_, partition_, beat_, accent_, wait_, dur_, width_, rate_);
+                p = new ZigzagPhrase(lane_, partition_, beat_, accent_, wait_, dur_, width_, rate_, recurse_);
                 break;
             default:
                 Debug.LogError("Illegal phrase type");

@@ -13,11 +13,15 @@ public class HeatController : MonoBehaviour
         {
             heat = Mathf.Clamp(value, 0, maxHeat);
 
+            if (capHeat) heat = maxHeat;
+
             // Recompile skill tree
             SkillTree.sing.compile();
         }
     }
     private float visualHeat = 0; // How much heat it looks like you have
+
+    public bool capHeat = false;
 
     public float heatTierDist = 30; // How much heat to tier up once
     public float maxHeat = 100; // Maximum heat achievable
@@ -35,6 +39,11 @@ public class HeatController : MonoBehaviour
 
         bar1 = transform.Find("FillBar1");
         bar2 = transform.Find("FillBar2");
+    }
+
+    private void Start()
+    {
+        Heat = Heat; // Update heat
     }
 
     // Update is called once per frame

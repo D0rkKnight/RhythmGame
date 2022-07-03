@@ -107,6 +107,8 @@ public partial class MapSerializer : MonoBehaviour
         string data = reader.ReadToEnd();
 
         string[] tokens = data.Split('\n');
+
+        reader.Close();
         return parseTokens(tokens);
     }
 
