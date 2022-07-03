@@ -12,14 +12,14 @@ public class MainSkillTree : SkillTree
     public class buttonPair
     {
         public NODE node;
-        public Button btn;
+        public SkillButton btn;
         public NODE[] prereqs;
         public int cost = 100;
         public float heatReq = 0;
 
         private MainSkillTree owner;
 
-        public buttonPair(NODE node_, Button btn_)
+        public buttonPair(NODE node_, SkillButton btn_)
         {
             node = node_;
             btn = btn_;
@@ -28,7 +28,7 @@ public class MainSkillTree : SkillTree
         public void init(MainSkillTree owner_)
         {
             owner = owner_;
-            btn.onClick.AddListener(onClick);
+            btn.btn.onClick.AddListener(onClick);
 
             // Set label text
             btn.GetComponentInChildren<Text>().text += " $" + cost.ToString();
@@ -147,8 +147,7 @@ public class MainSkillTree : SkillTree
                 if (adj) opacity = 0.25f;
             }
 
-            Image img = nodeData.btn.transform.Find("BG").GetComponent<Image>();
-            img.color = new Color(img.color.r, img.color.g, img.color.b, opacity);
+            nodeData.btn.Opacity = opacity;
         }
 
         // Fill in values not dictated by buttons
@@ -197,7 +196,7 @@ public class MainSkillTree : SkillTree
         // Gen new lines
         foreach (buttonPair bp in nodes)
         {
-            if (bp.btn.IsActive())
+            if (bp.btn.btn.IsActive())
             {
 
                 // Draw lines between active skills (from an active skill to its parent)
@@ -212,7 +211,7 @@ public class MainSkillTree : SkillTree
                     Button target = null;
                     foreach (buttonPair search in nodes) if (search.node == prereq)
                         {
-                            target = search.btn;
+                            target = search.btn.btn;
                             break;
                         }
 
@@ -239,7 +238,7 @@ public class MainSkillTree : SkillTree
                     lr.SetPosition(3, new Vector3(bpEnd.x, endY, bpEnd.z));
 
                     // set lr opacity to source btn opacity
-                    Color col = Color.white * bp.btn.transform.Find("BG").GetComponent<Image>().color.a;
+                    Color col = Color.white * bp.btn.Opacity;
                     col.a = 1f;
 
                     lr.startColor = col;
