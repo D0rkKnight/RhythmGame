@@ -3,4 +3,4 @@ track: track1uc.wav
 bpm: 100
 
 streamstart
-|S(4,2,1,F)L1
+|Z(4,2,1,F)L1

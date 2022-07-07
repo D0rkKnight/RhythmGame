@@ -527,11 +527,6 @@ public class MusicPlayer : MonoBehaviour
             }
         }
 
-        foreach (Note n in notes)
-        {
-
-        }
-
         if (!col.StreamOn)
         {
             Debug.LogWarning("Lane " + lane + " does not accept notes");

@@ -17,12 +17,6 @@ public class HoldPhrase : Phrase
     {
         return new HoldPhrase(lane, partition, beat, accent, wait, (string[]) meta.Clone());
     }
-    protected override bool genTypeBlock(out string res, List<string> meta)
-    {
-        res = "H";
-        meta.Add("" + dur);
-        return true;
-    }
 
     public override Note instantiateNote(MusicPlayer mp)
     {

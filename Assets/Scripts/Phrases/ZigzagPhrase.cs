@@ -14,14 +14,6 @@ public class ZigzagPhrase : StreamPhrase
         return new ZigzagPhrase(lane, partition, beat, accent, wait, (string[]) meta.Clone());
     }
 
-    protected override bool genTypeBlock(out string res, List<string> meta)
-    {
-        base.genTypeBlock(out res, meta);
-
-        res = "Z";
-        return true;
-    }
-
     int spawnDir; // Used during note generation
 
     public override void spawn(MusicPlayer mp, int spawnLane, float spawnBeat, float blockFrame)

@@ -26,7 +26,7 @@ public abstract class Phrase
 
     public enum TYPE
     {
-        NONE, NOTE, HOLD, ZIGZAG, SCATTER, SENTINEL
+        NONE, NOTE, HOLD, ZIGZAG, SCATTER, REBOUND, SENTINEL
     }
 
     public Phrase()
@@ -79,6 +79,7 @@ public abstract class Phrase
         typecodeMap.Add('H', TYPE.HOLD);
         typecodeMap.Add('Z', TYPE.ZIGZAG);
         typecodeMap.Add('S', TYPE.SCATTER);
+        typecodeMap.Add('R', TYPE.REBOUND);
     }
 
     // Generates a phrase object given a universal list of parameters
@@ -101,6 +102,9 @@ public abstract class Phrase
                 break;
             case TYPE.SCATTER:
                 p = new ScatterPhrase(lane_, partition_, beat_, accent_, wait_, typeMeta);
+                break;
+            case TYPE.REBOUND:
+                p = new ReboundPhrase(lane_, partition_, beat_, accent_, wait_, typeMeta);
                 break;
             default:
                 Debug.LogError("Illegal phrase type");
@@ -152,21 +156,30 @@ public abstract class Phrase
             }
         }
 
-        string typeStr;
-        List<string> meta = new List<string>();
+        if (type == TYPE.NONE) return o; // None phrases hold only rhythm data
 
-        if (!genTypeBlock(out typeStr, meta)) return o;
+        // Look for type in typecode table
+        string typeStr = "";
+        foreach (KeyValuePair<char, TYPE> pair in typecodeMap)
+            if (pair.Value == type)
+            {
+                typeStr = "" + pair.Key;
+                break;
+            }
 
         o += typeStr;
 
+        // Write to meta list just in case
+        writeToMeta();
+
         // Type metadata
-        if (meta.Count > 0)
+        if (meta.Length > 0)
         {
             o += '(';
-            for (int i=0; i<meta.Count; i++)
+            for (int i=0; i<meta.Length; i++)
             {
                 o += meta[i];
-                if (i < meta.Count - 1) o += ',';
+                if (i < meta.Length - 1) o += ',';
             }
             o += ')';
         }
@@ -177,13 +190,6 @@ public abstract class Phrase
             o += "~";
 
         return o;
-    }
-
-    // Returns whether the serialization completes
-    protected virtual bool genTypeBlock(out string res, List<string> meta)
-    {
-        res = "";
-        return true;
     }
 
     // Converts to notes
@@ -358,12 +364,6 @@ public class NonePhrase : Phrase
     public override Phrase clone()
     {
         return new NonePhrase(beat, wait);
-    }
-
-    protected override bool genTypeBlock(out string res, List<string> meta)
-    {
-        res = "";
-        return false;
     }
 
     public override Note instantiateNote(MusicPlayer mp)

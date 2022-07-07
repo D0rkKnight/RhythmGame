@@ -16,17 +16,6 @@ public abstract class StreamPhrase : Phrase
     {
     }
 
-    protected override bool genTypeBlock(out string res, List<string> meta)
-    {
-        base.genTypeBlock(out res, meta);
-        meta.Add("" + dur);
-        meta.Add("" + width);
-        meta.Add("" + rate);
-        meta.Add(recurse ? "T" : "F");
-
-        return false;
-    }
-
     public override Note instantiateNote(MusicPlayer mp)
     {
         return Object.Instantiate(mp.notePrefab).GetComponent<Note>();

@@ -15,14 +15,6 @@ public class ScatterPhrase : StreamPhrase
         return new ScatterPhrase(lane, partition, beat, accent, wait, (string[])meta.Clone());
     }
 
-    protected override bool genTypeBlock(out string res, List<string> meta)
-    {
-        base.genTypeBlock(out res, meta);
-
-        res = "S";
-        return true;
-    }
-
     System.Random rnd;
 
     public override void spawn(MusicPlayer mp, int spawnLane, float spawnBeat, float blockFrame)
