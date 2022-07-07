@@ -61,8 +61,10 @@ public partial class MapSerializer : MonoBehaviour
         // TODO: Read the typepool from Phrase's type-char listing
         catPool.Add('L');
         catPool.Add('R');
-        typePool.Add('H');
-        typePool.Add('Z');
+
+        foreach (char c in Phrase.typecodeMap.Keys)
+            typePool.Add(c);
+
         for (char c = '0'; c <= '9'; c++) lanePool.Add(c);
 
         accentPool.Add('~');
@@ -231,7 +233,7 @@ public partial class MapSerializer : MonoBehaviour
 
         // If there is a partition, the type defaults to note
         if (part.Length > 0) type = Phrase.TYPE.NOTE;
-
+        
         Phrase.TYPE codeOver = Phrase.codeToType(typeCode);
         if (codeOver != Phrase.TYPE.SENTINEL)
         {

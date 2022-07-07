@@ -21,10 +21,12 @@ public abstract class Phrase
     // Metadata
     protected string[] meta;
 
+    public static Dictionary<char, TYPE> typecodeMap = new Dictionary<char, TYPE>();
+
 
     public enum TYPE
     {
-        NONE, NOTE, HOLD, ZIGZAG, SENTINEL
+        NONE, NOTE, HOLD, ZIGZAG, SCATTER, SENTINEL
     }
 
     public Phrase()
@@ -66,6 +68,57 @@ public abstract class Phrase
         o += "Type: " + type + "\n";
 
         return o;
+    }
+
+
+
+    // --------------------------------------- EDIT BELOW 2 FUNCTIONS WHEN ADDING A NEW NOTE TYPE
+    public static void init()
+    {
+        // Build phrase lookup table
+        typecodeMap.Add('H', TYPE.HOLD);
+        typecodeMap.Add('Z', TYPE.ZIGZAG);
+        typecodeMap.Add('S', TYPE.SCATTER);
+    }
+
+    // Generates a phrase object given a universal list of parameters
+    public static Phrase staticCon(int lane_, string partition_, float beat_, int accent_, float wait_, string[] typeMeta, TYPE type_)
+    {
+        Phrase p = null;
+        switch (type_)
+        {
+            case TYPE.NONE:
+                p = new NonePhrase(beat_, wait_);
+                break;
+            case TYPE.NOTE:
+                p = new NotePhrase(lane_, partition_, beat_, accent_, wait_);
+                break;
+            case TYPE.HOLD:
+                p = new HoldPhrase(lane_, partition_, beat_, accent_, wait_, typeMeta);
+                break;
+            case TYPE.ZIGZAG:
+                p = new ZigzagPhrase(lane_, partition_, beat_, accent_, wait_, typeMeta);
+                break;
+            case TYPE.SCATTER:
+                p = new ScatterPhrase(lane_, partition_, beat_, accent_, wait_, typeMeta);
+                break;
+            default:
+                Debug.LogError("Illegal phrase type");
+                break;
+        }
+
+        return p;
+    }
+
+    // Returns the appropriate type for the given typecode
+    public static TYPE codeToType(string code)
+    {
+        if (code.Length == 1)
+        {
+            char c = code[0];
+            if (typecodeMap.ContainsKey(c)) return typecodeMap[c];
+        }
+        return TYPE.SENTINEL; // Inconclusive
     }
 
     // Metadata is force fed
@@ -152,11 +205,15 @@ public abstract class Phrase
             // Create a ghost phrase and rasterize that phrase instead
             NotePhrase ghost = (NotePhrase) staticCon(lane, partition, beat, accent, wait, null, TYPE.NOTE);
             ghost.rasterize(ms);
+
+            Debug.Log("Phrase ghosted");
+
             return;
         }
 
         // Short circuit if none type
         if (mutType == TYPE.NONE) return;
+
 
         // Limit accents
         int mutAccent = Mathf.Min(accent, ms.accentLim);
@@ -259,46 +316,6 @@ public abstract class Phrase
     public virtual float getBlockFrame()
     {
         return 0; // Doesn't advance blocking frame
-    }
-
-    // --------------------------------------- EDIT BELOW 2 FUNCTIONS WHEN ADDING A NEW NOTE TYPE
-    // Convert from typecode to type
-    public static TYPE codeToType(string code)
-    {
-        switch (code)
-        {
-            case "H":
-                return TYPE.HOLD;
-            case "Z":
-                return TYPE.ZIGZAG;
-        }
-
-        return TYPE.SENTINEL; // Inconclusive
-    }
-    // Generates a phrase object given a universal list of parameters
-    public static Phrase staticCon(int lane_, string partition_, float beat_, int accent_, float wait_, string[] typeMeta, TYPE type_)
-    {
-        Phrase p = null;
-        switch (type_)
-        {
-            case TYPE.NONE:
-                p = new NonePhrase(beat_, wait_);
-                break;
-            case TYPE.NOTE:
-                p = new NotePhrase(lane_, partition_, beat_, accent_, wait_);
-                break;
-            case TYPE.HOLD:
-                p = new HoldPhrase(lane_, partition_, beat_, accent_, wait_, typeMeta);
-                break;
-            case TYPE.ZIGZAG:
-                p = new ZigzagPhrase(lane_, partition_, beat_, accent_, wait_, typeMeta);
-                break;
-            default:
-                Debug.LogError("Illegal phrase type");
-                break;
-        }
-
-        return p;
     }
 
     // Writes meta contents to input field

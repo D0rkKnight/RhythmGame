@@ -45,7 +45,8 @@ public class BeatEditorSlot : MonoBehaviour, Clickable
                 rend.color = Color.white;
                 break;
             default:
-                Debug.LogError("Behavior not defined for note type: " + phrase.type);
+                rend.color = Color.cyan;
+                Debug.LogWarning("Behavior not defined for note type: " + phrase.type);
                 break;
         }
 
