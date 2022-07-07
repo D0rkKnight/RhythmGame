@@ -7,6 +7,8 @@ public class MusicPlayer : MonoBehaviour
 {
     public GameObject notePrefab;
     public GameObject holdPrefab;
+    public GameObject reboundPrefab;
+
     public NoteColumn[] columns;
     private float bpm = 60;
     public float BPM
@@ -454,7 +456,27 @@ public class MusicPlayer : MonoBehaviour
         nObj.hitTime = bTime;
 
         notes.Add(nObj);
-    } 
+    }
+
+
+// Working on this right now
+/*    public void spawnRebound(int lane, float beat, float holdLen)
+    {
+        if (!noteValid(lane, beat, -1))
+        {
+            Debug.LogWarning("Note spawn blocked at " + lane + ", " + beat);
+            return;
+        }
+
+        // Load in note
+        float bTime = beatInterval * beat;
+        Note nObj = Instantiate(reboundPrefab).GetComponent<Note>();
+        nObj.lane = columns[lane];
+        nObj.beat = beat;
+        nObj.hitTime = bTime;
+
+        notes.Add(nObj);
+    } */
 
     private void updateNote(Note note, List<Note> passed)
     {

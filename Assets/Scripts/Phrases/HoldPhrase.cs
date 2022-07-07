@@ -58,7 +58,6 @@ public class HoldPhrase : Phrase
         float tryRes;
         bool succ = float.TryParse(meta[0], out tryRes);
 
-        dur = 0;
         if (succ) dur = tryRes; // Write in data
     }
 
