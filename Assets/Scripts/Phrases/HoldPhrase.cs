@@ -6,16 +6,16 @@ using UnityEngine.UI;
 
 public class HoldPhrase : Phrase
 {
-    public float dur; // beats persisted
+    public float dur = 1.0f; // beats persisted
 
-    public HoldPhrase(int lane_, string partition_, float beat_, int accent_, float wait_, float dur_) : base(lane_, partition_, beat_, accent_, wait_, TYPE.HOLD)
+    public HoldPhrase(int lane_, string partition_, float beat_, int accent_, float wait_, string[] meta_) : 
+        base(lane_, partition_, beat_, accent_, wait_, TYPE.HOLD, meta_, 1)
     {
-        dur = dur_;
     }
 
     public override Phrase clone()
     {
-        return new HoldPhrase(lane, partition, beat, accent, wait, dur);
+        return new HoldPhrase(lane, partition, beat, accent, wait, (string[]) meta.Clone());
     }
     protected override bool genTypeBlock(out string res, List<string> meta)
     {
@@ -47,17 +47,22 @@ public class HoldPhrase : Phrase
     {
         base.writeMetaFields(fields);
 
-        fields[0].gameObject.SetActive(true);
         fields[0].placeholder.GetComponent<Text>().text = "Hold Dur";
-        fields[0].text = "" + dur; // Write in data
     }
 
-    public override void readMetaFields(List<InputField> fields)
+    public override void writeToMeta()
     {
-        base.readMetaFields(fields);
+        base.writeToMeta();
+
+        meta[0] = "" + dur;
+    }
+
+    public override void readFromMeta()
+    {
+        base.readFromMeta();
 
         float tryRes;
-        bool succ = float.TryParse(fields[0].text, out tryRes);
+        bool succ = float.TryParse(meta[0], out tryRes);
 
         dur = 0;
         if (succ) dur = tryRes; // Write in data

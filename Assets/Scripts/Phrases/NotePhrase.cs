@@ -1,7 +1,8 @@
 // Fields are stored in parent class for serialization
 public class NotePhrase : Phrase
 {
-    public NotePhrase(int lane_, string partition_, float beat_, int accent_, float wait_) : base(lane_, partition_, beat_, accent_, wait_, TYPE.NOTE)
+    public NotePhrase(int lane_, string partition_, float beat_, int accent_, float wait_) : 
+        base(lane_, partition_, beat_, accent_, wait_, TYPE.NOTE, null, 0)
     {
 
     }

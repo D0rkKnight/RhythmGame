@@ -3,5 +3,5 @@ track: track1uc.wav
 bpm: 100
 
 streamstart
-|Z(3,3,1,T)L1
-|Z(1,2,4,F)L1
+|<<Z(3,2,1,F)L1
+|Z(2,2,1,F)L1

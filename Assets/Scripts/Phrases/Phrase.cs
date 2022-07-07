@@ -16,11 +16,11 @@ public abstract class Phrase
     public TYPE type;
     public float wait; // beats until next phrase
 
-    // Zigzag values
-    public int leftLane;
-    public int rightLane;
-
     public bool active = true; // Whether this phrase is to be rasterized, or just a reference phrase
+
+    // Metadata
+    protected string[] meta;
+
 
     public enum TYPE
     {
@@ -34,7 +34,7 @@ public abstract class Phrase
         type = TYPE.NOTE;
     }
 
-    public Phrase(int lane_, string partition_, float beat_, int accent_, float wait_, TYPE type_)
+    public Phrase(int lane_, string partition_, float beat_, int accent_, float wait_, TYPE type_, string[] meta_, int _metaLen)
     {
         lane = lane_;
         partition = partition_;
@@ -42,6 +42,15 @@ public abstract class Phrase
         accent = accent_;
         type = type_;
         wait = wait_;
+        meta = meta_;
+
+        if (meta == null)
+        {
+            meta = new string[_metaLen]; // Void array
+            writeToMeta(); // Write field defaults into meta cache
+        }
+        else
+            readFromMeta(); // Read meta store into object fields
     }
 
     public abstract Phrase clone();
@@ -279,30 +288,10 @@ public abstract class Phrase
                 p = new NotePhrase(lane_, partition_, beat_, accent_, wait_);
                 break;
             case TYPE.HOLD:
-                float dur_ = 0;
-
-                if (typeMeta != null)
-                {
-                    dur_ = float.Parse(typeMeta[0]);
-                }
-
-                p = new HoldPhrase(lane_, partition_, beat_, accent_, wait_, dur_);
+                p = new HoldPhrase(lane_, partition_, beat_, accent_, wait_, typeMeta);
                 break;
             case TYPE.ZIGZAG:
-                dur_ = 0;
-                int width_ = 2;
-                float rate_ = 1;
-                bool recurse_ = false;
-
-                if (typeMeta != null)
-                {
-                    dur_ = float.Parse(typeMeta[0]);
-                    width_ = int.Parse(typeMeta[1]);
-                    rate_ = float.Parse(typeMeta[2]);
-                    recurse_ = typeMeta[3].Equals("T");
-                }
-
-                p = new ZigzagPhrase(lane_, partition_, beat_, accent_, wait_, dur_, width_, rate_, recurse_);
+                p = new ZigzagPhrase(lane_, partition_, beat_, accent_, wait_, typeMeta);
                 break;
             default:
                 Debug.LogError("Illegal phrase type");
@@ -315,20 +304,36 @@ public abstract class Phrase
     // Writes meta contents to input field
     public virtual void writeMetaFields(List<InputField> fields)
     {
+        writeToMeta(); // Reads object field values into meta cache
+
         // No fields
         foreach (InputField f in fields) f.gameObject.SetActive(false);
+
+        for (int i=0; i<meta.Length; i++)
+        {
+            fields[i].gameObject.SetActive(true);
+            fields[i].text = meta[i];
+        }
     }
 
+
     // Read meta contents to phrase
-    public virtual void readMetaFields(List<InputField> fields)
+    public void readMetaFields(List<InputField> fields)
     {
-        // Don't do anything by default
+        for (int i = 0; i < meta.Length; i++)
+            meta[i] = fields[i].text;
+
+        readFromMeta(); // Writes newly read inputfield values into object fields
     }
+
+    // Links meta store to real values
+    public virtual void writeToMeta() { }
+    public virtual void readFromMeta() { }
 }
 
 public class NonePhrase : Phrase
 {
-    public NonePhrase(float beat_, float wait_) : base(1, "L", beat_, 0, wait_, TYPE.NONE)
+    public NonePhrase(float beat_, float wait_) : base(1, "L", beat_, 0, wait_, TYPE.NONE, null, 0)
     {
 
     }
