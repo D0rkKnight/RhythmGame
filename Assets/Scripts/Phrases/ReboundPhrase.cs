@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 public class ReboundPhrase : Phrase
 {
-    float reboundDelta = 1.0f; // Distance of rebounded note
+    float reboundBeatDist = 1.0f; // Distance of rebounded note (in beats)
     int times = 1;
 
     public ReboundPhrase(int lane_, string partition_, float beat_, int accent_, float wait_, string[] typeMeta_) :
@@ -21,7 +21,12 @@ public class ReboundPhrase : Phrase
 
     public override Note instantiateNote(MusicPlayer mp)
     {
-        return Object.Instantiate(mp.notePrefab).GetComponent<Note>();
+        ReboundNote note = Object.Instantiate(mp.reboundPrefab).GetComponent<ReboundNote>();
+        note.reboundDelta = reboundBeatDist * mp.beatInterval;
+        note.rebounds = times;
+        note.reboundHeight = 3.0f;
+
+        return note;
     }
 
     public override float getBlockFrame()
@@ -32,10 +37,12 @@ public class ReboundPhrase : Phrase
     public override void spawn(MusicPlayer mp, int spawnLane, float spawnBeat, float blockFrame)
     {
         // Doubles up (depending on if rebounds are spawned as pairs or rebounders)
-        for (int i=0; i<times; i++)
+        /*for (int i=0; i<times; i++)
         {
             base.spawn(mp, spawnLane, spawnBeat + reboundDelta * i, blockFrame);
-        }
+        }*/
+
+        base.spawn(mp, spawnLane, spawnBeat, blockFrame);
     }
 
     public override void writeMetaFields(List<InputField> fields)
@@ -50,7 +57,7 @@ public class ReboundPhrase : Phrase
     {
         base.writeToMeta();
 
-        meta[0] = "" + reboundDelta;
+        meta[0] = "" + reboundBeatDist;
         meta[1] = "" + times;
     }
 
@@ -61,7 +68,7 @@ public class ReboundPhrase : Phrase
         float tryRes;
         bool succ = float.TryParse(meta[0], out tryRes);
 
-        if (succ) reboundDelta = tryRes;
+        if (succ) reboundBeatDist = tryRes;
 
 
         int tryInt;

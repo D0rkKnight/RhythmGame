@@ -166,7 +166,7 @@ public class MusicPlayer : MonoBehaviour
 
         foreach (Note note in notes)
         {
-            updateNote(note, passed);
+            note.updateNote(this, passed);
         }
 
         // Clean dead note buffer
@@ -204,8 +204,7 @@ public class MusicPlayer : MonoBehaviour
                     }
                     else // Kill if regular note
                     {
-                        if (streamNotes) hit(bestNote);
-                        else bestNote.dead = true;
+                        hit(bestNote);
                     }
 
                     // Check accuracy of hit
@@ -276,7 +275,7 @@ public class MusicPlayer : MonoBehaviour
         processPhraseQueue();
 
         // Draw notes
-        foreach (Note n in notes) updateNote(n, null);
+        foreach (Note n in notes) n.updateNote(this, null);
 
         // State transitions
         if (InputManager.checkKeyDown(pauseKey))
@@ -361,8 +360,16 @@ public class MusicPlayer : MonoBehaviour
 
     private void hit(Note note)
     {
-        notes.Remove(note);
-        note.hit();
+        note.hit(out bool remove);
+        if (remove) {
+            if (streamNotes)
+            {
+                notes.Remove(note);
+                note.kill();
+            }
+            else note.dead = true;
+        }
+
         note.lane.hitBurst();
 
         // Increment combo
@@ -372,7 +379,7 @@ public class MusicPlayer : MonoBehaviour
         HeatController.sing.Heat++;
     }
 
-    private void miss(Note note)
+    public void miss(Note note)
     {
         note.dead = true;
         Combo = 0;
@@ -419,89 +426,6 @@ public class MusicPlayer : MonoBehaviour
     public void addNote(Note n)
     {
         notes.Add(n);
-    }
-
-    public void spawnNote(int lane, float beat)
-    {
-        if (!noteValid(lane, beat, -1))
-        {
-            Debug.LogWarning("Note spawn blocked at " + lane + ", " + beat);
-            return;
-        }
-
-        // Load in note
-        float bTime = beatInterval * beat;
-        Note nObj = Instantiate(notePrefab).GetComponent<Note>();
-        nObj.lane = columns[lane];
-        nObj.beat = beat;
-        nObj.hitTime = bTime;
-
-        notes.Add(nObj);
-    }
-
-    public void spawnHold(int lane, float beat, float holdLen)
-    {
-        if (!noteValid(lane, beat, holdLen))
-        {
-            Debug.LogWarning("Note spawn blocked at " + lane + ", " + beat);
-            return;
-        }
-
-        float bTime = beatInterval * beat;
-
-        HoldNote nObj = Instantiate(holdPrefab).GetComponent<HoldNote>();
-
-        nObj.lane = columns[lane];
-        nObj.beat = beat;
-        nObj.hitTime = bTime;
-
-        notes.Add(nObj);
-    }
-
-
-// Working on this right now
-/*    public void spawnRebound(int lane, float beat, float holdLen)
-    {
-        if (!noteValid(lane, beat, -1))
-        {
-            Debug.LogWarning("Note spawn blocked at " + lane + ", " + beat);
-            return;
-        }
-
-        // Load in note
-        float bTime = beatInterval * beat;
-        Note nObj = Instantiate(reboundPrefab).GetComponent<Note>();
-        nObj.lane = columns[lane];
-        nObj.beat = beat;
-        nObj.hitTime = bTime;
-
-        notes.Add(nObj);
-    } */
-
-    private void updateNote(Note note, List<Note> passed)
-    {
-        GameObject col = note.lane.gameObject;
-        Vector2 tPos = col.transform.Find("TriggerBox").position;
-
-        float dt = note.hitTime - songTime;
-
-        Vector2 dp = -dir * dt * travelSpeed;
-        Vector2 p = tPos + dp;
-        note.transform.position = new Vector3(p.x, p.y, -1);
-
-        // Check if strictly unhittable
-        if (dt < -hitWindow && !note.dead)
-        {
-            miss(note);
-        }
-
-        // Sort into discard pile
-        if (passed != null)
-        {
-            float noteExtension = 0;
-            if (note is HoldNote) noteExtension += ((HoldNote)note).holdBeats * beatInterval;
-            if (dt < -(noteTimeout + noteExtension)) passed.Add(note);
-        }
     }
 
     private void processPhraseQueue()

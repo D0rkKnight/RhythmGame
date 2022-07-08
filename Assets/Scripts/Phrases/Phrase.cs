@@ -79,7 +79,7 @@ public abstract class Phrase
         typecodeMap.Add('H', TYPE.HOLD);
         typecodeMap.Add('Z', TYPE.ZIGZAG);
         typecodeMap.Add('S', TYPE.SCATTER);
-        typecodeMap.Add('R', TYPE.REBOUND);
+        typecodeMap.Add('X', TYPE.REBOUND);
     }
 
     // Generates a phrase object given a universal list of parameters

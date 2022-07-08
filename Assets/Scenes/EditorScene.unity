@@ -1728,7 +1728,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: R
+  m_Text: X
 --- !u!222 &631678606
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -2147,6 +2147,12 @@ PrefabInstance:
       propertyPath: streamNotes
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6973395804611573912, guid: 3e5a8fe67b687dc4b81f154ed99e82af,
+        type: 3}
+      propertyPath: reboundPrefab
+      value: 
+      objectReference: {fileID: 1813497413674491723, guid: c4fcec6be473cd44d8f9f43eb2cf5946,
+        type: 3}
     - target: {fileID: 6973395804611573912, guid: 3e5a8fe67b687dc4b81f154ed99e82af,
         type: 3}
       propertyPath: columns.Array.data[0]

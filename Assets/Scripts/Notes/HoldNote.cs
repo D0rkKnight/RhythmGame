@@ -13,4 +13,9 @@ public class HoldNote : Note
         Transform bg = transform.Find("HoldBar");
         bg.GetComponent<SpriteRenderer>().color = c;
     }
+
+    protected override float getNoteExtension(MusicPlayer mp)
+    {
+        return holdBeats * mp.beatInterval; ;
+    }
 }

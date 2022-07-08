@@ -56,7 +56,12 @@ public class Note : MonoBehaviour
         Destroy(gameObject);
     }
 
-    public void hit()
+    public virtual void hit(out bool remove)
+    {
+        remove = true;
+    }
+
+    public virtual void kill()
     {
         // Lock to column?
         transform.position = lane.gameObject.transform.position;
@@ -66,5 +71,37 @@ public class Note : MonoBehaviour
         killLerpTo = transform.position + Vector3.up * lerpDist;
 
         transform.Find("Trail").gameObject.SetActive(false); // Deactivate trail
+    }
+
+
+    public virtual void updateNote(MusicPlayer mp, List<Note> passed)
+    {
+        GameObject col = lane.gameObject;
+        Vector2 tPos = col.transform.Find("TriggerBox").position;
+
+        float dt = hitTime - mp.songTime;
+
+        Vector2 dp = -mp.dir * dt * mp.travelSpeed;
+        Vector2 p = tPos + dp;
+        transform.position = new Vector3(p.x, p.y, -1);
+
+        // Check if strictly unhittable
+        if (dt < -mp.hitWindow && !dead)
+        {
+            mp.miss(this);
+        }
+
+        // Sort into discard pile
+        if (passed != null)
+        {
+            float noteExtension = getNoteExtension(mp);
+
+            if (dt < -(mp.noteTimeout + noteExtension)) passed.Add(this);
+        }
+    }
+
+    protected virtual float getNoteExtension(MusicPlayer mp)
+    {
+        return 0;
     }
 }
