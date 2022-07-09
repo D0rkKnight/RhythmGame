@@ -25,8 +25,9 @@ public class NoteColumn : MonoBehaviour
             charTxt.GetComponent<TextMeshProUGUI>().SetText(key.ToString());
         }
     }
-    public NoteColumn reroute; // Whether to substitute input for other columns
+    public NoteColumn reroute;  // Whether to substitute input for other columns
 
+    public int defNoteReroute;     // Default column to reroute notes to
     private bool active = true;
     public bool Active
     {

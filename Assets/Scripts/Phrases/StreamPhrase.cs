@@ -63,6 +63,32 @@ public abstract class StreamPhrase : Phrase
     {
         int steps = (int) (dur * rate);
 
+        // Calculate actual width and spawnlane given the situation
+        // Shift bound first since the spawnLane ought to be valid
+        int wLane = spawnLane + width - 1;
+        wLane = Mathf.Clamp(wLane, 0, MapSerializer.sing.width-1);
+
+        while (!mp.columns[wLane].StreamOn && mp.columns[wLane].defNoteReroute >= 0)
+        {
+            Debug.Log("Rerouted");
+
+            // Figure out the column it's rerouting to
+            wLane = mp.columns[wLane].defNoteReroute;
+        }
+
+        int shiftedBy = wLane - (spawnLane + width);
+        spawnLane += shiftedBy;
+
+        // Shift the spawnLane to be valid too
+        spawnLane = Mathf.Clamp(spawnLane, 0, MapSerializer.sing.width-1);
+        while (!mp.columns[spawnLane].StreamOn && mp.columns[spawnLane].defNoteReroute >= 0)
+        {
+            // Figure out the column it's rerouting to
+            spawnLane = mp.columns[spawnLane].defNoteReroute;
+        }
+
+        Debug.Log("Spawn: " + spawnLane + ", end: " + wLane);
+
         int zzLane = spawnLane;
         float zzBeat = spawnBeat;
 
@@ -94,7 +120,7 @@ public abstract class StreamPhrase : Phrase
                 base.spawn(mp, zzLane, zzBeat, blockFrame);
             }
 
-            zzLane = streamNextLane(zzLane, mp, spawnLane, spawnBeat, blockFrame);
+            zzLane = streamNextLane(zzLane, mp, spawnLane, wLane, spawnBeat, blockFrame);
         }
 
         // Deactivate reference phrase if relevant
@@ -102,5 +128,5 @@ public abstract class StreamPhrase : Phrase
     }
 
     // Determine the next lane when streaming
-    public abstract int streamNextLane(int currLane, MusicPlayer mp, int spawnLane, float spawnBeat, float blockFrame);
+    public abstract int streamNextLane(int currLane, MusicPlayer mp, int spawnLane, int endLane, float spawnBeat, float blockFrame);
 }

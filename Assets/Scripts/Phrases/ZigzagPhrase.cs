@@ -21,13 +21,11 @@ public class ZigzagPhrase : StreamPhrase
         spawnDir = Mathf.RoundToInt(Mathf.Sign(width));
         base.spawn(mp, spawnLane, spawnBeat, blockFrame);
     }
-    public override int streamNextLane(int currLane, MusicPlayer mp, int spawnLane, float spawnBeat, float blockFrame)
+    public override int streamNextLane(int currLane, MusicPlayer mp, int spawnLane, int endLane, float spawnBeat, float blockFrame)
     {
-        int bound = spawnLane + width - 1;
-
         // Shift lane
         currLane += spawnDir;
-        if (currLane == spawnLane || currLane == bound) spawnDir *= -1; // Bounce at edges
+        if (currLane == spawnLane || currLane == endLane) spawnDir *= -1; // Bounce at edges
 
         return currLane;
     }
