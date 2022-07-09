@@ -288,10 +288,16 @@ public abstract class Phrase
     // Accepts generic arguments for mutability between phrase types
     public virtual void spawn(MusicPlayer mp, int spawnLane, float spawnBeat, float blockFrame)
     {
-        if (!mp.noteValid(spawnLane, spawnBeat, blockFrame))
+        if (!noteValid(mp, spawnLane, spawnBeat, blockFrame))
+        {
+            Debug.LogWarning("Illegal note spawn blocked at " + lane + ", " + beat);
+            return;
+        }
+
+        if (!checkNoteCollisions(mp, spawnLane, spawnBeat, blockFrame))
         {
             Debug.LogWarning("Note spawn blocked at " + lane + ", " + beat);
-            return;
+
         }
 
         // Update column blocking
@@ -307,6 +313,100 @@ public abstract class Phrase
 
         mp.addNote(nObj);
     }
+    public virtual bool noteValid(MusicPlayer mp, int lane, float beat, float blockDur)
+    {
+        NoteColumn col = mp.columns[lane];
+        if (!col.StreamOn)
+        {
+            Debug.LogWarning("Lane " + lane + " does not accept notes");
+            return false;
+        }
+
+        return true;
+    }
+
+    // Returns whether the given note is alive after checks
+    public virtual bool checkNoteCollisions(MusicPlayer mp, int lane, float beat, float blockDur)
+    {
+        // Check for note collisions
+        NoteColumn col = mp.columns[lane];
+
+        List<Note> collisions = new List<Note>();
+        foreach (Note n in mp.notes)
+        {
+            if (beat >= n.beat && beat <= n.beat + blockDur && col == n.lane)
+            {
+                collisions.Add(n);
+            }
+
+            if (n.beat == beat && n.lane == col)
+            {
+                collisions.Add(n);
+            }
+        }
+        if (collisions.Count > 0)
+        {
+            Debug.LogWarning("Spawning a note in a blocked segment: beat "
+                + beat + " when blocked til " + col.blockedTil);
+
+            bool alive = true;
+            foreach(Note n in collisions)
+            {
+                if (!tryReplaceNote(beat, n))
+                {
+                    alive = false;
+                    break;
+                }
+            }
+
+            // Now if still alive, clear out the MP and force the spawn
+            if (alive)
+            {
+                foreach (Note n in collisions)
+                {
+                    mp.notes.Remove(n);
+                    UnityEngine.Object.Destroy(n.gameObject);
+                }
+                return true;
+            } 
+            else
+            {
+                return false; // Not alive so don't instantiate the note
+            }
+        }
+
+        return true;
+    }
+
+    public bool tryReplaceNote(float beat, Note n)
+    {
+        // For now just pick the note that lands on the larger beat subdivision (8th > 16th)
+
+        // Get fractional component
+        float frac1 = beat - (float) Math.Truncate(beat);       // The note to be spawned
+        float frac2 = n.beat - (float)Math.Truncate(n.beat);    // The note being checked against
+
+        // Count the number of doublings required to get a whole number
+        float margin = 0.0001f;
+
+        int pow1 = 0;
+        while (frac1 - Math.Truncate(frac1) > margin)
+        {
+            frac1 *= 2;
+            pow1++;
+        }
+
+        int pow2 = 0;
+        while (frac2 - Math.Truncate(frac2) > margin)
+        {
+            frac2 *= 2;
+            pow2++;
+        }
+
+        if (pow1 > pow2) return true; // Means the tbspawned note is strictly on a larger subdivision
+        return false;
+    }
+
 
     public abstract Note instantiateNote(MusicPlayer mp);
 

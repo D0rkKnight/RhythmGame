@@ -446,42 +446,6 @@ public class MusicPlayer : MonoBehaviour
         dump.Clear();
     }
 
-    public bool noteValid(int lane, float beat, float blockDur)
-    {
-        if (lane < 0 || lane >= 4)
-        {
-            // Catch it
-            Debug.Log("Catch");
-        }
-
-        NoteColumn col = columns[lane];
-
-        foreach(Note n in notes)
-        {
-            if (beat >= n.beat && beat <= n.beat + blockDur && col == n.lane)
-            {
-                Debug.LogWarning("Spawning a note in a blocked segment: beat "
-                + beat + " when blocked til " + col.blockedTil);
-
-                return false;
-            }
-
-            if (n.beat == beat && n.lane == col)
-            {
-                Debug.LogWarning("Lane " + lane + " occupied by another note on same frame");
-                return false;
-            }
-        }
-
-        if (!col.StreamOn)
-        {
-            Debug.LogWarning("Lane " + lane + " does not accept notes");
-            return false;
-        }
-
-        return true;
-    }
-
     public float getCurrBeat() { return currBeat; }
 
     public void broadCastHitAcc(float delta)
