@@ -25,7 +25,6 @@ public class NoteColumn : MonoBehaviour
             charTxt.GetComponent<TextMeshProUGUI>().SetText(key.ToString());
         }
     }
-    public float blockedTil; // in beats
     public NoteColumn reroute; // Whether to substitute input for other columns
 
     private bool active = true;

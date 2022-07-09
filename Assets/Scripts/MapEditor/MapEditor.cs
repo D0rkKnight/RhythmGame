@@ -221,7 +221,6 @@ public class MapEditor : MonoBehaviour, Clickable
             // delete all existing notes and then requeue new phrases
             MusicPlayer.sing.clearNotes();
             MusicPlayer.sing.clearPhraseQueue();
-            MusicPlayer.sing.resetColumnBlocking();
 
             foreach (Phrase p in map.phrases) MusicPlayer.sing.enqueuePhrase(p);
         }

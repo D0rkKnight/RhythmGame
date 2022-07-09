@@ -323,19 +323,11 @@ public class MusicPlayer : MonoBehaviour
         pausedTotal = 0;
         scroll = 0;
 
-        // Clear col blocks
-        resetColumnBlocking();
-
         clearNotes();
         clearPhraseQueue();
 
         // Any audio we'd be playing would be illegal
         TrackPlayer.sing.audio.Stop();
-    }
-
-    public void resetColumnBlocking()
-    {
-        foreach (NoteColumn col in columns) col.blockedTil = 0;
     }
 
     public void clearNotes()

@@ -228,6 +228,7 @@ public abstract class Phrase
         int mutLane = lane - 1;
 
         // Given lane weights, calculate target lane
+        // This will always push the lane inwards
         int def = 0;
         switch (partition)
         {
@@ -300,14 +301,7 @@ public abstract class Phrase
 
         }
 
-        // Update column blocking
-        NoteColumn col = mp.columns[spawnLane];
-        if (blockFrame > 0)
-        {
-            // Update column blocking
-            col.blockedTil = Mathf.Max(col.blockedTil, beat + blockFrame);
-        }
-
+        // Spawn note
         Note nObj = instantiateNote(mp);
         configNote(mp, nObj, spawnLane, spawnBeat, blockFrame);
 
@@ -347,7 +341,7 @@ public abstract class Phrase
         if (collisions.Count > 0)
         {
             Debug.LogWarning("Spawning a note in a blocked segment: beat "
-                + beat + " when blocked til " + col.blockedTil);
+                + beat);
 
             bool alive = true;
             foreach(Note n in collisions)
