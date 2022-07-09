@@ -4,14 +4,14 @@ using UnityEngine;
 
 public class ZigzagPhrase : StreamPhrase
 {
-    public ZigzagPhrase(int lane_, string partition_, float beat_, int accent_, float wait_, string[] _meta) :
-    base(lane_, partition_, beat_, accent_, wait_, TYPE.ZIGZAG, _meta, 4)
+    public ZigzagPhrase(int lane_, float beat_, int accent_, float wait_, string[] _meta) :
+    base(lane_, beat_, accent_, wait_, TYPE.ZIGZAG, _meta, 4)
     {
     }
 
     public override Phrase clone()
     {
-        return new ZigzagPhrase(lane, partition, beat, accent, wait, (string[]) meta.Clone());
+        return new ZigzagPhrase(lane, beat, accent, wait, (string[]) meta.Clone());
     }
 
     int spawnDir; // Used during note generation

@@ -7,7 +7,6 @@ using UnityEngine.UI;
 [System.Serializable]
 public abstract class Phrase
 {
-    public string partition;
     public int lane;
     public int accent;
     public float beat; // Beat no. that the phrase spawns on.
@@ -36,10 +35,9 @@ public abstract class Phrase
         type = TYPE.NOTE;
     }
 
-    public Phrase(int lane_, string partition_, float beat_, int accent_, float wait_, TYPE type_, string[] meta_, int _metaLen)
+    public Phrase(int lane_, float beat_, int accent_, float wait_, TYPE type_, string[] meta_, int _metaLen)
     {
         lane = lane_;
-        partition = partition_;
         beat = beat_;
         accent = accent_;
         type = type_;
@@ -61,7 +59,6 @@ public abstract class Phrase
     {
         string o = "Phrase: ";
         o += "Lane: "+lane+"\n";
-        o += "Partition: " + partition + "\n";
         o += "Beat: " + beat + "\n";
         o += "Accent: " + accent + "\n";
         o += "Wait: " + wait + "\n";
@@ -83,7 +80,7 @@ public abstract class Phrase
     }
 
     // Generates a phrase object given a universal list of parameters
-    public static Phrase staticCon(int lane_, string partition_, float beat_, int accent_, float wait_, string[] typeMeta, TYPE type_)
+    public static Phrase staticCon(int lane_, float beat_, int accent_, float wait_, string[] typeMeta, TYPE type_)
     {
         Phrase p = null;
         switch (type_)
@@ -92,19 +89,19 @@ public abstract class Phrase
                 p = new NonePhrase(beat_, wait_);
                 break;
             case TYPE.NOTE:
-                p = new NotePhrase(lane_, partition_, beat_, accent_, wait_);
+                p = new NotePhrase(lane_, beat_, accent_, wait_);
                 break;
             case TYPE.HOLD:
-                p = new HoldPhrase(lane_, partition_, beat_, accent_, wait_, typeMeta);
+                p = new HoldPhrase(lane_, beat_, accent_, wait_, typeMeta);
                 break;
             case TYPE.ZIGZAG:
-                p = new ZigzagPhrase(lane_, partition_, beat_, accent_, wait_, typeMeta);
+                p = new ZigzagPhrase(lane_, beat_, accent_, wait_, typeMeta);
                 break;
             case TYPE.SCATTER:
-                p = new ScatterPhrase(lane_, partition_, beat_, accent_, wait_, typeMeta);
+                p = new ScatterPhrase(lane_, beat_, accent_, wait_, typeMeta);
                 break;
             case TYPE.REBOUND:
-                p = new ReboundPhrase(lane_, partition_, beat_, accent_, wait_, typeMeta);
+                p = new ReboundPhrase(lane_, beat_, accent_, wait_, typeMeta);
                 break;
             default:
                 Debug.LogError("Illegal phrase type");
@@ -184,8 +181,7 @@ public abstract class Phrase
             o += ')';
         }
 
-        o += partition;
-        o += lane;
+        if (type != TYPE.NONE) o += lane + 1;
         for (int i = 0; i < accent; i++)
             o += "~";
 
@@ -209,7 +205,7 @@ public abstract class Phrase
         if (!ms.genType[(int)type])
         {
             // Create a ghost phrase and rasterize that phrase instead
-            NotePhrase ghost = (NotePhrase) staticCon(lane, partition, beat, accent, wait, null, TYPE.NOTE);
+            NotePhrase ghost = (NotePhrase) staticCon(lane, beat, accent, wait, null, TYPE.NOTE);
             ghost.rasterize(ms);
 
             Debug.Log("Phrase ghosted");
@@ -225,12 +221,12 @@ public abstract class Phrase
         int mutAccent = Mathf.Min(accent, ms.accentLim);
 
         // Empty = no lane specifier, defaults to the left lane of the category
-        int mutLane = lane - 1;
+        int mutLane = lane;
 
         // Given lane weights, calculate target lane
         // This will always push the lane inwards
         int def = 0;
-        switch (partition)
+        /*switch (partition)
         {
             case "R":
                 mutLane += ms.rOff;
@@ -243,7 +239,7 @@ public abstract class Phrase
             default:
                 Debug.LogError("Lane marker " + partition + " not recognized");
                 break;
-        }
+        }*/
 
         // If lane isn't available, default to default lanes
         // Accents for example will stack up and block each other
@@ -450,7 +446,7 @@ public abstract class Phrase
 
 public class NonePhrase : Phrase
 {
-    public NonePhrase(float beat_, float wait_) : base(1, "L", beat_, 0, wait_, TYPE.NONE, null, 0)
+    public NonePhrase(float beat_, float wait_) : base(0, beat_, 0, wait_, TYPE.NONE, null, 0)
     {
 
     }

@@ -231,9 +231,20 @@ public partial class MapSerializer : MonoBehaviour
         // Write to note
         Phrase.TYPE type = Phrase.TYPE.NONE;
 
-        // If there is a partition, the type defaults to note
-        if (part.Length > 0) type = Phrase.TYPE.NOTE;
-        
+        // Calculate lane
+        int l = 0; 
+        if (lane.Length > 0)
+        {
+            l = int.Parse(lane) - 1;
+            if (type == Phrase.TYPE.NONE) type = Phrase.TYPE.NOTE; // Having a lane means this is a note
+        }
+        if (part.Length > 0)
+        {
+            if (part.Equals("R")) l += 2;
+        }
+
+        if (l >= 4 || l < 0) Debug.Log(l + ", " + tok);
+
         Phrase.TYPE codeOver = Phrase.codeToType(typeCode);
         if (codeOver != Phrase.TYPE.SENTINEL)
         {
@@ -241,10 +252,8 @@ public partial class MapSerializer : MonoBehaviour
         }
 
         float wait = getWait(beatCode);
-        int l = 1;
-        if (lane.Length > 0) l = int.Parse(lane);
 
-        Phrase p = Phrase.staticCon(l, part, readerBeat, accent, wait, typeMeta, type);
+        Phrase p = Phrase.staticCon(l, readerBeat, accent, wait, typeMeta, type);
 
         map.addPhrase(p);
         advanceBeat(wait);

@@ -19,14 +19,10 @@ public class MapEditor : MonoBehaviour, Clickable
 
     public static MapEditor sing;
 
-    public Phrase activePhrase = new NotePhrase(1, "L", 0, 0, 1);
+    public Phrase activePhrase = new NotePhrase(0, 0, 0, 1);
     public Phrase nonePhrase = new NonePhrase(0, 1);
-    public string ActivePartition // Unity buttons can interface with delegates
-    {
-        get { return activePhrase.partition; }
-        set { activePhrase.partition = value; }
-    }
-    public int ActiveCol
+
+    public int ActiveLane
     {
         get { return activePhrase.lane; }
         set { activePhrase.lane = value; }
