@@ -19,8 +19,21 @@ public abstract class Phrase
 
     // Metadata
     protected string[] meta;
+    public static List<TypeEntry> typeTable = new List<TypeEntry>();
+    public struct TypeEntry
+    {
+        public char charCode;
+        public TYPE type;
 
-    public static Dictionary<char, TYPE> typecodeMap = new Dictionary<char, TYPE>();
+        public Func<int, float, int, float, string[], Phrase> con;
+
+        public TypeEntry(char charCode_, TYPE type_, Func<int, float, int, float, string[], Phrase> con_)
+        {
+            charCode = charCode_;
+            type = type_;
+            con = con_;
+        }
+    }
 
 
     public enum TYPE
@@ -67,46 +80,63 @@ public abstract class Phrase
         return o;
     }
 
-
-
     // --------------------------------------- EDIT BELOW 2 FUNCTIONS WHEN ADDING A NEW NOTE TYPE
     public static void init()
     {
         // Build phrase lookup table
-        typecodeMap.Add('H', TYPE.HOLD);
-        typecodeMap.Add('Z', TYPE.ZIGZAG);
-        typecodeMap.Add('S', TYPE.SCATTER);
-        typecodeMap.Add('X', TYPE.REBOUND);
+        typeTable.Add(new TypeEntry('\0', TYPE.NONE,
+            (lane_, beat_, accent_, wait_, meta_) => {
+                return new NonePhrase(beat_, wait_);
+            }
+            ));
+
+        typeTable.Add(new TypeEntry('\0', TYPE.NOTE,
+            (lane_, beat_, accent_, wait_, meta_) => {
+                return new NotePhrase(lane_, beat_, accent_, wait_);
+            }
+            ));
+
+        typeTable.Add(new TypeEntry('H', TYPE.HOLD,
+            (lane_, beat_, accent_, wait_, meta_) => {
+                return new HoldPhrase(lane_, beat_, accent_, wait_, meta_);
+            }
+            ));
+
+        typeTable.Add(new TypeEntry('Z', TYPE.ZIGZAG,
+            (lane_, beat_, accent_, wait_, meta_) => {
+                return new ZigzagPhrase(lane_, beat_, accent_, wait_, meta_);
+            }
+            ));
+
+        typeTable.Add(new TypeEntry('S', TYPE.SCATTER,
+            (lane_, beat_, accent_, wait_, meta_) => {
+                return new ScatterPhrase(lane_, beat_, accent_, wait_, meta_);
+            }
+            ));
+
+        typeTable.Add(new TypeEntry('X', TYPE.REBOUND,
+            (lane_, beat_, accent_, wait_, meta_) => {
+                return new ReboundPhrase(lane_, beat_, accent_, wait_, meta_);
+            }
+            ));
     }
 
     // Generates a phrase object given a universal list of parameters
     public static Phrase staticCon(int lane_, float beat_, int accent_, float wait_, string[] typeMeta, TYPE type_)
     {
         Phrase p = null;
-        switch (type_)
+        
+        foreach (TypeEntry entry in typeTable)
         {
-            case TYPE.NONE:
-                p = new NonePhrase(beat_, wait_);
+            if (entry.type == type_)
+            {
+                p = entry.con(lane_, beat_, accent_, wait_, typeMeta);
                 break;
-            case TYPE.NOTE:
-                p = new NotePhrase(lane_, beat_, accent_, wait_);
-                break;
-            case TYPE.HOLD:
-                p = new HoldPhrase(lane_, beat_, accent_, wait_, typeMeta);
-                break;
-            case TYPE.ZIGZAG:
-                p = new ZigzagPhrase(lane_, beat_, accent_, wait_, typeMeta);
-                break;
-            case TYPE.SCATTER:
-                p = new ScatterPhrase(lane_, beat_, accent_, wait_, typeMeta);
-                break;
-            case TYPE.REBOUND:
-                p = new ReboundPhrase(lane_, beat_, accent_, wait_, typeMeta);
-                break;
-            default:
-                Debug.LogError("Illegal phrase type");
-                break;
+            }
         }
+
+        if (p == null)
+            Debug.LogError("Illegal phrase type");
 
         return p;
     }
@@ -117,7 +147,8 @@ public abstract class Phrase
         if (code.Length == 1)
         {
             char c = code[0];
-            if (typecodeMap.ContainsKey(c)) return typecodeMap[c];
+            foreach (TypeEntry entry in typeTable)
+                if (entry.charCode == c) return entry.type;
         }
         return TYPE.SENTINEL; // Inconclusive
     }
@@ -157,10 +188,10 @@ public abstract class Phrase
 
         // Look for type in typecode table
         string typeStr = "";
-        foreach (KeyValuePair<char, TYPE> pair in typecodeMap)
-            if (pair.Value == type)
+        foreach (TypeEntry entry in typeTable)
+            if (entry.type == type)
             {
-                typeStr = "" + pair.Key;
+                if (entry.charCode != '\0') typeStr = "" + entry.charCode;
                 break;
             }
 
@@ -226,20 +257,6 @@ public abstract class Phrase
         // Given lane weights, calculate target lane
         // This will always push the lane inwards
         int def = 0;
-        /*switch (partition)
-        {
-            case "R":
-                mutLane += ms.rOff;
-                def = ms.rDef;
-                break;
-            case "L":
-                mutLane += ms.lOff;
-                def = ms.lDef;
-                break;
-            default:
-                Debug.LogError("Lane marker " + partition + " not recognized");
-                break;
-        }*/
 
         // If lane isn't available, default to default lanes
         // Accents for example will stack up and block each other

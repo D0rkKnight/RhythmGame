@@ -62,8 +62,8 @@ public partial class MapSerializer : MonoBehaviour
         catPool.Add('L');
         catPool.Add('R');
 
-        foreach (char c in Phrase.typecodeMap.Keys)
-            typePool.Add(c);
+        foreach (Phrase.TypeEntry entry in Phrase.typeTable)
+            if (entry.charCode != '\0') typePool.Add(entry.charCode);
 
         for (char c = '0'; c <= '9'; c++) lanePool.Add(c);
 
@@ -252,6 +252,8 @@ public partial class MapSerializer : MonoBehaviour
         }
 
         float wait = getWait(beatCode);
+
+        Debug.Log(type);
 
         Phrase p = Phrase.staticCon(l, readerBeat, accent, wait, typeMeta, type);
 
