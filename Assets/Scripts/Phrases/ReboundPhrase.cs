@@ -24,7 +24,6 @@ public class ReboundPhrase : Phrase
         ReboundNote note = Object.Instantiate(mp.reboundPrefab).GetComponent<ReboundNote>();
         note.reboundDelta = reboundBeatDist * mp.beatInterval;
         note.rebounds = times;
-        note.reboundHeight = 3.0f;
 
         return note;
     }
