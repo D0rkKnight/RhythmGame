@@ -461,7 +461,7 @@ public class MusicPlayer : MonoBehaviour
 
     public int getReroute(int col)
     {
-        while (!columns[col].StreamOn)
+        while (!columns[col].StreamOn && columns[col].defNoteReroute >= 0)
             col = columns[col].defNoteReroute;
 
         return col;

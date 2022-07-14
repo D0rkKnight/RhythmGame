@@ -299,6 +299,8 @@ public abstract class Phrase
     // Accepts generic arguments for mutability between phrase types
     public virtual void spawn(MusicPlayer mp, int spawnLane, float spawnBeat, float blockFrame)
     {
+        Debug.Log(blockFrame);
+
         if (!noteValid(mp, spawnLane, spawnBeat, blockFrame))
         {
             Debug.LogWarning("Illegal note spawn blocked at " + lane + ", " + beat);
@@ -308,7 +310,7 @@ public abstract class Phrase
         if (!checkNoteCollisions(mp, spawnLane, spawnBeat, blockFrame))
         {
             Debug.LogWarning("Note spawn blocked at " + lane + ", " + beat);
-
+            return;
         }
 
         // Spawn note
@@ -330,33 +332,35 @@ public abstract class Phrase
     }
 
     // Returns whether the given note is alive after checks
-    public virtual bool checkNoteCollisions(MusicPlayer mp, int lane, float beat, float blockDur)
+    public virtual bool checkNoteCollisions(MusicPlayer mp, int lane_, float beat_, float blockDur_)
     {
         // Check for note collisions
-        NoteColumn col = mp.columns[lane];
+        NoteColumn col = mp.columns[lane_];
 
         List<Note> collisions = new List<Note>();
         foreach (Note n in mp.notes)
-        {
-            if (beat >= n.beat && beat <= n.beat + blockDur && col == n.lane)
+        {   
+            // Check opposing note's tail and head
+            if (n.beat+n.blockDur >= beat_ && n.beat <= beat_ + blockDur_ && col == n.lane)
             {
                 collisions.Add(n);
             }
 
-            if (n.beat == beat && n.lane == col)
+            if (n.beat == beat_ && n.lane == col)
             {
                 collisions.Add(n);
             }
         }
+
         if (collisions.Count > 0)
         {
             Debug.LogWarning("Spawning a note in a blocked segment: beat "
-                + beat);
+                + beat_);
 
             bool alive = true;
             foreach(Note n in collisions)
             {
-                if (!tryReplaceNote(beat, n))
+                if (!tryReplaceNote(beat_, n))
                 {
                     alive = false;
                     break;
@@ -384,7 +388,9 @@ public abstract class Phrase
 
     public bool tryReplaceNote(float beat, Note n)
     {
-        // For now just pick the note that lands on the larger beat subdivision (8th > 16th)
+        // Scoring:
+        // Pick the note that lands on the larger beat subdivision (8th > 16th)
+        // Also consider adjacency to other notes on other columns
 
         // Get fractional component
         float frac1 = beat - (float) Math.Truncate(beat);       // The note to be spawned
@@ -407,7 +413,7 @@ public abstract class Phrase
             pow2++;
         }
 
-        if (pow1 > pow2) return true; // Means the tbspawned note is strictly on a larger subdivision
+        if (pow1 >= pow2) return true; // Means the tbspawned note is on a larger or same sized subdivision
         return false;
     }
 
@@ -421,11 +427,12 @@ public abstract class Phrase
 
         float bTime = mp.beatInterval * spawnBeat;
         nObj.hitTime = bTime;
+        nObj.blockDur = blockFrame;
     }
 
     public virtual float getBlockFrame()
     {
-        return 0; // Doesn't advance blocking frame
+        return 0;
     }
 
     // Writes meta contents to input field

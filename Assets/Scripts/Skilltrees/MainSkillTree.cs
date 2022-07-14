@@ -12,14 +12,14 @@ public class MainSkillTree : SkillTree
     public class buttonPair
     {
         public NODE node;
-        public SkillButton btn;
+        public CustomButton btn;
         public NODE[] prereqs;
         public int cost = 100;
         public float heatReq = 0;
 
         private MainSkillTree owner;
 
-        public buttonPair(NODE node_, SkillButton btn_)
+        public buttonPair(NODE node_, CustomButton btn_)
         {
             node = node_;
             btn = btn_;
@@ -28,8 +28,6 @@ public class MainSkillTree : SkillTree
         public void init(MainSkillTree owner_)
         {
             owner = owner_;
-
-            Debug.Log(btn.btn);
             btn.btn.onClick.AddListener(onClick);
 
             // Set label text

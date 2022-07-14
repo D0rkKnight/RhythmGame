@@ -98,7 +98,7 @@ public abstract class StreamPhrase : Phrase
 
         if (myInd+1 >= mp.phraseQueue.Count) callRecurse = false; // Can't recure if there isn't a following phrase
 
-        // Zigzag pattern!
+        // Stream notes
         for(int i=0; i<steps; i++)
         {
             zzBeat += dur / steps;
@@ -128,4 +128,9 @@ public abstract class StreamPhrase : Phrase
 
     // Determine the next lane when streaming
     public abstract int streamNextLane(int currLane, MusicPlayer mp, int spawnLane, int endLane, float spawnBeat, float blockFrame);
+
+    public override float getBlockFrame()
+    {
+        return MapSerializer.sing.noteBlockLen;
+    }
 }

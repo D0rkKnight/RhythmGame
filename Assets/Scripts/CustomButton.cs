@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 [RequireComponent(typeof(Button))]
-public class SkillButton : MonoBehaviour
+public class CustomButton : MonoBehaviour
 {
 
     public Image bg;
