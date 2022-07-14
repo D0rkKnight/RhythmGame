@@ -80,7 +80,7 @@ public abstract class Phrase
         return o;
     }
 
-    // --------------------------------------- EDIT BELOW 2 FUNCTIONS WHEN ADDING A NEW NOTE TYPE
+    // --------------------------------------- EDIT BELOW FUNCTION WHEN ADDING A NEW NOTE TYPE
     public static void init()
     {
         // Build phrase lookup table

@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 using UnityEngine.UI;
+using System;
+using TMPro;
 
 public class MapEditor : MonoBehaviour, Clickable
 {
@@ -33,6 +35,8 @@ public class MapEditor : MonoBehaviour, Clickable
     public InputField audioFileField;
     public InputField BPMField;
     public InputField importField;
+    public TMP_Dropdown typeDropdown;
+
     public Text codeInd;
     public Transform phraseMarker;
 
@@ -82,6 +86,29 @@ public class MapEditor : MonoBehaviour, Clickable
 
         // Visual init
         updateMetaField();
+
+        // Assign types to type dropdown
+        typeDropdown.ClearOptions();
+        List<TMP_Dropdown.OptionData> options = new List<TMP_Dropdown.OptionData>();
+        foreach (Phrase.TypeEntry entry in Phrase.typeTable)
+        {
+            if (entry.type == Phrase.TYPE.NONE) continue;
+            options.Add(new TMP_Dropdown.OptionData(entry.type.ToString()));
+        }
+
+        typeDropdown.AddOptions(options);
+
+        // Submit event
+        typeDropdown.onValueChanged.AddListener((data) =>
+        {
+            System.Object newType;
+            string typeName = typeDropdown.options[data].text;
+            Enum.TryParse(typeof(Phrase.TYPE), typeName, out newType);
+
+            Phrase p = sing.activePhrase;
+            sing.activePhrase = Phrase.staticCon(p.lane, p.beat, p.accent, p.wait, null, (Phrase.TYPE) newType);
+            sing.updateMetaField();
+        });
     }
 
     private void Update()
