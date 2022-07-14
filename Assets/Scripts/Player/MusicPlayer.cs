@@ -458,4 +458,12 @@ public class MusicPlayer : MonoBehaviour
         }
 
     }
+
+    public int getReroute(int col)
+    {
+        while (!columns[col].StreamOn)
+            col = columns[col].defNoteReroute;
+
+        return col;
+    }
 }

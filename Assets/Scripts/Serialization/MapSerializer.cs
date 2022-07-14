@@ -253,8 +253,6 @@ public partial class MapSerializer : MonoBehaviour
 
         float wait = getWait(beatCode);
 
-        Debug.Log(type);
-
         Phrase p = Phrase.staticCon(l, readerBeat, accent, wait, typeMeta, type);
 
         map.addPhrase(p);

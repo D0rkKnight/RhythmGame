@@ -136,7 +136,7 @@ public abstract class Phrase
         }
 
         if (p == null)
-            Debug.LogError("Illegal phrase type");
+            Debug.LogWarning("Illegal phrase type "+type_);
 
         return p;
     }
@@ -256,15 +256,12 @@ public abstract class Phrase
 
         // Given lane weights, calculate target lane
         // This will always push the lane inwards
-        int def = 0;
 
-        // If lane isn't available, default to default lanes
-        // Accents for example will stack up and block each other
         NoteColumn[] columns = MusicPlayer.sing.columns;
 
         if (!columns[mutLane].StreamOn)
         {
-            mutLane = def;
+            mutLane = MusicPlayer.sing.getReroute(mutLane);
         }
 
         // Get block frame
