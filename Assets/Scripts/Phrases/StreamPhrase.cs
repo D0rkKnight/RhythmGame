@@ -65,7 +65,8 @@ public abstract class StreamPhrase : Phrase
 
         // Calculate actual width and spawnlane given the situation
         // Shift bound first since the spawnLane ought to be valid
-        int wLane = spawnLane + width - 1;
+        int orgWLane = spawnLane + width - (int)Mathf.Sign(width);
+        int wLane = orgWLane;
         wLane = Mathf.Clamp(wLane, 0, MapSerializer.sing.width-1);
 
         while (!mp.columns[wLane].StreamOn && mp.columns[wLane].defNoteReroute >= 0)
@@ -76,7 +77,7 @@ public abstract class StreamPhrase : Phrase
             wLane = mp.columns[wLane].defNoteReroute;
         }
 
-        int shiftedBy = wLane - (spawnLane + width);
+        int shiftedBy = wLane - orgWLane;
         spawnLane += shiftedBy;
 
         // Shift the spawnLane to be valid too
@@ -87,7 +88,7 @@ public abstract class StreamPhrase : Phrase
             spawnLane = mp.columns[spawnLane].defNoteReroute;
         }
 
-        Debug.Log("Spawn: " + spawnLane + ", end: " + wLane);
+        Debug.Log("Spawn: " + spawnLane + ", end: " + wLane + ", shifted by: " + shiftedBy);
 
         int zzLane = spawnLane;
         float zzBeat = spawnBeat;

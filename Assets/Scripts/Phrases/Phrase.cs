@@ -299,8 +299,6 @@ public abstract class Phrase
     // Accepts generic arguments for mutability between phrase types
     public virtual void spawn(MusicPlayer mp, int spawnLane, float spawnBeat, float blockFrame)
     {
-        Debug.Log(blockFrame);
-
         if (!noteValid(mp, spawnLane, spawnBeat, blockFrame))
         {
             Debug.LogWarning("Illegal note spawn blocked at " + lane + ", " + beat);

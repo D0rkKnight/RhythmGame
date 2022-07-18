@@ -23,6 +23,9 @@ public class ZigzagPhrase : StreamPhrase
     }
     public override int streamNextLane(int currLane, MusicPlayer mp, int spawnLane, int endLane, float spawnBeat, float blockFrame)
     {
+        // If 1 column case, don't move anything
+        if (spawnLane == endLane) return currLane;
+
         // Shift lane
         currLane += spawnDir;
         if (currLane == spawnLane || currLane == endLane) spawnDir *= -1; // Bounce at edges
