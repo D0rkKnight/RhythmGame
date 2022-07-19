@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+// 0 means block cast, 1 means pass cast to lower layers
 public class InputManager : MonoBehaviour
 {
     public bool focusedInField;

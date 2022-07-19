@@ -8,14 +8,14 @@ public class HoldPhrase : Phrase
 {
     public float dur = 1.0f; // beats persisted
 
-    public HoldPhrase(int lane_, float beat_, int accent_, float wait_, string[] meta_) : 
-        base(lane_, beat_, accent_, wait_, TYPE.HOLD, meta_, 1)
+    public HoldPhrase(int lane_, float beat_, int accent_, string[] meta_) : 
+        base(lane_, beat_, accent_, TYPE.HOLD, meta_, 1)
     {
     }
 
     public override Phrase clone()
     {
-        return new HoldPhrase(lane, beat, accent, wait, (string[]) meta.Clone());
+        return new HoldPhrase(lane, beat, accent, (string[]) meta.Clone());
     }
 
     public override Note instantiateNote(MusicPlayer mp)

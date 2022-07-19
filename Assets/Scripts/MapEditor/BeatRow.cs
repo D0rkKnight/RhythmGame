@@ -19,17 +19,14 @@ public class BeatRow : MonoBehaviour
             slots.Add(b);
     }
 
-    public void setData(int rowNum_)
+    public void setPhrase(Phrase p)
     {
-        rowNum = rowNum_;
-        txt.text = ""+rowNum_;
+        slots[0].setPhrase(p);
     }
 
     internal string serialize()
     {
         string o = "";
-
-        o += "|";
 
         // Add row data
         for (int i=0; i<slots.Count; i++)
@@ -45,6 +42,6 @@ public class BeatRow : MonoBehaviour
 
     public void removeSelf()
     {
-        MapEditor.sing.removeBeatRow(this);
+        MapEditor.sing.removePhraseEntry(this);
     }
 }

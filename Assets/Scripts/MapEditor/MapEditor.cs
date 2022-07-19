@@ -6,23 +6,14 @@ using UnityEngine.UI;
 using System;
 using TMPro;
 
-public class MapEditor : MonoBehaviour, Clickable
+public class MapEditor : MonoBehaviour
 {
-    public GameObject rowPrefab;
-    public Transform rowOrigin;
-    public Transform rowLimit;
-    public int lastActiveRow = 0;
-
-    [SerializeField]
-    private List<BeatRow> beatRows;
-
-    public float rowAdvance = 1.1f;
-    public float scroll = 0f;
 
     public static MapEditor sing;
 
-    public Phrase activePhrase = new NotePhrase(0, 0, 0, 1);
-    public Phrase nonePhrase = new NonePhrase(0, 1);
+    public Phrase activePhrase = new NotePhrase(0, 0, 0);
+    public Phrase nonePhrase = new NonePhrase(0);
+    public List<BeatRow> phraseEntries = new List<BeatRow>();
 
     public int ActiveLane
     {
@@ -36,6 +27,7 @@ public class MapEditor : MonoBehaviour, Clickable
     public InputField BPMField;
     public InputField importField;
     public TMP_Dropdown typeDropdown;
+    public BeatField beatInput;
 
     public Text codeInd;
     public Transform phraseMarker;
@@ -55,14 +47,16 @@ public class MapEditor : MonoBehaviour, Clickable
     public GameObject addPhraseEle;
     public int addPhraseIndex = 0;
 
+    public PhraseWorkspace workspace;
+
     // Start is called before the first frame update
     void Awake()
     {
         if (sing != null) Debug.LogError("Singleton broken");
         sing = this;
 
-        beatRows = new List<BeatRow>();
         phraseMarker = transform.Find("Canvas/PhraseMarker");
+        workspace = transform.Find("PhraseWorkspace").GetComponent<PhraseWorkspace>();
 
         // Create meta fields
         metaFields = new List<InputField>();
@@ -73,8 +67,6 @@ public class MapEditor : MonoBehaviour, Clickable
             field.position = metaFieldAnchor.position + Vector3.down * 1 * i;
             metaFields.Add(field.GetComponent<InputField>());
         }
-
-        genRows();
     }
 
     private void Start()
@@ -106,7 +98,7 @@ public class MapEditor : MonoBehaviour, Clickable
             Enum.TryParse(typeof(Phrase.TYPE), typeName, out newType);
 
             Phrase p = sing.activePhrase;
-            sing.activePhrase = Phrase.staticCon(p.lane, p.beat, p.accent, p.wait, null, (Phrase.TYPE) newType);
+            sing.activePhrase = Phrase.staticCon(p.lane, p.beat, p.accent, null, (Phrase.TYPE) newType);
             sing.updateMetaField();
         });
     }
@@ -116,21 +108,6 @@ public class MapEditor : MonoBehaviour, Clickable
         // Display active phrase
         if (activePhrase != null) 
             codeInd.text = activePhrase.serialize();
-
-        // Show where the song is at on the phrase list
-        float currBeat = MusicPlayer.sing.getCurrBeat();
-        int markerIndex = -1;
-        for (int i=0; i<beatRows.Count-1; i++)
-        {
-            if (beatRows[i].slots[0].phrase.beat < currBeat &&
-                beatRows[i+1].slots[0].phrase.beat > currBeat) {
-
-                markerIndex = i;
-                break;
-            }
-        }
-        phraseMarker.position = rowOrigin.transform.position + 
-            Vector3.down * (-scroll + rowAdvance * (markerIndex+0.5f)) + Vector3.left * 0.8f;
 
         // Process edits
         Map image = null;
@@ -153,62 +130,9 @@ public class MapEditor : MonoBehaviour, Clickable
         // Check for undo input
         if (Input.GetKeyDown(KeyCode.Z) /*&& Input.GetKey(KeyCode.LeftControl)*/) undo();
 
-        // Move add phrase button
-        Vector2 mPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        float mY = mPos.y;
-        for (int i=0; i<beatRows.Count-1; i++)
-        {
-            float bY1 = beatRows[i].transform.position.y;
-            float bY2 = beatRows[i+1].transform.position.y;
-
-            if (mY < bY1 && mY > bY2)
-            {
-                addPhraseIndex = i;
-                break;
-            }
-        }
-
-        // snap add button to inbetween
-        float y1 = beatRows[addPhraseIndex].transform.position.y;
-        float y2 = beatRows[addPhraseIndex+1].transform.position.y;
-
-        addPhraseEle.transform.position = new Vector3(addPhraseEle.transform.position.x,
-            (y1 + y2) / 2, addPhraseEle.transform.position.z);
-
-
-        // Write field data to phrase
+        // Write field data and timestamp to phrase
+        activePhrase.beat = beatInput.beat;
         activePhrase.readMetaFields(metaFields);
-
-        genRows();
-    }
-
-    private void genRows()
-    {
-        genRows(-1);
-    }
-    private void genRows(int force)
-    {
-        while ((force > 0 && beatRows.Count < force) ||
-            beatRows.Count == 0 || 
-            beatRows[beatRows.Count - 1].transform.position.y > rowLimit.position.y)
-        {
-            BeatRow row = Instantiate(rowPrefab, rowOrigin, false).GetComponent<BeatRow>();
-            row.setData(beatRows.Count+1);
-
-            beatRows.Add(row);
-            updateBeatRows();
-        }
-    }
-
-    private void updateBeatRows()
-    {
-        for (int i=0; i< beatRows.Count; i++)
-        {
-            BeatRow r = beatRows[i];
-
-            r.transform.position = rowOrigin.transform.position + 
-                Vector3.down * (-scroll + i * rowAdvance);
-        }
     }
 
     public void play()
@@ -223,7 +147,6 @@ public class MapEditor : MonoBehaviour, Clickable
 
     public Map onEdit()
     {
-        timestamp();
         Map image = hotswap();
         return image;
     }
@@ -295,9 +218,10 @@ public class MapEditor : MonoBehaviour, Clickable
 
         data.Add("\nstreamstart");
 
-        for (int i = 0; i < lastActiveRow; i++)
+        // TODO
+        foreach(BeatRow br in phraseEntries)
         {
-            data.Add(beatRows[i].serialize());
+            data.Add(br.serialize());
         }
 
         return data;
@@ -305,24 +229,21 @@ public class MapEditor : MonoBehaviour, Clickable
 
     public void clear()
     {
-        foreach (BeatRow br in beatRows)
+        foreach (BeatRow br in phraseEntries)
         {
             Destroy(br.gameObject);
         }
-        beatRows.Clear();
-        lastActiveRow = 0;
+        phraseEntries.Clear();
     }
 
     public void import(Map map)
     {
         clear(); // Clean slate
-        genRows(map.phrases.Count); // Get enough rows to contain every element
 
-        // Phrases are linearly laid out
+        // Import to phrase entries
         for (int i = 0; i < map.phrases.Count; i++)
         {
-            // Hackity hack
-            beatRows[i].slots[0].setPhrase(map.phrases[i]);
+            workspace.addPhraseEntry(map.phrases[i].clone());
         }
 
         songTitleField.text = map.name;
@@ -355,39 +276,18 @@ public class MapEditor : MonoBehaviour, Clickable
         imageQueued = false;
     }
 
+    public void createPhraseEntry(float beat)
+    {
+
+    }
+    public void removePhraseEntry(BeatRow entry)
+    {
+        phraseEntries.Remove(entry);
+        Destroy(entry.gameObject);
+    }
+
     private void updateVisuals()
     {
-        beatIndicator.text = activePhrase.wait.ToString();
-    }
-
-    public void beatDurPow(int pow)
-    {
-        float tmp = activePhrase.wait;
-
-        while (pow > 0)
-        {
-            tmp *= 2;
-            pow--;
-        }
-
-        while (pow < 0)
-        {
-            tmp /= 2;
-            pow++;
-        }
-
-        // Set some reasonable bounds to avoid rounding errors and overflow
-        if (beatInBounds(tmp)) activePhrase.wait = tmp;
-
-        updateVisuals();
-    }
-
-    public void beatDurAdd(float amt)
-    {
-        float tmp = activePhrase.wait + amt;
-        if (beatInBounds(tmp)) activePhrase.wait = tmp;
-
-        updateVisuals();
     }
 
     private bool beatInBounds(float amt)
@@ -396,73 +296,9 @@ public class MapEditor : MonoBehaviour, Clickable
         return false;
     }
 
-    public void resetBeatDur() { activePhrase.wait = 1; updateVisuals(); }
-    int Clickable.onClick(int code)
-    {
-        return 1;
-    }
-
     public void addAccent(int amt)
     {
         activePhrase.accent = Mathf.Max(0, activePhrase.accent + amt);
-    }
-
-    int Clickable.onOver()
-    {
-        scroll -= Input.mouseScrollDelta.y;
-        scroll = Mathf.Max(0, scroll);
-
-        updateBeatRows();
-        return 1;
-    }
-
-    // TODO: Use this to timestamp serializer phrases too
-    private void timestamp()
-    {
-        // Timestamp phrases (very simple algorithm)
-        float currBeat = 0;
-        for (int i = 0; i < beatRows.Count; i++)
-        {
-            Phrase p = beatRows[i].slots[0].phrase;
-            p.beat = currBeat;
-
-            // Advance beat
-            currBeat += p.wait;
-        }
-    }
-
-    public void insertPhraseAtMarker()
-    {
-        BeatRow row = Instantiate(rowPrefab, rowOrigin, false).GetComponent<BeatRow>();
-
-        // Reset row data
-        beatRows.Insert(addPhraseIndex+1, row);
-
-        for (int i=0; i<beatRows.Count; i++)
-            beatRows[i].setData(i + 1);
-
-        updateBeatRows();
-
-        // Push onto undo stack
-        sing.edited = true;
-        sing.imageQueued = true;
-    }
-
-    public void removeBeatRow(BeatRow caller)
-    {
-        Destroy(caller.gameObject);
-        beatRows.Remove(caller);
-
-        lastActiveRow--;
-
-        for (int i = 0; i < beatRows.Count; i++)
-            beatRows[i].setData(i + 1);
-
-        updateBeatRows();
-
-        // Push onto undo stack
-        sing.edited = true;
-        sing.imageQueued = true;
     }
 
     public void updateMetaField()

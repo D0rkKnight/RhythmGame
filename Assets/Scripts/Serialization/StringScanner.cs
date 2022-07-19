@@ -29,12 +29,23 @@ class StringScanner
 
     public string[] getMeta()
     {
+        string segment = getEnclosed('(', ')');
+
+        string[] meta = segment.Split(',');
+        for (int i = 0; i < meta.Length; i++) 
+            meta[i] = meta[i].Trim();
+
+        return meta;
+    }
+
+    public string getEnclosed(char start, char end)
+    {
         string segment = "";
         // Look for meta start symbol
-        if (ptr < str.Length && str[ptr] == '(')
+        if (ptr < str.Length && str[ptr] == start)
         {
             ptr++;
-            while (ptr < str.Length && str[ptr] != ')')
+            while (ptr < str.Length && str[ptr] != end)
             {
                 segment += str[ptr];
                 ptr++;
@@ -43,10 +54,11 @@ class StringScanner
             ptr++;
         }
 
-        string[] meta = segment.Split(',');
-        for (int i = 0; i < meta.Length; i++) 
-            meta[i] = meta[i].Trim();
+        return segment;
+    }
 
-        return meta;
+    public char peekChar()
+    {
+        return str[ptr];
     }
 }

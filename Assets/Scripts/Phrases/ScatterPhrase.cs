@@ -5,14 +5,14 @@ using System.Runtime;
 
 public class ScatterPhrase : StreamPhrase
 {
-    public ScatterPhrase(int lane_, float beat_, int accent_, float wait_, string[] _meta) :
-    base(lane_, beat_, accent_, wait_, TYPE.SCATTER, _meta, 4)
+    public ScatterPhrase(int lane_, float beat_, int accent_, string[] _meta) :
+    base(lane_, beat_, accent_, TYPE.SCATTER, _meta, 4)
     {
     }
 
     public override Phrase clone()
     {
-        return new ScatterPhrase(lane, beat, accent, wait, (string[])meta.Clone());
+        return new ScatterPhrase(lane, beat, accent, (string[])meta.Clone());
     }
 
     System.Random rnd;

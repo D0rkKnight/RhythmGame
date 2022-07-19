@@ -13,7 +13,6 @@ public abstract class Phrase
                        // Used in music player and in map editor but is regenerated every read/write cycle
 
     public TYPE type;
-    public float wait; // beats until next phrase
 
     public bool active = true; // Whether this phrase is to be rasterized, or just a reference phrase
 
@@ -25,9 +24,9 @@ public abstract class Phrase
         public char charCode;
         public TYPE type;
 
-        public Func<int, float, int, float, string[], Phrase> con;
+        public Func<int, float, int, string[], Phrase> con;
 
-        public TypeEntry(char charCode_, TYPE type_, Func<int, float, int, float, string[], Phrase> con_)
+        public TypeEntry(char charCode_, TYPE type_, Func<int, float, int, string[], Phrase> con_)
         {
             charCode = charCode_;
             type = type_;
@@ -48,13 +47,12 @@ public abstract class Phrase
         type = TYPE.NOTE;
     }
 
-    public Phrase(int lane_, float beat_, int accent_, float wait_, TYPE type_, string[] meta_, int _metaLen)
+    public Phrase(int lane_, float beat_, int accent_, TYPE type_, string[] meta_, int _metaLen)
     {
         lane = lane_;
         beat = beat_;
         accent = accent_;
         type = type_;
-        wait = wait_;
         meta = meta_;
 
         if (meta == null)
@@ -74,7 +72,6 @@ public abstract class Phrase
         o += "Lane: "+lane+"\n";
         o += "Beat: " + beat + "\n";
         o += "Accent: " + accent + "\n";
-        o += "Wait: " + wait + "\n";
         o += "Type: " + type + "\n";
 
         return o;
@@ -85,44 +82,44 @@ public abstract class Phrase
     {
         // Build phrase lookup table
         typeTable.Add(new TypeEntry('\0', TYPE.NONE,
-            (lane_, beat_, accent_, wait_, meta_) => {
-                return new NonePhrase(beat_, wait_);
+            (lane_, beat_, accent_, meta_) => {
+                return new NonePhrase(beat_);
             }
             ));
 
         typeTable.Add(new TypeEntry('\0', TYPE.NOTE,
-            (lane_, beat_, accent_, wait_, meta_) => {
-                return new NotePhrase(lane_, beat_, accent_, wait_);
+            (lane_, beat_, accent_, meta_) => {
+                return new NotePhrase(lane_, beat_, accent_);
             }
             ));
 
         typeTable.Add(new TypeEntry('H', TYPE.HOLD,
-            (lane_, beat_, accent_, wait_, meta_) => {
-                return new HoldPhrase(lane_, beat_, accent_, wait_, meta_);
+            (lane_, beat_, accent_, meta_) => {
+                return new HoldPhrase(lane_, beat_, accent_, meta_);
             }
             ));
 
         typeTable.Add(new TypeEntry('Z', TYPE.ZIGZAG,
-            (lane_, beat_, accent_, wait_, meta_) => {
-                return new ZigzagPhrase(lane_, beat_, accent_, wait_, meta_);
+            (lane_, beat_, accent_, meta_) => {
+                return new ZigzagPhrase(lane_, beat_, accent_, meta_);
             }
             ));
 
         typeTable.Add(new TypeEntry('S', TYPE.SCATTER,
-            (lane_, beat_, accent_, wait_, meta_) => {
-                return new ScatterPhrase(lane_, beat_, accent_, wait_, meta_);
+            (lane_, beat_, accent_, meta_) => {
+                return new ScatterPhrase(lane_, beat_, accent_, meta_);
             }
             ));
 
         typeTable.Add(new TypeEntry('X', TYPE.REBOUND,
-            (lane_, beat_, accent_, wait_, meta_) => {
-                return new ReboundPhrase(lane_, beat_, accent_, wait_, meta_);
+            (lane_, beat_, accent_, meta_) => {
+                return new ReboundPhrase(lane_, beat_, accent_, meta_);
             }
             ));
     }
 
     // Generates a phrase object given a universal list of parameters
-    public static Phrase staticCon(int lane_, float beat_, int accent_, float wait_, string[] typeMeta, TYPE type_)
+    public static Phrase staticCon(int lane_, float beat_, int accent_, string[] typeMeta, TYPE type_)
     {
         Phrase p = null;
         
@@ -130,7 +127,7 @@ public abstract class Phrase
         {
             if (entry.type == type_)
             {
-                p = entry.con(lane_, beat_, accent_, wait_, typeMeta);
+                p = entry.con(lane_, beat_, accent_, typeMeta);
                 break;
             }
         }
@@ -158,31 +155,8 @@ public abstract class Phrase
     {
         string o = "";
 
-        // Rhythm
-        float wait_ = wait;
-        if (wait_ > 0)
-        {
-            while (wait_ < 1 || wait_ - Mathf.Floor(wait_) != 0)
-            {
-                o = ">" + o; // Means the note is fast
-                wait_ *= 2;
-            }
-
-            // Working with effectively integer value now
-            while (wait_ > 1)
-            {
-                if (wait_ % 2 == 0)
-                {
-                    o = "<" + o;
-                    wait_ /= 2;
-                }
-                else
-                {
-                    o = "|" + o;
-                    wait_--;
-                }
-            }
-        }
+        // Rhythm (use timestamp)
+        o += "[" + beat + "]";
 
         if (type == TYPE.NONE) return o; // None phrases hold only rhythm data
 
@@ -236,7 +210,7 @@ public abstract class Phrase
         if (!ms.genType[(int)type])
         {
             // Create a ghost phrase and rasterize that phrase instead
-            NotePhrase ghost = (NotePhrase) staticCon(lane, beat, accent, wait, null, TYPE.NOTE);
+            NotePhrase ghost = (NotePhrase) staticCon(lane, beat, accent, null, TYPE.NOTE);
             ghost.rasterize(ms);
 
             Debug.Log("Phrase ghosted");
@@ -465,14 +439,14 @@ public abstract class Phrase
 
 public class NonePhrase : Phrase
 {
-    public NonePhrase(float beat_, float wait_) : base(0, beat_, 0, wait_, TYPE.NONE, null, 0)
+    public NonePhrase(float beat_) : base(0, beat_, 0, TYPE.NONE, null, 0)
     {
 
     }
 
     public override Phrase clone()
     {
-        return new NonePhrase(beat, wait);
+        return new NonePhrase(beat);
     }
 
     public override Note instantiateNote(MusicPlayer mp)

@@ -22,7 +22,6 @@ public partial class MapSerializer : MonoBehaviour
     List<char> accentPool;
     List<char> beatPool;
 
-    float readerBeat = 0;
     MusicPlayer mPlay;
 
     public int lOff = 0;
@@ -119,7 +118,6 @@ public partial class MapSerializer : MonoBehaviour
         ParseState state = ParseState.HEADER;
 
         Map map = new Map();
-        resetBeat();
 
         foreach (string tok in tokens)
         {
@@ -218,7 +216,9 @@ public partial class MapSerializer : MonoBehaviour
         StringScanner scanner = new StringScanner(tok);
 
         // Single note reader
-        string beatCode = scanner.getSegment(beatPool);
+
+        // Check first char to see if it is a beat advance or a timestamp
+        string timestamp = scanner.getEnclosed('[', ']');
         string typeCode = scanner.getSegment(typePool);
 
         string[] typeMeta = null;
@@ -251,12 +251,10 @@ public partial class MapSerializer : MonoBehaviour
             type = codeOver;
         }
 
-        float wait = getWait(beatCode);
-
-        Phrase p = Phrase.staticCon(l, readerBeat, accent, wait, typeMeta, type);
+        float beat = float.Parse(timestamp);
+        Phrase p = Phrase.staticCon(l, beat, accent, typeMeta, type);
 
         map.addPhrase(p);
-        advanceBeat(wait);
 
         return ParseState.STREAM; // Persist state
     }
@@ -289,15 +287,5 @@ public partial class MapSerializer : MonoBehaviour
         }
 
         return b;
-    }
-
-    void advanceBeat(float amt)
-    {
-        readerBeat += amt;
-    }
-
-    void resetBeat()
-    {
-        readerBeat = 0;
     }
 }

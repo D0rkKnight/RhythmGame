@@ -19,7 +19,7 @@ public class BeatEditorSlot : MonoBehaviour, Clickable
         rend = bg.GetComponent<SpriteRenderer>();
         parent = transform.parent.GetComponent<BeatRow>();
 
-        phrase = new NonePhrase(0, 1); // Random null phrase
+        phrase = new NonePhrase(0); // Random null phrase
         updateGraphics();
 
     }
@@ -62,32 +62,12 @@ public class BeatEditorSlot : MonoBehaviour, Clickable
     public void setPhrase(Phrase p)
     {
         phrase = p;
-        
-        if (phrase != null && phrase.type != Phrase.TYPE.NONE && 
-            parent.rowNum > MapEditor.sing.lastActiveRow)
-            MapEditor.sing.lastActiveRow = parent.rowNum;
 
         updateGraphics();
 
         // Field has been edited
         MapEditor.sing.edited = true;
         MapEditor.sing.imageQueued = true;
-    }
-
-    int Clickable.onClick(int code)
-    {
-        switch (code) {
-            case 0:
-                setPhrase(MapEditor.sing.activePhrase.clone());
-                break;
-            case 1:
-                Phrase p = MapEditor.sing.activePhrase.clone();
-                p.type = Phrase.TYPE.NONE;
-                setPhrase(p);
-                break;
-        }
-
-        return 1;
     }
 
     int Clickable.onOver()
@@ -100,5 +80,10 @@ public class BeatEditorSlot : MonoBehaviour, Clickable
         }
 
         return 1;
+    }
+
+    public int onClick(int code)
+    {
+        return 0; // Catches input
     }
 }
