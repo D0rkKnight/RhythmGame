@@ -83,6 +83,7 @@ public class MusicPlayer : MonoBehaviour
     public STATE state = STATE.RUN;
 
     float interimTil = 0; // Deadline for interim period between songs
+    public bool willUnpauseCD = true; // Countdown on unpause
 
     public GameObject accuracyPopupPrefab;
     public Transform accuracyPopupLoc;
@@ -270,8 +271,12 @@ public class MusicPlayer : MonoBehaviour
         pauseText.gameObject.SetActive(false);
     }
 
+    // Very local variables
+    float unpauseCountMax = 3f;
+    float unpauseCountdown = -1000f;
     private void statePause()
     {
+
         // Local song time + scroll delta
         // Write some kinda method that simplifies this...
         songTime = pauseStart-songStart-pausedTotal + scroll;
@@ -286,14 +291,26 @@ public class MusicPlayer : MonoBehaviour
         // State transitions
         if (InputManager.checkKeyDown(pauseKey))
         {
-            state = STATE.RUN;
-            pausedTotal += Time.time - pauseStart;
-
-            // Resync music (if music is to be played)
-            if (songTime >= 0)
+            if (willUnpauseCD)
             {
-                TrackPlayer.sing.play();
-                TrackPlayer.sing.audio.time = songTime;
+                unpauseCountdown = unpauseCountMax;
+            }
+            else
+                unpause();
+        }
+
+        // Unpause logic (either unpause is nonnegative and ticks, or is negative and is waiting for unpause)
+        if (unpauseCountdown >= 0)
+        {
+            unpauseCountdown -= Time.deltaTime;
+            if (unpauseCountdown < 0)
+            {
+                unpause();
+                pauseText.text = "PAUSE";
+            }
+            else
+            {
+                pauseText.text = "" + Mathf.Ceil(unpauseCountdown);
             }
         }
 
@@ -318,12 +335,26 @@ public class MusicPlayer : MonoBehaviour
             state = STATE.RUN;
         }
     }
+
     public void pause()
     {
         if (state != STATE.PAUSE) pauseStart = Time.time;
         state = STATE.PAUSE;
         TrackPlayer.sing.audio.Stop();
 
+    }
+
+    public void unpause()
+    {
+        state = STATE.RUN;
+        pausedTotal += Time.time - pauseStart;
+
+        // Resync music (if music is to be played)
+        if (songTime >= 0)
+        {
+            TrackPlayer.sing.play();
+            TrackPlayer.sing.audio.time = songTime;
+        }
     }
 
     public void resetSongEnv()
