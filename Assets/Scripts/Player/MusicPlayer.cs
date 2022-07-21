@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public class MusicPlayer : MonoBehaviour
 {
@@ -87,6 +88,8 @@ public class MusicPlayer : MonoBehaviour
     public Transform accuracyPopupLoc;
 
     public KeyCode resetKey = KeyCode.R;
+
+    public TMP_Text pauseText;
 
     public static MusicPlayer sing;
 
@@ -262,6 +265,9 @@ public class MusicPlayer : MonoBehaviour
         {
             pause();
         }
+
+        // Pause label is inactive
+        pauseText.gameObject.SetActive(false);
     }
 
     private void statePause()
@@ -296,6 +302,9 @@ public class MusicPlayer : MonoBehaviour
         {
             if (n.dead && n.beat > currBeat) n.dead = false;
         }
+
+        // Set pause label
+        pauseText.gameObject.SetActive(true);
     }
 
     // Buffer period to avoid excessive flip flopping

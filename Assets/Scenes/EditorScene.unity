@@ -1393,6 +1393,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 702c897329a2fae4ba24c46167ed9c25, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &406391384 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2105126854943499032, guid: 3e5a8fe67b687dc4b81f154ed99e82af,
+    type: 3}
+  m_PrefabInstance: {fileID: 785917320}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &420732415
 GameObject:
   m_ObjectHideFlags: 0
@@ -2479,7 +2491,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 476063124, guid: 3e5a8fe67b687dc4b81f154ed99e82af, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 284
+      value: 275.9
       objectReference: {fileID: 0}
     - target: {fileID: 983379949, guid: 3e5a8fe67b687dc4b81f154ed99e82af, type: 3}
       propertyPath: m_LocalPosition.x
@@ -2495,6 +2507,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6973395804611573912, guid: 3e5a8fe67b687dc4b81f154ed99e82af,
         type: 3}
+      propertyPath: pauseText
+      value: 
+      objectReference: {fileID: 406391384}
+    - target: {fileID: 6973395804611573912, guid: 3e5a8fe67b687dc4b81f154ed99e82af,
+        type: 3}
       propertyPath: streamNotes
       value: 0
       objectReference: {fileID: 0}
@@ -2504,6 +2521,11 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1813497413674491723, guid: c4fcec6be473cd44d8f9f43eb2cf5946,
         type: 3}
+    - target: {fileID: 6973395804611573912, guid: 3e5a8fe67b687dc4b81f154ed99e82af,
+        type: 3}
+      propertyPath: accuracyPopupLoc
+      value: 
+      objectReference: {fileID: 785917321}
     - target: {fileID: 6973395804611573912, guid: 3e5a8fe67b687dc4b81f154ed99e82af,
         type: 3}
       propertyPath: columns.Array.data[0]
@@ -2617,10 +2639,16 @@ PrefabInstance:
     - target: {fileID: 6973395804618539041, guid: 3e5a8fe67b687dc4b81f154ed99e82af,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 10.247606
+      value: 5.92
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 3e5a8fe67b687dc4b81f154ed99e82af, type: 3}
+--- !u!224 &785917321 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 4927838112510624482, guid: 3e5a8fe67b687dc4b81f154ed99e82af,
+    type: 3}
+  m_PrefabInstance: {fileID: 785917320}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &811617944
 GameObject:
   m_ObjectHideFlags: 0
@@ -6242,7 +6270,7 @@ MonoBehaviour:
   addPhraseEle: {fileID: 9060572}
   addPhraseIndex: 0
   workspace: {fileID: 0}
-  interactMode: 0
+  selectedPhraseSlot: {fileID: 0}
 --- !u!1 &1670609440
 GameObject:
   m_ObjectHideFlags: 0
