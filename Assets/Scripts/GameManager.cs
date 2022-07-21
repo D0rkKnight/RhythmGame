@@ -10,10 +10,14 @@ public class GameManager : MonoBehaviour
 
     public GameObject settings;
 
+    public Stack<GameObject> panelStack = new Stack<GameObject>(); // Tracks the active stack of ui panels
+    public GameObject activePanel = null;
+
     // Start is called before the first frame update
     void Awake()
     {
         if (sing != null) Debug.LogError("Gamemanager Singleton broken (very bad)");
+        sing = this;
 
         Phrase.init();
     }
@@ -24,13 +28,32 @@ public class GameManager : MonoBehaviour
         
     }
 
-    public void controlSettings(bool val)
-    {
-        settings.SetActive(val);
-    }
-
     public void changeScene(string scene)
     {
         SceneManager.LoadScene(scene);
+    }
+
+    public void pushPanelStack(GameObject obj)
+    {
+        // Deactivate last element
+        if (panelStack.Count > 0)
+            panelStack.Peek().SetActive(false);
+
+        // Activate new element
+        panelStack.Push(obj);
+        obj.SetActive(true);
+    }
+
+    public GameObject popPanelStack()
+    {
+        // Deactivate top element
+        GameObject top = panelStack.Pop();
+        if (top != null) top.SetActive(false);
+
+        // Activate next element
+        if (panelStack.Count > 0)
+            panelStack.Peek().SetActive(true);
+
+        return top;
     }
 }
