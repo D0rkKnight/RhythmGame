@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 public class PhraseWorkspace : MonoBehaviour, Scrollable
 {
@@ -9,7 +10,7 @@ public class PhraseWorkspace : MonoBehaviour, Scrollable
     public float height;
 
     private List<GameObject> beatMarkers = new List<GameObject>();
-    public float intervalHeight = 2f;
+    public float beatsPerInterval = 2f;
     public float beatHeight = 1f;
     public float beatSnap = 0.25f;
     public float scroll = 0f;
@@ -30,6 +31,25 @@ public class PhraseWorkspace : MonoBehaviour, Scrollable
 
     public void regenBeatMarkers()
     {
+        float intervalHeight = beatHeight * beatsPerInterval;
+
+        // Clamp displayed bars to a range
+        int intervalPow = 0; // 2^0 positive means intervals represent big beats
+        while (intervalHeight > 2f)
+        {
+            intervalHeight /= 2;
+            intervalPow--;
+        }
+        while (intervalHeight < 0.9f)
+        {
+            intervalHeight *= 2;
+            intervalPow++;
+        }
+
+        // Set input fidelity to be half the interval height
+        beatSnap = beatsPerInterval * Mathf.Pow(2, intervalPow) / 2;
+
+        // Generate enough bars to fill the range
         while (beatMarkers.Count < height / intervalHeight + 2)
             beatMarkers.Add(Instantiate(beatMarkerPrefab, transform));
 
@@ -37,9 +57,24 @@ public class PhraseWorkspace : MonoBehaviour, Scrollable
         {
             GameObject marker = beatMarkers[i];
 
-            float scrollOff = scroll % intervalHeight;
-            marker.transform.localPosition = Vector3.down * (intervalHeight * i + scrollOff);
+            // Get parity for opacity
+            float scrollOff = intervalHeight - scroll % intervalHeight;
 
+            marker.transform.localPosition = Vector3.down * (intervalHeight * i + scrollOff);
+            float trueAlt = scroll + scrollOff + i * intervalHeight;
+
+            float par = scroll % (2 * intervalHeight);
+            bool weighted =  par > intervalHeight ^ i%2 == 0; // Checks for indexed parity and starting parity
+
+            // Set opacity
+            Color col = marker.GetComponent<SpriteRenderer>().color;
+            marker.GetComponent<SpriteRenderer>().color = new Color(col.r, col.g, col.b, weighted ? 1.0f : 0.5f);
+
+            // Set beat text
+            float beat = trueAlt / beatHeight;
+            marker.transform.Find("Canvas/BeatMarker").GetComponent<TMP_Text>().text = "" + beat;
+
+            // Deactivate out of bounds markers
             float markerY = marker.transform.localPosition.y;
             marker.SetActive(-markerY <= height && markerY <= 0);
         }
@@ -85,8 +120,22 @@ public class PhraseWorkspace : MonoBehaviour, Scrollable
 
     public void ScrollBy(float amt)
     {
-        scroll -= amt;
-        scroll = Mathf.Max(0, scroll);
+        // Determine if scaled scroll or vertical scroll
+        if (Input.GetKey(KeyCode.LeftControl))
+        {
+            float oldBH = beatHeight;
+            beatHeight *= (1 + amt * 0.2f);
+
+            // Change scroll as well to center around the mouse position
+            float scrollAnchor = scroll - transform.InverseTransformPoint(Camera.main.ScreenToWorldPoint(Input.mousePosition)).y;
+            float anchorBeat = scrollAnchor / oldBH;
+            float newScrollAnchor = anchorBeat * beatHeight;
+            scroll += newScrollAnchor - scrollAnchor;
+        } else
+        {
+            scroll -= amt;
+            scroll = Mathf.Max(0, scroll);
+        }
 
         regenBeatMarkers();
         updatePhraseEntries();
