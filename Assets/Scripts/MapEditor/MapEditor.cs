@@ -8,7 +8,6 @@ using TMPro;
 
 public class MapEditor : MonoBehaviour
 {
-
     public static MapEditor sing;
 
     public Phrase activePhrase = new NotePhrase(0, 0, 0);
@@ -48,6 +47,25 @@ public class MapEditor : MonoBehaviour
     public int addPhraseIndex = 0;
 
     public PhraseWorkspace workspace;
+
+    public enum MODE
+    {
+        EDIT, WRITE
+    }
+    private MODE interactMode = MODE.WRITE;
+    public MODE InteractMode
+    {
+        get
+        {
+            return interactMode;
+        }
+        set
+        {
+            interactMode = value;
+            selectedPhraseSlot = null; // Unselect whatever phrase
+        }
+    }
+    public BeatEditorSlot selectedPhraseSlot = null;
 
     // Start is called before the first frame update
     void Awake()
@@ -98,8 +116,8 @@ public class MapEditor : MonoBehaviour
             Enum.TryParse(typeof(Phrase.TYPE), typeName, out newType);
 
             Phrase p = sing.activePhrase;
-            sing.activePhrase = Phrase.staticCon(p.lane, p.beat, p.accent, null, (Phrase.TYPE) newType);
-            sing.updateMetaField();
+            Phrase newPhrase = Phrase.staticCon(p.lane, p.beat, p.accent, null, (Phrase.TYPE) newType);
+            sing.setActivePhrase(newPhrase);
         });
     }
 
@@ -131,8 +149,16 @@ public class MapEditor : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Z) /*&& Input.GetKey(KeyCode.LeftControl)*/) undo();
 
         // Write field data and timestamp to phrase
-        activePhrase.beat = beatInput.beat;
         activePhrase.readMetaFields(metaFields);
+
+        // Sketchy and probably laggy
+        if (InteractMode == MODE.EDIT)
+        {
+            if (selectedPhraseSlot != null)
+            {
+                selectedPhraseSlot.setPhrase(activePhrase.clone());
+            }
+        }
     }
 
     public void play()
@@ -276,24 +302,10 @@ public class MapEditor : MonoBehaviour
         imageQueued = false;
     }
 
-    public void createPhraseEntry(float beat)
-    {
-
-    }
     public void removePhraseEntry(BeatRow entry)
     {
         phraseEntries.Remove(entry);
         Destroy(entry.gameObject);
-    }
-
-    private void updateVisuals()
-    {
-    }
-
-    private bool beatInBounds(float amt)
-    {
-        if (amt > 0.0001 && amt < 10000) return true;
-        return false;
     }
 
     public void addAccent(int amt)
@@ -305,5 +317,11 @@ public class MapEditor : MonoBehaviour
     {
         // Flag metadata input fields
         activePhrase.writeMetaFields(metaFields);
+    }
+
+    public void setActivePhrase(Phrase p)
+    {
+        activePhrase = p;
+        updateMetaField();
     }
 }

@@ -84,6 +84,15 @@ public class BeatEditorSlot : MonoBehaviour, Clickable
 
     public int onClick(int code)
     {
+        // Set active phrase as this
+        if (MapEditor.sing.InteractMode == MapEditor.MODE.EDIT)
+        {
+            MapEditor.sing.setActivePhrase(phrase.clone());
+            MapEditor.sing.selectedPhraseSlot = this;
+
+            Debug.Log(phrase.ToString());
+        }
+
         return 0; // Catches input
     }
 }

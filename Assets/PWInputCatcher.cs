@@ -11,7 +11,8 @@ public class PWInputCatcher : MonoBehaviour, Clickable
         // Spawn a note
         if (code == 0)
         {
-            workspace.addPhraseEntry();
+            if (MapEditor.sing.InteractMode == MapEditor.MODE.WRITE)
+                workspace.addPhraseEntry();
         }
 
         return 1;
