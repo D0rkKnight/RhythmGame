@@ -16,6 +16,7 @@ public class TrackPlayer : MonoBehaviour
     public bool clipLoading = false;
 
     public float vol = 0.2f;
+    public float latency = 0f; // How many seconds behind the game state the audio lags
 
     // Start is called before the first frame update
     void Start()
@@ -70,5 +71,10 @@ public class TrackPlayer : MonoBehaviour
         string audioToLoad = string.Format(path + "{0}", fname);
         WWW request = new WWW(audioToLoad);
         return request;
+    }
+
+    public void setTime(float time)
+    {
+        audio.time = time + latency;
     }
 }

@@ -149,12 +149,12 @@ public class MusicPlayer : MonoBehaviour
         if (tpTime >= 0 && !TrackPlayer.sing.audio.isPlaying)
         {
             TrackPlayer.sing.play();
-            TrackPlayer.sing.audio.time = tpTime; // Sync song time
+            TrackPlayer.sing.setTime(tpTime); // Sync song time
         }
 
         // Resync on lagspike
         if (Time.deltaTime > 0.01 && tpTime >= 0 && TrackPlayer.sing.audio.isPlaying)
-            TrackPlayer.sing.audio.time = tpTime;
+            TrackPlayer.sing.setTime(tpTime);
 
         // If eclipsing the beat threshold, tick a beat.
         if (Time.time > lastBeat + beatInterval)
@@ -353,7 +353,7 @@ public class MusicPlayer : MonoBehaviour
         if (songTime >= 0)
         {
             TrackPlayer.sing.play();
-            TrackPlayer.sing.audio.time = songTime;
+            TrackPlayer.sing.setTime(songTime);
         }
     }
 

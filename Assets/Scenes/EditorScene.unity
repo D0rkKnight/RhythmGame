@@ -1809,6 +1809,16 @@ PrefabInstance:
       propertyPath: m_PresetInfoIsWorld
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5637978402961704280, guid: 5963d0f7b8dc7fd48b1984c8de6c851e,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -2.6000004
+      objectReference: {fileID: 0}
+    - target: {fileID: 8115493320498275451, guid: 5963d0f7b8dc7fd48b1984c8de6c851e,
+        type: 3}
+      propertyPath: m_audioClip
+      value: 
+      objectReference: {fileID: 8300000, guid: 267f5ecb0faf1ea41bb07ea96ba0adb6, type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5963d0f7b8dc7fd48b1984c8de6c851e, type: 3}
 --- !u!1 &505640587
@@ -6856,6 +6866,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   settings: {fileID: 0}
+  colKeys: 
+  activePanel: {fileID: 0}
 --- !u!1 &1807337307
 GameObject:
   m_ObjectHideFlags: 0
