@@ -9,6 +9,7 @@ public class GameManager : MonoBehaviour
     public static GameManager sing;
 
     public GameObject settings;
+    public KeyCode[] colKeys;
 
     public Stack<GameObject> panelStack = new Stack<GameObject>(); // Tracks the active stack of ui panels
     public GameObject activePanel = null;
@@ -25,7 +26,6 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
     }
 
     public void changeScene(string scene)

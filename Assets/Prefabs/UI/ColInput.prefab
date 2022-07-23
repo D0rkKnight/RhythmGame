@@ -159,7 +159,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 5861060394438760619}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 0}
+        m_TargetAssemblyTypeName: 
+        m_MethodName: 
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: 
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &5734143787360616576
 GameObject:
   m_ObjectHideFlags: 0
@@ -308,7 +320,7 @@ GameObject:
   - component: {fileID: 4475066796872386650}
   - component: {fileID: 8362913861557335883}
   m_Layer: 5
-  m_Name: Text (TMP)
+  m_Name: Text
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

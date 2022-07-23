@@ -12,17 +12,16 @@ public class NoteColumn : MonoBehaviour
 
     ParticleSystem burstSys;
     public GameObject charTxt;
+    public int colNum;
 
-    [SerializeField]
-    private KeyCode key;
     public KeyCode Key
     {
-        get { return key;  }
+        get { return GameManager.sing.colKeys[colNum];  }
         set
         {
-            key = value;
+            GameManager.sing.colKeys[colNum] = value;
 
-            charTxt.GetComponent<TextMeshProUGUI>().SetText(key.ToString());
+            charTxt.GetComponent<TextMeshProUGUI>().SetText(value.ToString());
         }
     }
     public NoteColumn reroute;  // Whether to substitute input for other columns
@@ -84,5 +83,12 @@ public class NoteColumn : MonoBehaviour
     public void hitBurst()
     {
         burstSys.Play();
+    }
+
+    public static void Regenerate()
+    {
+        // Proc the delegate behavior
+        foreach (NoteColumn col in MusicPlayer.sing.columns)
+            col.Key = col.Key;
     }
 }
