@@ -61,7 +61,11 @@ public class NoteColumn : MonoBehaviour
         buttonOverlay = transform.Find("TriggerBox/TBHitOverlay").
             GetComponent<SpriteRenderer>().material;
         burstSys = transform.Find("HitBurst").GetComponent<ParticleSystem>();
+        
+    }
 
+    private void Start()
+    {
         Key = Key; // Update graphics
     }
 

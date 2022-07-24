@@ -71,8 +71,6 @@ public abstract class StreamPhrase : Phrase
 
         while (!mp.columns[wLane].StreamOn && mp.columns[wLane].defNoteReroute >= 0)
         {
-            Debug.Log("Rerouted");
-
             // Figure out the column it's rerouting to
             wLane = mp.columns[wLane].defNoteReroute;
         }
@@ -88,7 +86,7 @@ public abstract class StreamPhrase : Phrase
             spawnLane = mp.columns[spawnLane].defNoteReroute;
         }
 
-        Debug.Log("Spawn: " + spawnLane + ", end: " + wLane + ", shifted by: " + shiftedBy);
+        // Debug.Log("Spawn: " + spawnLane + ", end: " + wLane + ", shifted by: " + shiftedBy);
 
         int zzLane = spawnLane;
         float zzBeat = spawnBeat;

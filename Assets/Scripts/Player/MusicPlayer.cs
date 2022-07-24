@@ -57,6 +57,7 @@ public class MusicPlayer : MonoBehaviour
 
     public float tpOffset = 1f; // # of seconds off the music is vs the game
                                 // positive -> music plays first
+    public float lagspikeTolerance = 0.05f;
 
     // Combo
     public Text comboCounter;
@@ -153,7 +154,7 @@ public class MusicPlayer : MonoBehaviour
         }
 
         // Resync on lagspike
-        if (Time.deltaTime > 0.01 && tpTime >= 0 && TrackPlayer.sing.audio.isPlaying)
+        if (Time.deltaTime > lagspikeTolerance && tpTime >= 0 && TrackPlayer.sing.audio.isPlaying)
             TrackPlayer.sing.setTime(tpTime);
 
         // If eclipsing the beat threshold, tick a beat.
