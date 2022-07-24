@@ -59,7 +59,7 @@ public abstract class StreamPhrase : Phrase
         if (meta[3].Trim().Equals("T")) recurse = true;
     }
 
-    public override void spawn(MusicPlayer mp, int spawnLane, float spawnBeat, float blockFrame)
+    public override void spawn(MusicPlayer mp, int spawnLane, float spawnBeat, float blockFrame, float weight)
     {
         int steps = (int) (dur * rate);
 
@@ -115,7 +115,7 @@ public abstract class StreamPhrase : Phrase
             }
             else // Spawn just notes otherwise
             {
-                base.spawn(mp, zzLane, zzBeat, blockFrame);
+                base.spawn(mp, zzLane, zzBeat, blockFrame, weight);
             }
 
             zzLane = streamNextLane(zzLane, mp, spawnLane, wLane, spawnBeat, blockFrame);

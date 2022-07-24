@@ -22,9 +22,9 @@ public class HoldPhrase : Phrase
     {
         return UnityEngine.Object.Instantiate(mp.holdPrefab).GetComponent<Note>();
     }
-    public override void configNote(MusicPlayer mp, Note nObj, int spawnLane, float spawnBeat, float blockFrame)
+    public override void configNote(MusicPlayer mp, Note nObj, int spawnLane, float spawnBeat, float blockFrame, float weight)
     {
-        base.configNote(mp, nObj, spawnLane, spawnBeat, blockFrame);
+        base.configNote(mp, nObj, spawnLane, spawnBeat, blockFrame, weight);
 
         Transform bg = nObj.transform.Find("HoldBar");
 

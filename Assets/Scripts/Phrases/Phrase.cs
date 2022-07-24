@@ -240,6 +240,8 @@ public abstract class Phrase
 
         // Get block frame
         float blockFrame = getBlockFrame();
+        float weight = 1 + accent; // Weight is based off of raw accent
+
 
         // Double/triple up according to accents
         if (mutAccent > 0)
@@ -259,19 +261,19 @@ public abstract class Phrase
             for (int j = 0; j <= mutAccent; j++)
             {
                 // Spawn note directly
-                spawn(MusicPlayer.sing, sCol + j, beat, blockFrame);
+                spawn(MusicPlayer.sing, sCol + j, beat, blockFrame, weight);
             }
 
         }
         else
         {
-            spawn(MusicPlayer.sing, mutLane, beat, blockFrame);
+            spawn(MusicPlayer.sing, mutLane, beat, blockFrame, weight);
         }
     }
 
     // Generates this phrase attached to the given music player
     // Accepts generic arguments for mutability between phrase types
-    public virtual void spawn(MusicPlayer mp, int spawnLane, float spawnBeat, float blockFrame)
+    public virtual void spawn(MusicPlayer mp, int spawnLane, float spawnBeat, float blockFrame, float weight)
     {
         if (!noteValid(mp, spawnLane, spawnBeat, blockFrame))
         {
@@ -279,7 +281,7 @@ public abstract class Phrase
             return;
         }
 
-        if (!checkNoteCollisions(mp, spawnLane, spawnBeat, blockFrame))
+        if (!checkNoteCollisions(mp, spawnLane, spawnBeat, blockFrame, weight))
         {
             Debug.LogWarning("Note spawn blocked at " + lane + ", " + beat);
             return;
@@ -287,7 +289,7 @@ public abstract class Phrase
 
         // Spawn note
         Note nObj = instantiateNote(mp);
-        configNote(mp, nObj, spawnLane, spawnBeat, blockFrame);
+        configNote(mp, nObj, spawnLane, spawnBeat, blockFrame, weight);
 
         mp.addNote(nObj);
     }
@@ -304,7 +306,7 @@ public abstract class Phrase
     }
 
     // Returns whether the given note is alive after checks
-    public virtual bool checkNoteCollisions(MusicPlayer mp, int lane_, float beat_, float blockDur_)
+    public virtual bool checkNoteCollisions(MusicPlayer mp, int lane_, float beat_, float blockDur_, float weight)
     {
         // Check for note collisions
         NoteColumn col = mp.columns[lane_];
@@ -332,7 +334,7 @@ public abstract class Phrase
             bool alive = true;
             foreach(Note n in collisions)
             {
-                if (!tryReplaceNote(beat_, n))
+                if (!tryReplaceNote(beat_, weight, n))
                 {
                     alive = false;
                     break;
@@ -358,11 +360,15 @@ public abstract class Phrase
         return true;
     }
 
-    public bool tryReplaceNote(float beat, Note n)
+    // True means successful replace
+    public bool tryReplaceNote(float beat, float weight, Note n)
     {
         // Scoring:
         // Pick the note that lands on the larger beat subdivision (8th > 16th)
-        // Also consider adjacency to other notes on other columns
+
+        // Consider weight (based on accenting) first
+        if (weight > n.weight) return true;
+        if (weight < n.weight) return false;
 
         // Get fractional component
         float frac1 = beat - (float) Math.Truncate(beat);       // The note to be spawned
@@ -392,10 +398,11 @@ public abstract class Phrase
 
     public abstract Note instantiateNote(MusicPlayer mp);
 
-    public virtual void configNote(MusicPlayer mp, Note nObj, int spawnLane, float spawnBeat, float blockFrame)
+    public virtual void configNote(MusicPlayer mp, Note nObj, int spawnLane, float spawnBeat, float blockFrame, float weight)
     {
         nObj.lane = mp.columns[spawnLane];
         nObj.beat = spawnBeat;
+        nObj.weight = weight;
 
         float bTime = mp.beatInterval * spawnBeat;
         nObj.hitTime = bTime;

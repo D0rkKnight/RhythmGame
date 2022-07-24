@@ -33,7 +33,7 @@ public class ReboundPhrase : Phrase
         return MapSerializer.sing.noteBlockLen;
     }
 
-    public override void spawn(MusicPlayer mp, int spawnLane, float spawnBeat, float blockFrame)
+    public override void spawn(MusicPlayer mp, int spawnLane, float spawnBeat, float blockFrame, float weight)
     {
         // Doubles up (depending on if rebounds are spawned as pairs or rebounders)
         /*for (int i=0; i<times; i++)
@@ -41,7 +41,7 @@ public class ReboundPhrase : Phrase
             base.spawn(mp, spawnLane, spawnBeat + reboundDelta * i, blockFrame);
         }*/
 
-        base.spawn(mp, spawnLane, spawnBeat, blockFrame);
+        base.spawn(mp, spawnLane, spawnBeat, blockFrame, weight);
     }
 
     public override void writeMetaFields(List<InputField> fields)

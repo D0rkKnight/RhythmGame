@@ -16,10 +16,10 @@ public class ZigzagPhrase : StreamPhrase
 
     int spawnDir; // Used during note generation
 
-    public override void spawn(MusicPlayer mp, int spawnLane, float spawnBeat, float blockFrame)
+    public override void spawn(MusicPlayer mp, int spawnLane, float spawnBeat, float blockFrame, float weight)
     {
         spawnDir = Mathf.RoundToInt(Mathf.Sign(width));
-        base.spawn(mp, spawnLane, spawnBeat, blockFrame);
+        base.spawn(mp, spawnLane, spawnBeat, blockFrame, weight);
     }
     public override int streamNextLane(int currLane, MusicPlayer mp, int spawnLane, int endLane, float spawnBeat, float blockFrame)
     {

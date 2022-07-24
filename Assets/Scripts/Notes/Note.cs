@@ -7,6 +7,7 @@ public class Note : MonoBehaviour
     public float hitTime; // In seconds, as Unity standard
     public float beat = 0; // Beat for hit
     public float blockDur = 0; // How long this note blocks other notes during rasterization
+    public float weight = 0; // Priority when rasterizing
 
     public NoteColumn lane;
     public bool dead = false;
