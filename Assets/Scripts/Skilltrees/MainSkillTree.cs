@@ -38,7 +38,8 @@ public class MainSkillTree : SkillTree
 
         private void onClick()
         {
-            if (owner.tokens < cost) return; // Not enough money :(
+            // Not enough money or already purchased
+            if (owner.tokens < cost || owner.purchasedFlags[(int) node]) return; 
             owner.Tokens -= cost;
 
             owner.purchasedFlags[(int)node] = true;
