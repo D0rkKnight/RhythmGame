@@ -7,11 +7,13 @@ using UnityEngine.UI;
 public class BeatEditorSlot : MonoBehaviour, Clickable
 {
     public GameObject bg;
-    public Text txt;
+    public TMPro.TMP_Text txt;
     private SpriteRenderer rend;
 
     public BeatRow parent;
     public Phrase phrase = null;
+
+    public GameObject selectedHalo;
 
     // Start is called before the first frame update
     void Awake()
@@ -22,6 +24,11 @@ public class BeatEditorSlot : MonoBehaviour, Clickable
         phrase = new NonePhrase(0); // Random null phrase
         updateGraphics();
 
+    }
+
+    private void Update()
+    {
+        selectedHalo.SetActive(MapEditor.sing.selectedPhraseSlot == this);
     }
 
     private void updateGraphics()
@@ -75,8 +82,7 @@ public class BeatEditorSlot : MonoBehaviour, Clickable
         if (Input.GetKeyDown(MapEditor.sing.copyKey))
         {
             // Write phrase to active phrase
-            MapEditor.sing.activePhrase = phrase.clone();
-            MapEditor.sing.updateMetaField();
+            MapEditor.sing.setActivePhrase(phrase.clone());
         }
 
         return 1;
@@ -89,6 +95,8 @@ public class BeatEditorSlot : MonoBehaviour, Clickable
         {
             MapEditor.sing.setActivePhrase(phrase.clone());
             MapEditor.sing.selectedPhraseSlot = this;
+
+            Debug.Log(phrase.ToString());
         }
 
         return 0; // Catches input

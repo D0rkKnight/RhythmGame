@@ -115,7 +115,7 @@ public class PhraseWorkspace : MonoBehaviour, Scrollable
         {
             // Set right altitude
             entry.transform.localPosition =
-                Vector3.down * (entry.slots[0].phrase.beat * beatHeight - scroll);
+                Vector3.down * (entry.slots[0].phrase.beat * beatHeight - scroll) + Vector3.back * 3;
 
             float entryY = entry.transform.localPosition.y;
             entry.gameObject.SetActive(-entryY <= height && entryY <= 0);

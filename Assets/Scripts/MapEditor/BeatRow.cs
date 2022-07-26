@@ -6,9 +6,10 @@ using UnityEngine.UI;
 
 public class BeatRow : MonoBehaviour
 {
-    public Text txt;
+    public TMPro.TMP_Text txt;
     public int rowNum;
     public List<BeatEditorSlot> slots;
+
 
     // Start is called before the first frame update
     void Awake()
@@ -19,9 +20,14 @@ public class BeatRow : MonoBehaviour
             slots.Add(b);
     }
 
+    private void Update()
+    {
+    }
+
     public void setPhrase(Phrase p)
     {
         slots[0].setPhrase(p);
+        txt.text = p.beat.ToString();
     }
 
     internal string serialize()
