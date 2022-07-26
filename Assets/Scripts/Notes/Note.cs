@@ -11,9 +11,20 @@ public class Note : MonoBehaviour
 
     public NoteColumn lane;
     public bool dead = false;
+    private bool showWeight = false;
+    public bool ShowWeight
+    {
+        get { return showWeight;  }
+        set
+        {
+            showWeight = value;
+            text.text = value ? "" + weight : "";
+        }
+    }
 
     public Color defaultColor = Color.cyan;
     public Color deadColor = Color.grey;
+    public TMPro.TMP_Text text;
 
     private float killTime = -1;
     public float killDelay = 1;

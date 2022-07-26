@@ -59,6 +59,8 @@ public class MusicPlayer : MonoBehaviour
                                 // positive -> music plays first
     public float lagspikeTolerance = 0.05f;
 
+    public bool showNoteWeight = false;
+
     // Combo
     public Text comboCounter;
     private float combo;
@@ -459,6 +461,7 @@ public class MusicPlayer : MonoBehaviour
     public void addNote(Note n)
     {
         notes.Add(n);
+        n.ShowWeight = showNoteWeight;
     }
 
     private void processPhraseQueue()

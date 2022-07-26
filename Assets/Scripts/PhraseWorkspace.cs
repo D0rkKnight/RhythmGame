@@ -7,6 +7,7 @@ public class PhraseWorkspace : MonoBehaviour, Scrollable
 {
     public GameObject beatMarkerPrefab;
     public GameObject beatEntryPrefab;
+    public GameObject ghost;
     public float height;
 
     private List<GameObject> beatMarkers = new List<GameObject>();
@@ -27,11 +28,34 @@ public class PhraseWorkspace : MonoBehaviour, Scrollable
     void Update()
     {
         updatePhraseEntries();
+
+        // Just sending it with the maths
+        float snapInterval = beatSnap * beatHeight;
+
+        float mouseAlt = Camera.main.ScreenToWorldPoint(Input.mousePosition).y - transform.position.y;
+        float mouseBar = (mouseAlt - scroll % snapInterval) / snapInterval; // Transform to bar offset from first bar
+        float snapAlt = Mathf.Round(mouseBar) * snapInterval + (scroll % snapInterval);
+        float snapBeat = (-snapAlt + scroll) / beatHeight;
+
+        // Hella boilerplate lol
+        Vector3 newPos = ghost.transform.localPosition;
+        newPos.y = snapAlt;
+        ghost.transform.localPosition = newPos;
+
+        // Set ghost phrase
+        BeatRow row = ghost.GetComponent<BeatRow>();
+        Phrase newPhrase = MapEditor.sing.activePhrase.clone();
+        newPhrase.beat = snapBeat;
+
+        row.setPhrase(newPhrase);
+        row.txt.text = "" + snapBeat;
+
+        ghost.SetActive(MapEditor.sing.InteractMode == MapEditor.MODE.WRITE);
     }
 
     public void regenBeatMarkers()
     {
-        float intervalHeight = beatHeight * beatsPerInterval;
+        float intervalHeight = getIntervalHeight();
 
         // Clamp displayed bars to a range
         int intervalPow = 0; // 2^0 positive means intervals represent big beats
@@ -78,6 +102,11 @@ public class PhraseWorkspace : MonoBehaviour, Scrollable
             float markerY = marker.transform.localPosition.y;
             marker.SetActive(-markerY <= height && markerY <= 0);
         }
+    }
+
+    public float getIntervalHeight()
+    {
+        return beatHeight * beatsPerInterval;
     }
 
     public void updatePhraseEntries()

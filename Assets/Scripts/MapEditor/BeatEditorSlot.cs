@@ -26,31 +26,31 @@ public class BeatEditorSlot : MonoBehaviour, Clickable
 
     private void updateGraphics()
     {
-        // No phrase attached
-        if (phrase == null)
-        {
-            rend.color = Color.white;
-            return;
+        Color newCol = Color.white;
+
+        if (phrase != null) {
+            switch (phrase.type)
+            {
+                case Phrase.TYPE.NOTE:
+                    newCol = Color.cyan;
+                    break;
+                case Phrase.TYPE.HOLD:
+                    newCol = Color.magenta;
+                    break;
+                case Phrase.TYPE.NONE:
+                    newCol = Color.white;
+                    break;
+                default:
+                    newCol = Color.cyan;
+                    Debug.LogWarning("Behavior not defined for note type: " + phrase.type);
+                    break;
+            }
+
+            txt.text = serialize();
         }
 
-        switch (phrase.type)
-        {
-            case Phrase.TYPE.NOTE:
-                rend.color = Color.cyan;
-                break;
-            case Phrase.TYPE.HOLD:
-                rend.color = Color.magenta;
-                break;
-            case Phrase.TYPE.NONE:
-                rend.color = Color.white;
-                break;
-            default:
-                rend.color = Color.cyan;
-                Debug.LogWarning("Behavior not defined for note type: " + phrase.type);
-                break;
-        }
-
-        txt.text = serialize();
+        // Inherit opacity
+        rend.color = new Color(newCol.r, newCol.g, newCol.b, rend.color.a);
     }
 
     internal string serialize()
@@ -89,8 +89,6 @@ public class BeatEditorSlot : MonoBehaviour, Clickable
         {
             MapEditor.sing.setActivePhrase(phrase.clone());
             MapEditor.sing.selectedPhraseSlot = this;
-
-            Debug.Log(phrase.ToString());
         }
 
         return 0; // Catches input
