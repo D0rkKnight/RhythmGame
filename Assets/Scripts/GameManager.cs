@@ -23,6 +23,18 @@ public class GameManager : MonoBehaviour
         Phrase.init();
     }
 
+    private void Start()
+    {
+        // Hide all ui panels
+        foreach (Transform child in transform.Find("Canvas"))
+        {
+            if (child.tag == "UIPanel")
+            {
+                child.gameObject.SetActive(false);
+            }
+        }
+    }
+
     // Update is called once per frame
     void Update()
     {
