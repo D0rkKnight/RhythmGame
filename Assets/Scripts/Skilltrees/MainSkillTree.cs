@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Events;
 using System;
+using TMPro;
 
 public class MainSkillTree : SkillTree
 {
@@ -31,7 +32,7 @@ public class MainSkillTree : SkillTree
             btn.btn.onClick.AddListener(onClick);
 
             // Set label text
-            btn.GetComponentInChildren<Text>().text += " $" + cost.ToString();
+            btn.GetComponentInChildren<TMP_Text>().text += " $" + cost.ToString();
 
             checkPrereqs();
         }
@@ -63,7 +64,7 @@ public class MainSkillTree : SkillTree
 
     public buttonPair[] nodes = new buttonPair[(int) NODE.SENTINEL];
 
-    public Text tokenText;
+    public TMP_Text tokenText;
     private int tokens = 0;
     public int Tokens
     {

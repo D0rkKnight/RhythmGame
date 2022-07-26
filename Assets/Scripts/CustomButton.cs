@@ -2,13 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 [RequireComponent(typeof(Button))]
 public class CustomButton : MonoBehaviour
 {
 
     public Image bg;
-    public Text txt;
+    public TMP_Text txt;
     public Button btn;
 
     public float Opacity {
