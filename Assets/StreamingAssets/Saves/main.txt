@@ -24,3 +24,6 @@ nodes
 1
 1
 1
+
+editor
+active: rhythm_1.txt

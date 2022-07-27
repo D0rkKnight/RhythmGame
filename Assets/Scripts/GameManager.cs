@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using System.IO;
 
 public class GameManager : MonoBehaviour
 {
@@ -13,6 +14,8 @@ public class GameManager : MonoBehaviour
 
     public Stack<GameObject> panelStack = new Stack<GameObject>(); // Tracks the active stack of ui panels
     public GameObject activePanel = null;
+
+    public string forceSave = "";
 
     // Start is called before the first frame update
     void Awake()
@@ -33,6 +36,10 @@ public class GameManager : MonoBehaviour
                 child.gameObject.SetActive(false);
             }
         }
+
+        // Force a save load
+        if (forceSave.Length > 0)
+            loadSave(getSave(forceSave));
     }
 
     // Update is called once per frame
@@ -67,5 +74,95 @@ public class GameManager : MonoBehaviour
             panelStack.Peek().SetActive(true);
 
         return top;
+    }
+
+    public static string getSave(string name)
+    {
+        string fpath = Path.Combine(Application.streamingAssetsPath, "Saves", name);
+        StreamReader reader = new StreamReader(fpath);
+        string data = reader.ReadToEnd();
+
+        return data;
+    }
+
+    public static void loadSave(string data)
+    {
+        int _stage = 0; // Tutorial stage by default
+        string[] tokens = data.Split('\n');
+
+        int block = 0; // Block 0 is the header
+        int _node = 0;
+
+        // Parse tokens (start with header)
+        for (int i = 0; i < tokens.Length; i++)
+        {
+            string line = tokens[i].Trim();
+
+            // colon delimit
+            string[] toks = line.Split(":");
+            for (int j = 0; j < toks.Length; j++)
+            {
+                toks[j] = toks[j].Trim();
+            }
+
+            if (line.Length == 0) continue; // Skip empty lines
+
+            switch (block)
+            {
+                case 0:
+                    switch (toks[0])
+                    {
+                        case "stage":
+                            _stage = int.Parse(toks[1]);
+                            break;
+                        case "nodes":
+                            block++;
+                            break;
+                        default:
+                            Debug.LogError("Illegal header token");
+                            break;
+                    }
+
+                    break;
+                case 1:
+                    // Reading nodes
+                    if (_node < (int)SkillTree.NODE.SENTINEL)
+                    { // Check bounds
+
+                        SkillTree.sing.purchasedFlags[_node] = int.Parse(line) > 0;
+                        _node++;
+                    }
+
+                    if (line.Equals("editor"))
+                        block++;
+
+                    break;
+                case 2:
+                    switch (toks[0])
+                    {
+                        case "active":
+                            if (MapEditor.sing != null && toks.Length >= 2)
+                            {
+                                MapEditor.sing.importField.text = toks[1];
+                            }
+
+                            break;
+                        default:
+                            Debug.LogError("Illegal header token");
+                            break;
+                    }
+
+                    break;
+                default:
+                    Debug.LogError("Block overflow");
+                    break;
+            }
+        }
+
+        Timeliner.sing.Stage = _stage;
+        Debug.Log("Stage: " + _stage);
+
+        // Recompile
+        SkillTree.sing.compile();
     }
 }

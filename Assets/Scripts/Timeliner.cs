@@ -44,9 +44,11 @@ public class Timeliner : MonoBehaviour
             activeProfile = "new.txt";
         }
 
+        string saveData = GameManager.getSave(activeProfile);
+
         // Boot up skilltree and musicplayer
         SkillTree.sing.compile();
-        SkillTree.sing.loadSave(activeProfile);
+        GameManager.loadSave(saveData);
     }
 
     // Update is called once per frame
