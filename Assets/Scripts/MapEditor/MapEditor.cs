@@ -180,6 +180,8 @@ public class MapEditor : MonoBehaviour
     // Returns map that is hotswapped in
     public Map hotswap()
     {
+        Debug.Log("Hotswap commencing");
+
         List<string> data = exportString(songTitleField.text+"_hotswap", audioFileField.text);
         MapSerializer mapSer = MapSerializer.sing;
 
@@ -323,5 +325,12 @@ public class MapEditor : MonoBehaviour
     {
         activePhrase = p;
         updateMetaField();
+    }
+
+    public void markChange()
+    {
+        // Field has been edited
+        edited = true;
+        imageQueued = true;
     }
 }

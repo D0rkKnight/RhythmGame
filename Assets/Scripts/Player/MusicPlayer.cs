@@ -255,6 +255,8 @@ public class MusicPlayer : MonoBehaviour
             // Zero out other stuff
             Score = 0;
             Combo = 0;
+
+            Debug.Log("Interim");
         }
 
         // Reset key

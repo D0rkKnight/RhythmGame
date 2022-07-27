@@ -590,7 +590,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   notePrefab: {fileID: 848576772978090438, guid: e914aa2c2b6a2394f93aaeb0038a55eb,
     type: 3}
-  holdPrefab: {fileID: 5744367414494298441, guid: 2edee2eec6904584d9d168eb2605a7f6,
+  holdPrefab: {fileID: 7763410180275696510, guid: 8d5f1d16cd5058e48943c469f038cca5,
     type: 3}
   reboundPrefab: {fileID: 1813497413674491723, guid: c4fcec6be473cd44d8f9f43eb2cf5946,
     type: 3}
@@ -617,6 +617,7 @@ MonoBehaviour:
   notes: []
   tpOffset: 0
   lagspikeTolerance: 0.05
+  showNoteWeight: 0
   comboCounter: {fileID: 1398898063}
   pauseKey: 112
   state: 0

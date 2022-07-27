@@ -442,6 +442,32 @@ public abstract class Phrase
     // Links meta store to real values
     public virtual void writeToMeta() { }
     public virtual void readFromMeta() { }
+
+    public override bool Equals(System.Object obj)
+    {
+        if (!(obj is Phrase)) return false;
+
+        Phrase p = (Phrase)obj;
+
+        if (p.lane != lane || 
+            p.beat != beat || 
+            p.accent != accent || 
+            p.type != type || 
+            p.active != active)
+            return false;
+
+        // Check meta fields
+        if (meta.Length != p.meta.Length)
+            return false;
+
+        for (int i=0; i<meta.Length; i++)
+        {
+            if (!meta[i].Equals(p.meta[i]))
+                return false;
+        }
+
+        return true;
+    }
 }
 
 public class NonePhrase : Phrase

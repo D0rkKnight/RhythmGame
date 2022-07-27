@@ -68,13 +68,20 @@ public class BeatEditorSlot : MonoBehaviour, Clickable
 
     public void setPhrase(Phrase p)
     {
+        // Mark a change if the phrase is different
+        if (!phrase.Equals(p))
+        {
+            MapEditor.sing.markChange();
+        }
+
+        setPhraseNoHotswap(p);
+    }
+
+    public void setPhraseNoHotswap(Phrase p)
+    {
         phrase = p;
 
         updateGraphics();
-
-        // Field has been edited
-        MapEditor.sing.edited = true;
-        MapEditor.sing.imageQueued = true;
     }
 
     int Clickable.onOver()

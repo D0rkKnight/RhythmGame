@@ -10,6 +10,8 @@ public class BeatRow : MonoBehaviour
     public int rowNum;
     public List<BeatEditorSlot> slots;
 
+    public GameObject editorSlotPrefab;
+
 
     // Start is called before the first frame update
     void Awake()
@@ -28,6 +30,17 @@ public class BeatRow : MonoBehaviour
     {
         slots[0].setPhrase(p);
         txt.text = p.beat.ToString();
+    }
+
+    public void addPhrase(Phrase p)
+    {
+        GameObject slotObj = Instantiate(editorSlotPrefab, transform);
+        slotObj.transform.position = slots[slots.Count - 1].transform.position + Vector3.right * 2;
+
+        BeatEditorSlot slot = slotObj.GetComponent<BeatEditorSlot>();
+        slot.setPhrase(p);
+
+        slots.Add(slot);
     }
 
     internal string serialize()

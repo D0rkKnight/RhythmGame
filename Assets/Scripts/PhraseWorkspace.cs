@@ -47,7 +47,7 @@ public class PhraseWorkspace : MonoBehaviour, Scrollable
         Phrase newPhrase = MapEditor.sing.activePhrase.clone();
         newPhrase.beat = snapBeat;
 
-        row.setPhrase(newPhrase);
+        row.slots[0].setPhraseNoHotswap(newPhrase);
         row.txt.text = "" + snapBeat;
 
         ghost.SetActive(MapEditor.sing.InteractMode == MapEditor.MODE.WRITE);
@@ -139,10 +139,27 @@ public class PhraseWorkspace : MonoBehaviour, Scrollable
 
     public void addPhraseEntry(Phrase p)
     {
-        BeatRow br = Instantiate(beatEntryPrefab, transform.Find("Canvas")).GetComponent<BeatRow>();
-        MapEditor.sing.phraseEntries.Add(br);
+        BeatRow dupeRow = null;
+        foreach (BeatRow row in MapEditor.sing.phraseEntries)
+        {
+            if (row.slots[0].phrase.beat == p.beat)
+            {
+                dupeRow = row;
+                break;
+            }
+        }
 
-        br.setPhrase(p);
+        if (dupeRow == null)
+        {
+            BeatRow br = Instantiate(beatEntryPrefab, transform.Find("Canvas")).GetComponent<BeatRow>();
+            MapEditor.sing.phraseEntries.Add(br);
+
+            br.setPhrase(p);
+        }
+        else {
+            dupeRow.addPhrase(p);
+            
+        }
 
         updatePhraseEntries();
     }

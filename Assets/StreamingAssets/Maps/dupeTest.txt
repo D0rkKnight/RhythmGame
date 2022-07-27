@@ -1,4 +1,4 @@
-mapname: playTemp
+mapname: dupeTest
 track: track1uc.wav
 bpm: 100
 

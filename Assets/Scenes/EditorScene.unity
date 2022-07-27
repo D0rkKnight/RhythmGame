@@ -2807,6 +2807,10 @@ PrefabInstance:
       propertyPath: m_LocalPosition.x
       value: 8.47
       objectReference: {fileID: 0}
+    - target: {fileID: 983379950, guid: 3e5a8fe67b687dc4b81f154ed99e82af, type: 3}
+      propertyPath: capHeat
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1398898062, guid: 3e5a8fe67b687dc4b81f154ed99e82af, type: 3}
       propertyPath: m_AnchoredPosition.x
       value: 72.99997
