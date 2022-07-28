@@ -2895,6 +2895,11 @@ PrefabInstance:
         type: 3}
     - target: {fileID: 6973395804611573912, guid: 3e5a8fe67b687dc4b81f154ed99e82af,
         type: 3}
+      propertyPath: willUnpauseCD
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6973395804611573912, guid: 3e5a8fe67b687dc4b81f154ed99e82af,
+        type: 3}
       propertyPath: showNoteWeight
       value: 1
       objectReference: {fileID: 0}
@@ -6956,8 +6961,11 @@ MonoBehaviour:
   beatIndicator: {fileID: 315794178}
   songTitleField: {fileID: 751055546}
   audioFileField: {fileID: 176996577}
-  BPMField: {fileID: 882799206}
   importField: {fileID: 2109787436}
+  BPMField: {fileID: 882799206}
+  trackOffsetField: {fileID: 920986217}
+  bpm: 0
+  trackOffset: 0
   typeDropdown: {fileID: 1311142278}
   beatInput: {fileID: 2031204694}
   codeInd: {fileID: 505640589}
@@ -6972,7 +6980,6 @@ MonoBehaviour:
   copyKey: 99
   addPhraseEle: {fileID: 9060572}
   addPhraseIndex: 0
-  trackOffsetField: {fileID: 920986217}
   workspace: {fileID: 0}
   selectedPhraseSlot: {fileID: 0}
   dragging: 0

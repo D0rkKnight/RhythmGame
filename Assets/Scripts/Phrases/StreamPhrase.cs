@@ -6,9 +6,9 @@ using UnityEngine.UI;
 // Ziggity zoo da
 public abstract class StreamPhrase : Phrase
 {
-    public float dur = 0f;
+    public int notes = 3;
     public int width = 2;
-    public float rate = 1.0f;
+    public float noteLen = 1.0f;
     public bool recurse = false;
 
     public StreamPhrase(int lane_, float beat_, int accent_, TYPE type_, string[] _meta, int metaLen_) : 
@@ -25,9 +25,9 @@ public abstract class StreamPhrase : Phrase
     {
         base.writeMetaFields(fields);
 
-        fields[0].placeholder.GetComponent<Text>().text = "Duration";
+        fields[0].placeholder.GetComponent<Text>().text = "Num notes";
         fields[1].placeholder.GetComponent<Text>().text = "Width";
-        fields[2].placeholder.GetComponent<Text>().text = "Rate";
+        fields[2].placeholder.GetComponent<Text>().text = "Note len";
         fields[3].placeholder.GetComponent<Text>().text = "Recurse";
     }
 
@@ -35,9 +35,9 @@ public abstract class StreamPhrase : Phrase
     {
         base.writeToMeta();
 
-        meta[0] = "" + dur;
+        meta[0] = "" + notes;
         meta[1] = "" + width;
-        meta[2] = "" + rate;
+        meta[2] = "" + noteLen;
         meta[3] = recurse ? "T" : "F"; // Write in data
     }
 
@@ -45,24 +45,15 @@ public abstract class StreamPhrase : Phrase
     {
         base.readFromMeta();
 
-        float tryRes;
-        bool succ = float.TryParse(meta[0], out tryRes);
-
-        dur = 0;
-        if (succ) dur = tryRes; // Write in data
-
-        int tryInt;
+        if (int.TryParse(meta[0], out int tryInt)) notes = tryInt;
         if (int.TryParse(meta[1], out tryInt)) width = tryInt;
-        if (float.TryParse(meta[2], out tryRes)) rate = tryRes;
+        if (float.TryParse(meta[2], out float tryRes)) noteLen = tryRes;
 
-        recurse = false;
         if (meta[3].Trim().Equals("T")) recurse = true;
     }
 
     public override void spawn(MusicPlayer mp, int spawnLane, float spawnBeat, float blockFrame, float weight)
     {
-        int steps = (int) (dur * rate);
-
         // Calculate actual width and spawnlane given the situation
         // Shift bound first since the spawnLane ought to be valid
         int orgWLane = spawnLane + width - (int)Mathf.Sign(width);
@@ -98,7 +89,7 @@ public abstract class StreamPhrase : Phrase
         if (myInd+1 >= mp.phraseQueue.Count) callRecurse = false; // Can't recure if there isn't a following phrase
 
         // Stream notes
-        for(int i=0; i<steps; i++)
+        for(int i=0; i<notes; i++)
         {
             // Call the next phrase recursively
             if (callRecurse)
@@ -117,7 +108,7 @@ public abstract class StreamPhrase : Phrase
             }
 
             zzLane = streamNextLane(zzLane, mp, spawnLane, wLane, spawnBeat, blockFrame);
-            zzBeat += dur / steps;
+            zzBeat += noteLen;
         }
 
         // Deactivate reference phrase if relevant
