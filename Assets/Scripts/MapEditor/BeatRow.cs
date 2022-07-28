@@ -76,7 +76,14 @@ public class BeatRow : MonoBehaviour
 
     public void regenSlots()
     {
-        for (int i=0; i<slots.Count; i++)
-            slots[i].transform.localPosition = (i + 2) * Vector3.right + (i * 0.1f) * Vector3.back; // Later slots are farther forwards as well
+        float advance = 2;
+        for (int i = 0; i < slots.Count; i++)
+        {
+            slots[i].transform.localPosition = advance * Vector3.right + 
+                (i * 0.1f) * Vector3.back; // Later slots are farther forwards as well
+
+            TMPro.TMP_Text text = slots[i].txt;
+            advance += (text.transform.localToWorldMatrix * text.textBounds.size).x + 0.1f;
+        }
     }
 }
