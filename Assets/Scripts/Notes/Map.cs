@@ -8,6 +8,7 @@ public partial class Map
     public float endBeat;
     public string trackName;
     public int bpm;
+    public float offset; // In beats
 
     // Map is populated after creation
     public Map()

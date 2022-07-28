@@ -192,6 +192,9 @@ public partial class MapSerializer : MonoBehaviour
                 case "bpm":
                     map.bpm = int.Parse(value);
                     break;
+                case "offset":
+                    map.offset = float.Parse(value);
+                    break;
                 case "":
                     break;
                 default:

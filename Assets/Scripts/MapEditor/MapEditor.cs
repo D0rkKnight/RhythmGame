@@ -46,6 +46,8 @@ public class MapEditor : MonoBehaviour
     public GameObject addPhraseEle;
     public int addPhraseIndex = 0;
 
+    public TMP_InputField trackOffsetField;
+
     public PhraseWorkspace workspace;
 
     public enum MODE
@@ -192,7 +194,10 @@ public class MapEditor : MonoBehaviour
         Map map = mapSer.parseTokens(data.ToArray());
 
         // Hotswap kinda depends (bpm change or track change will restage map)
-        if (mapSer.activeMap == null || map.bpm != mapSer.activeMap.bpm || !map.trackName.Equals(mapSer.activeMap.trackName))
+        if (mapSer.activeMap == null || map.bpm != mapSer.activeMap.bpm || 
+            !map.trackName.Equals(mapSer.activeMap.trackName) ||
+            map.offset != mapSer.activeMap.offset
+            )
             MapSerializer.sing.stageMap(map);
         else
         {
@@ -235,6 +240,7 @@ public class MapEditor : MonoBehaviour
     {
         // Write to header
         int bpm = int.Parse(BPMField.text.Trim());
+        float offset = float.Parse(trackOffsetField.text.Trim());
 
         if (mapName.Length == 0 || track.Length == 0)
         {
@@ -247,6 +253,7 @@ public class MapEditor : MonoBehaviour
         data.Add("mapname: " + mapName);
         data.Add("track: " + track);
         data.Add("bpm: " + bpm);
+        data.Add("offset: " + offset);
 
         data.Add("\nstreamstart");
 
@@ -281,6 +288,7 @@ public class MapEditor : MonoBehaviour
         songTitleField.text = map.name;
         audioFileField.text = map.trackName;
         BPMField.text = map.bpm.ToString();
+        trackOffsetField.text = map.offset.ToString();
 
         edited = true;
     }

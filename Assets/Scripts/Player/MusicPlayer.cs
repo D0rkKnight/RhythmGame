@@ -55,7 +55,7 @@ public class MusicPlayer : MonoBehaviour
     public List<Note> notes;
     public List<Phrase> phraseQueue;
 
-    public float tpOffset = 1f; // # of seconds off the music is vs the game
+    public float tpOffset = 0f; // # of seconds off the music is vs the game
                                 // positive -> music plays first
     public float lagspikeTolerance = 0.05f;
 
@@ -148,7 +148,7 @@ public class MusicPlayer : MonoBehaviour
         currBeat = songTime / beatInterval;
 
         // Start song if ready
-        float tpTime = songTime + tpOffset;
+        float tpTime = getTrackTime();
         if (tpTime >= 0 && !TrackPlayer.sing.audio.isPlaying)
         {
             TrackPlayer.sing.play();
@@ -355,10 +355,11 @@ public class MusicPlayer : MonoBehaviour
         pausedTotal += Time.time - pauseStart;
 
         // Resync music (if music is to be played)
+        float tpTime = getTrackTime();
         if (songTime >= 0)
         {
             TrackPlayer.sing.play();
-            TrackPlayer.sing.setTime(songTime);
+            TrackPlayer.sing.setTime(tpTime);
         }
     }
 
@@ -511,5 +512,15 @@ public class MusicPlayer : MonoBehaviour
             col = columns[col].defNoteReroute;
 
         return col;
+    }
+
+    // Track time is the time the track player should be at, not the song time
+    public float getTrackTime()
+    {
+        float tpTime = songTime + tpOffset + MapSerializer.sing.activeMap.offset;
+
+        Debug.Log(MapSerializer.sing.activeMap.offset);
+
+        return tpTime;
     }
 }
