@@ -88,6 +88,10 @@ public class BeatEditorSlot : MonoBehaviour, Clickable
 
     int Clickable.onOver()
     {
+        // Don't block if scrolling or zooming (is this hacky?)
+        if (Input.mouseScrollDelta.y != 0)
+            return 1;
+
         if (Input.GetKeyDown(MapEditor.sing.copyKey))
         {
             // Write phrase to active phrase

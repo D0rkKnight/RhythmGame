@@ -24,8 +24,7 @@ public class BeatRowHover : MonoBehaviour, Clickable
 
     public int onOver()
     {
-        // Activate delete button
-        return 0; // Blocks
+        return 1; // Doesn't block
     }
 
     public void OnMouseEnter()
