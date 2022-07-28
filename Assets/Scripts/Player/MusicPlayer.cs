@@ -376,6 +376,15 @@ public class MusicPlayer : MonoBehaviour
         TrackPlayer.sing.audio.Stop();
     }
 
+    public void reloadNotes()
+    {
+        clearNotes();
+        clearPhraseQueue();
+
+        // Any audio we'd be playing would be illegal
+        TrackPlayer.sing.audio.Stop();
+    }
+
     public void clearNotes()
     {
         // Clear out note queue and active notes

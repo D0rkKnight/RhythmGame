@@ -23,8 +23,13 @@ public class MapEditor : MonoBehaviour
     public Text beatIndicator;
     public InputField songTitleField;
     public InputField audioFileField;
-    public InputField BPMField;
     public InputField importField;
+
+    public InputField BPMField;
+    public TMP_InputField trackOffsetField;
+    public float bpm;
+    public float trackOffset;
+
     public TMP_Dropdown typeDropdown;
     public BeatField beatInput;
 
@@ -45,8 +50,6 @@ public class MapEditor : MonoBehaviour
 
     public GameObject addPhraseEle;
     public int addPhraseIndex = 0;
-
-    public TMP_InputField trackOffsetField;
 
     public PhraseWorkspace workspace;
 
@@ -162,6 +165,20 @@ public class MapEditor : MonoBehaviour
                 selectedPhraseSlot.setPhrase(activePhrase.clone());
             }
         }
+
+        // Read field data
+        if (float.TryParse(BPMField.text, out float tryBpm) && tryBpm > 0
+            && tryBpm != bpm)
+        {
+            bpm = tryBpm;
+            markChange();
+        }
+        if (float.TryParse(trackOffsetField.text, out float tryTrackOffset)
+            && tryTrackOffset != trackOffset)
+        {
+            trackOffset = tryTrackOffset;
+            markChange();
+        }
     }
 
     public void play()
@@ -198,7 +215,7 @@ public class MapEditor : MonoBehaviour
             !map.trackName.Equals(mapSer.activeMap.trackName) ||
             map.offset != mapSer.activeMap.offset
             )
-            MapSerializer.sing.stageMap(map);
+            MapSerializer.sing.stageMap(map, false); // Don't reset the track position when hotswapping
         else
         {
             // delete all existing notes and then requeue new phrases
@@ -239,9 +256,6 @@ public class MapEditor : MonoBehaviour
     private List<string> exportString(string mapName, string track)
     {
         // Write to header
-        int bpm = int.Parse(BPMField.text.Trim());
-        float offset = float.Parse(trackOffsetField.text.Trim());
-
         if (mapName.Length == 0 || track.Length == 0)
         {
             Debug.LogError("Invalid map/track name");
@@ -253,7 +267,7 @@ public class MapEditor : MonoBehaviour
         data.Add("mapname: " + mapName);
         data.Add("track: " + track);
         data.Add("bpm: " + bpm);
-        data.Add("offset: " + offset);
+        data.Add("offset: " + trackOffset);
 
         data.Add("\nstreamstart");
 

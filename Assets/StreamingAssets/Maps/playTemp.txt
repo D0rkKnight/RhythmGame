@@ -1,8 +1,10 @@
 mapname: playTemp
-track: track1uc.wav
-bpm: 50
-offset: 0
+track: rhythm1.mp3
+bpm: 100
+offset: 0.5
 
 streamstart
+[0]1
+[0.125]Z(0.25,-2,8,F)4
 [1]1
-[2]1
+[1.125]Z(0.5,-2,4,F)4

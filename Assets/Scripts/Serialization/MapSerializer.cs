@@ -39,6 +39,7 @@ public partial class MapSerializer : MonoBehaviour
 
     public static MapSerializer sing;
     public bool loadQueued = false;
+    public bool resetTrackPosition = true;
 
     private void Awake()
     {
@@ -86,19 +87,20 @@ public partial class MapSerializer : MonoBehaviour
 
         if (fname.Length > 0)
         {
-            stageMap(parseMap(fname));
+            stageMap(parseMap(fname), true);
         }
 
         // Don't do anything if we don't have a map to generate
     }
 
-    public void stageMap(Map map)
+    public void stageMap(Map map, bool resTrackPos)
     {
         activeMap = map;
 
         // Start music
         TrackPlayer.sing.loadTrack(activeMap.trackName);
         loadQueued = true;
+        resetTrackPosition = resTrackPos;
     }
 
     public Map parseMap(string fname)
@@ -153,7 +155,8 @@ public partial class MapSerializer : MonoBehaviour
             mPlay.BPM = activeMap.bpm;
 
             // Reset music player
-            mPlay.resetSongEnv();
+            if (resetTrackPosition)
+                mPlay.resetSongEnv();
 
             // Map is populated now, load into music player
             foreach (Phrase p in activeMap.phrases)
@@ -164,6 +167,7 @@ public partial class MapSerializer : MonoBehaviour
             // Align music
             TrackPlayer.sing.resetTrack();
             loadQueued = false;
+            resetTrackPosition = true; // Default value
         }
     }
 
