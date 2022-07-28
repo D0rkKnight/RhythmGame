@@ -61,7 +61,9 @@ public class PhraseWorkspace : MonoBehaviour, Scrollable
         row.slots[0].setPhraseNoHotswap(newPhrase);
         row.txt.text = "" + snapBeat;
 
-        ghost.SetActive(MapEditor.sing.InteractMode == MapEditor.MODE.WRITE);
+        float ghostY = ghost.transform.localPosition.y;
+        ghost.SetActive(MapEditor.sing.InteractMode == MapEditor.MODE.WRITE &&
+            -ghostY <= height && ghostY <= 0);
 
         if (MapEditor.sing.dragging)
         {

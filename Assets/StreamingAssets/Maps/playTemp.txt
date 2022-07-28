@@ -3,4 +3,5 @@ track: track1uc.wav
 bpm: 100
 
 streamstart
-[3]1
+[0]Z(5,2,1,F)1
+[0]1

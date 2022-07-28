@@ -100,8 +100,6 @@ public abstract class StreamPhrase : Phrase
         // Stream notes
         for(int i=0; i<steps; i++)
         {
-            zzBeat += dur / steps;
-
             // Call the next phrase recursively
             if (callRecurse)
             {
@@ -119,6 +117,7 @@ public abstract class StreamPhrase : Phrase
             }
 
             zzLane = streamNextLane(zzLane, mp, spawnLane, wLane, spawnBeat, blockFrame);
+            zzBeat += dur / steps;
         }
 
         // Deactivate reference phrase if relevant
