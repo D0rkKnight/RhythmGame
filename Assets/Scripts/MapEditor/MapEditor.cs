@@ -210,20 +210,8 @@ public class MapEditor : MonoBehaviour
 
         Map map = mapSer.parseTokens(data.ToArray());
 
-        // Hotswap kinda depends (bpm change or track change will restage map)
-        if (mapSer.activeMap == null || map.bpm != mapSer.activeMap.bpm || 
-            !map.trackName.Equals(mapSer.activeMap.trackName) ||
-            map.offset != mapSer.activeMap.offset
-            )
-            MapSerializer.sing.stageMap(map, false); // Don't reset the track position when hotswapping
-        else
-        {
-            // delete all existing notes and then requeue new phrases
-            MusicPlayer.sing.clearNotes();
-            MusicPlayer.sing.clearPhraseQueue();
-
-            foreach (Phrase p in map.phrases) MusicPlayer.sing.enqueuePhrase(p);
-        }
+        // Just requeue the whole map while retaining track position
+        MapSerializer.sing.stageMap(map, false);
 
         // Pause the mplayer
         MusicPlayer.sing.pause();

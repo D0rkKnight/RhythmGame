@@ -155,8 +155,7 @@ public partial class MapSerializer : MonoBehaviour
             mPlay.BPM = activeMap.bpm;
 
             // Reset music player
-            if (resetTrackPosition)
-                mPlay.resetSongEnv();
+            mPlay.resetSongEnv(resetTrackPosition);
 
             // Map is populated now, load into music player
             foreach (Phrase p in activeMap.phrases)

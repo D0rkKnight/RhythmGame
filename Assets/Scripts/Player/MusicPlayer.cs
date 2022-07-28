@@ -363,11 +363,14 @@ public class MusicPlayer : MonoBehaviour
         }
     }
 
-    public void resetSongEnv()
+    public void resetSongEnv(bool resetTrackPos = true)
     {
-        songStart = Time.time + songStartDelay;
-        pausedTotal = 0;
-        scroll = 0;
+        if (resetTrackPos)
+        {
+            songStart = Time.time + songStartDelay;
+            pausedTotal = 0;
+            scroll = 0;
+        }
 
         clearNotes();
         clearPhraseQueue();
