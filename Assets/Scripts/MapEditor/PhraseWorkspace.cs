@@ -59,7 +59,7 @@ public class PhraseWorkspace : MonoBehaviour, Scrollable
         newPhrase.beat = snapBeat;
 
         row.slots[0].setPhraseNoHotswap(newPhrase);
-        row.txt.text = "" + snapBeat;
+        row.regenerate();
 
         float ghostY = ghost.transform.localPosition.y;
         ghost.SetActive(MapEditor.sing.InteractMode == MapEditor.MODE.WRITE &&

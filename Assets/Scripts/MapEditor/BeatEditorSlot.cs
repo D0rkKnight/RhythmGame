@@ -119,7 +119,7 @@ public class BeatEditorSlot : MonoBehaviour, Clickable
         transform.parent = null;
 
         parent.desIfEmpty();
-        parent.regenSlots();
+        parent.regenerate();
 
         parent = null;
     }

@@ -312,6 +312,8 @@ public class MapEditor : MonoBehaviour
     {
         phraseEntries.Remove(entry);
         Destroy(entry.gameObject);
+
+        markChange();
     }
 
     public void addAccent(int amt)

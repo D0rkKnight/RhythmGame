@@ -47,7 +47,7 @@ public class BeatRow : MonoBehaviour
         slots.Add(slot);
         slot.subSlot(this);
 
-        regenSlots();
+        regenerate();
     }
 
     internal void serialize(List<string> data)
@@ -74,8 +74,11 @@ public class BeatRow : MonoBehaviour
         }
     }
 
-    public void regenSlots()
+    public void regenerate()
     {
+        if (slots.Count > 0)
+            txt.text = slots[0].phrase.beat + "";
+
         float advance = 2;
         for (int i = 0; i < slots.Count; i++)
         {
