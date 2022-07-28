@@ -66,6 +66,7 @@ public class MapEditor : MonoBehaviour
         }
     }
     public BeatEditorSlot selectedPhraseSlot = null;
+    public bool dragging = false;
 
     // Start is called before the first frame update
     void Awake()
@@ -183,6 +184,9 @@ public class MapEditor : MonoBehaviour
         Debug.Log("Hotswap commencing");
 
         List<string> data = exportString(songTitleField.text+"_hotswap", audioFileField.text);
+
+        foreach (string s in data) Debug.Log(s);
+
         MapSerializer mapSer = MapSerializer.sing;
 
         Map map = mapSer.parseTokens(data.ToArray());
@@ -249,7 +253,7 @@ public class MapEditor : MonoBehaviour
         // TODO
         foreach(BeatRow br in phraseEntries)
         {
-            data.Add(br.serialize());
+            br.serialize(data);
         }
 
         return data;

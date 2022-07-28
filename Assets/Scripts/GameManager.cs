@@ -159,8 +159,11 @@ public class GameManager : MonoBehaviour
             }
         }
 
-        Timeliner.sing.Stage = _stage;
-        Debug.Log("Stage: " + _stage);
+        if (Timeliner.sing != null)
+        {
+            Timeliner.sing.Stage = _stage;
+            Debug.Log("Stage: " + _stage);
+        }
 
         // Recompile
         SkillTree.sing.compile();

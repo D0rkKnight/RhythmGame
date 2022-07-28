@@ -4859,6 +4859,8 @@ MonoBehaviour:
     type: 3}
   beatEntryPrefab: {fileID: 5900327795777386045, guid: b94e3ec7365d5294198c112fee160e01,
     type: 3}
+  editorSlotPrefab: {fileID: 4537746673760429262, guid: 342bf641807daee4192db402091c1ccc,
+    type: 3}
   ghost: {fileID: 539346557}
   height: 0
   beatsPerInterval: 2
@@ -6607,6 +6609,7 @@ MonoBehaviour:
   addPhraseIndex: 0
   workspace: {fileID: 0}
   selectedPhraseSlot: {fileID: 0}
+  dragging: 0
 --- !u!1 &1670609440
 GameObject:
   m_ObjectHideFlags: 0

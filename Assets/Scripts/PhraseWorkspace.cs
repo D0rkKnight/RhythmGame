@@ -7,6 +7,8 @@ public class PhraseWorkspace : MonoBehaviour, Scrollable
 {
     public GameObject beatMarkerPrefab;
     public GameObject beatEntryPrefab;
+    public GameObject editorSlotPrefab;
+
     public GameObject ghost;
     public float height;
 
@@ -20,6 +22,15 @@ public class PhraseWorkspace : MonoBehaviour, Scrollable
     void Start()
     {
         if (height <= 0) height = transform.Find("BG").localScale.y;
+
+        BeatRow ghostRow = ghost.GetComponent<BeatRow>();
+        ghostRow.addPhrase(MapEditor.sing.activePhrase.clone());
+        ghostRow.slots[0].enabled = false;
+
+        SpriteRenderer slotRend = ghostRow.slots[0].GetComponentInChildren<SpriteRenderer>();
+        Color slotCol = slotRend.color;
+        slotCol.a = 0.5f;
+        slotRend.color = slotCol;
 
         regenBeatMarkers();
     }
@@ -51,6 +62,35 @@ public class PhraseWorkspace : MonoBehaviour, Scrollable
         row.txt.text = "" + snapBeat;
 
         ghost.SetActive(MapEditor.sing.InteractMode == MapEditor.MODE.WRITE);
+
+        if (MapEditor.sing.dragging)
+        {
+            // Move around the slot
+            BeatEditorSlot slot = MapEditor.sing.selectedPhraseSlot;
+
+            if (slot != null && snapBeat != slot.phrase.beat)
+            {
+                Debug.Log(MapEditor.sing.selectedPhraseSlot.isActiveAndEnabled);
+
+                slot.unsubSlot();
+
+
+                Phrase slotP = slot.phrase.clone();
+                slotP.beat = snapBeat;
+                slot.setPhrase(slotP); // Set new beat
+
+                MapEditor.sing.setActivePhrase(slotP); // Copy back into active phrase
+
+                // Add to new slot
+                addPhraseEntry(slot);
+            }
+        }
+
+        // Mouse up
+        if (Input.GetMouseButtonUp(0))
+        {
+            MapEditor.sing.dragging = false;
+        }
     }
 
     public void regenBeatMarkers()
@@ -139,27 +179,32 @@ public class PhraseWorkspace : MonoBehaviour, Scrollable
 
     public void addPhraseEntry(Phrase p)
     {
-        BeatRow dupeRow = null;
+        GameObject slotObj = Instantiate(editorSlotPrefab);
+        BeatEditorSlot slot = slotObj.GetComponent<BeatEditorSlot>();
+
+        slot.setPhrase(p);
+        addPhraseEntry(slot);
+    }
+
+    public void addPhraseEntry(BeatEditorSlot slot)
+    {
+        BeatRow activeRow = null;
         foreach (BeatRow row in MapEditor.sing.phraseEntries)
         {
-            if (row.slots[0].phrase.beat == p.beat)
+            if (row.slots[0].phrase.beat == slot.phrase.beat)
             {
-                dupeRow = row;
+                activeRow = row;
                 break;
             }
         }
 
-        if (dupeRow == null)
+        if (activeRow == null)
         {
-            BeatRow br = Instantiate(beatEntryPrefab, transform.Find("Canvas")).GetComponent<BeatRow>();
-            MapEditor.sing.phraseEntries.Add(br);
+            activeRow = Instantiate(beatEntryPrefab, transform.Find("Canvas")).GetComponent<BeatRow>();
+            MapEditor.sing.phraseEntries.Add(activeRow);
+        }
 
-            br.setPhrase(p);
-        }
-        else {
-            dupeRow.addPhrase(p);
-            
-        }
+        activeRow.addSlot(slot);
 
         updatePhraseEntries();
     }

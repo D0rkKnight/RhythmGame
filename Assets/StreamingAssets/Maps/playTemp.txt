@@ -1,7 +1,6 @@
 mapname: playTemp
-track: rhythm1.mp3
+track: track1uc.wav
 bpm: 100
 
 streamstart
-[0]1
-[1]Z(0.5,-2,4,F)4
+[3]1

@@ -19,7 +19,9 @@ public class BeatEditorSlot : MonoBehaviour, Clickable
     void Awake()
     {
         rend = bg.GetComponent<SpriteRenderer>();
-        parent = transform.parent.GetComponent<BeatRow>();
+
+        if (transform.parent != null)
+            parent = transform.parent.GetComponent<BeatRow>();
 
         phrase = new NonePhrase(0); // Random null phrase
         updateGraphics();
@@ -69,7 +71,7 @@ public class BeatEditorSlot : MonoBehaviour, Clickable
     public void setPhrase(Phrase p)
     {
         // Mark a change if the phrase is different
-        if (!phrase.Equals(p))
+        if (phrase == null || !phrase.Equals(p))
         {
             MapEditor.sing.markChange();
         }
@@ -92,7 +94,7 @@ public class BeatEditorSlot : MonoBehaviour, Clickable
             MapEditor.sing.setActivePhrase(phrase.clone());
         }
 
-        return 1;
+        return 0;
     }
 
     public int onClick(int code)
@@ -102,10 +104,29 @@ public class BeatEditorSlot : MonoBehaviour, Clickable
         {
             MapEditor.sing.setActivePhrase(phrase.clone());
             MapEditor.sing.selectedPhraseSlot = this;
+            MapEditor.sing.dragging = true;
 
             Debug.Log(phrase.ToString());
+
+            return 0; // Catches input
         }
 
-        return 0; // Catches input
+        return 1; // Lets input through if not editing
+    }
+    public void unsubSlot()
+    {
+        parent.slots.Remove(this);
+        transform.parent = null;
+
+        parent.desIfEmpty();
+        parent.regenSlots();
+
+        parent = null;
+    }
+
+    public void subSlot(BeatRow par)
+    {
+        transform.parent = par.transform;
+        parent = par;
     }
 }

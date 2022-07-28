@@ -35,32 +35,48 @@ public class BeatRow : MonoBehaviour
     public void addPhrase(Phrase p)
     {
         GameObject slotObj = Instantiate(editorSlotPrefab, transform);
-        slotObj.transform.position = slots[slots.Count - 1].transform.position + Vector3.right * 2;
 
         BeatEditorSlot slot = slotObj.GetComponent<BeatEditorSlot>();
         slot.setPhrase(p);
 
-        slots.Add(slot);
+        addSlot(slot);
     }
 
-    internal string serialize()
+    public void addSlot(BeatEditorSlot slot)
     {
-        string o = "";
+        slots.Add(slot);
+        slot.subSlot(this);
 
+        regenSlots();
+    }
+
+    internal void serialize(List<string> data)
+    {
         // Add row data
         for (int i=0; i<slots.Count; i++)
         {
             BeatEditorSlot slot = slots[i];
-            o += slot.serialize();
-            
-            if (i < slots.Count-1) o += "\n";
+            data.Add(slot.serialize());
         }
-
-        return o;
     }
 
     public void removeSelf()
     {
         MapEditor.sing.removePhraseEntry(this);
+    }
+
+    public void desIfEmpty()
+    {
+        if (slots.Count == 0)
+        {
+            MapEditor.sing.phraseEntries.Remove(this);
+            Destroy(gameObject);
+        }
+    }
+
+    public void regenSlots()
+    {
+        for (int i=0; i<slots.Count; i++)
+            slots[i].transform.localPosition = (i + 2) * Vector3.right + (i * 0.1f) * Vector3.back; // Later slots are farther forwards as well
     }
 }
