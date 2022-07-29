@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 
-public class PhraseWorkspace : MonoBehaviour, Scrollable
+public class WorkspaceEditor : MonoBehaviour, Scrollable
 {
     public GameObject beatMarkerPrefab;
     public GameObject beatEntryPrefab;
@@ -153,7 +153,7 @@ public class PhraseWorkspace : MonoBehaviour, Scrollable
 
     public void updatePhraseEntries()
     {
-        foreach (BeatRow entry in MapEditor.sing.phraseEntries)
+        foreach (BeatRow entry in MapEditor.sing.activeWorkspace.rows)
         {
             // Set right altitude
             entry.transform.localPosition =
@@ -191,7 +191,7 @@ public class PhraseWorkspace : MonoBehaviour, Scrollable
     public void addPhraseEntry(BeatEditorSlot slot)
     {
         BeatRow activeRow = null;
-        foreach (BeatRow row in MapEditor.sing.phraseEntries)
+        foreach (BeatRow row in MapEditor.sing.activeWorkspace.rows)
         {
             if (row.slots[0].phrase.beat == slot.phrase.beat)
             {
@@ -203,7 +203,7 @@ public class PhraseWorkspace : MonoBehaviour, Scrollable
         if (activeRow == null)
         {
             activeRow = Instantiate(beatEntryPrefab, transform.Find("Canvas")).GetComponent<BeatRow>();
-            MapEditor.sing.phraseEntries.Add(activeRow);
+            MapEditor.sing.activeWorkspace.rows.Add(activeRow);
         }
 
         activeRow.addSlot(slot);

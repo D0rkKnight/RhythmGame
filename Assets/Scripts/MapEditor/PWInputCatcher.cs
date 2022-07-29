@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class PWInputCatcher : MonoBehaviour, Clickable
 {
-    [SerializeField] private PhraseWorkspace workspace;
+    [SerializeField] private WorkspaceEditor workspace;
 
     public int onClick(int code)
     {

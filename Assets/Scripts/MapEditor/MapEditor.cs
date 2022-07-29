@@ -12,7 +12,8 @@ public class MapEditor : MonoBehaviour
 
     public Phrase activePhrase = new NotePhrase(0, 0, 0);
     public Phrase nonePhrase = new NonePhrase(0);
-    public List<BeatRow> phraseEntries = new List<BeatRow>();
+    public Workspace activeWorkspace = null;
+    public List<Workspace> workspaces = new List<Workspace>();
 
     public int ActiveLane
     {
@@ -31,6 +32,7 @@ public class MapEditor : MonoBehaviour
     public float trackOffset;
 
     public TMP_Dropdown typeDropdown;
+    public TMP_Dropdown workspaceDropdown;
     public BeatField beatInput;
 
     public Text codeInd;
@@ -51,7 +53,7 @@ public class MapEditor : MonoBehaviour
     public GameObject addPhraseEle;
     public int addPhraseIndex = 0;
 
-    public PhraseWorkspace workspace;
+    public WorkspaceEditor workspaceEditor;
 
     public enum MODE
     {
@@ -80,7 +82,7 @@ public class MapEditor : MonoBehaviour
         sing = this;
 
         phraseMarker = transform.Find("Canvas/PhraseMarker");
-        workspace = transform.Find("PhraseWorkspace").GetComponent<PhraseWorkspace>();
+        workspaceEditor = transform.Find("PhraseWorkspace").GetComponent<WorkspaceEditor>();
 
         // Create meta fields
         metaFields = new List<InputField>();
@@ -91,6 +93,9 @@ public class MapEditor : MonoBehaviour
             field.position = metaFieldAnchor.position + Vector3.down * 1 * i;
             metaFields.Add(field.GetComponent<InputField>());
         }
+
+        // Create default workspace
+        genDefWorkspaces();
     }
 
     private void Start()
@@ -124,6 +129,31 @@ public class MapEditor : MonoBehaviour
             Phrase p = sing.activePhrase;
             Phrase newPhrase = Phrase.staticCon(p.lane, p.beat, p.accent, null, (Phrase.TYPE) newType);
             sing.setActivePhrase(newPhrase);
+        });
+
+        // Setup workspace dropdown
+        workspaceDropdown.ClearOptions();
+        options = new List<TMP_Dropdown.OptionData>();
+        foreach (Workspace space in workspaces)
+        {
+            options.Add(new TMP_Dropdown.OptionData(space.name));
+        }
+
+        workspaceDropdown.AddOptions(options);
+
+        workspaceDropdown.onValueChanged.AddListener((data) =>
+        {
+            // Deactivate existing rows
+            foreach (BeatRow row in activeWorkspace.rows)
+                row.gameObject.SetActive(false);
+
+            activeWorkspace = workspaces[data];
+
+            // Activate new rows
+            foreach (BeatRow row in activeWorkspace.rows)
+                row.gameObject.SetActive(true);
+
+            Debug.Log("Activating workspace " + data);
         });
     }
 
@@ -207,7 +237,6 @@ public class MapEditor : MonoBehaviour
         foreach (string s in data) Debug.Log(s);
 
         MapSerializer mapSer = MapSerializer.sing;
-
         Map map = mapSer.parseTokens(data.ToArray());
 
         // Just requeue the whole map while retaining track position
@@ -260,7 +289,7 @@ public class MapEditor : MonoBehaviour
         data.Add("\nstreamstart");
 
         // TODO
-        foreach(BeatRow br in phraseEntries)
+        foreach(BeatRow br in activeWorkspace.rows)
         {
             br.serialize(data);
         }
@@ -270,11 +299,25 @@ public class MapEditor : MonoBehaviour
 
     public void clear()
     {
-        foreach (BeatRow br in phraseEntries)
+        foreach (Workspace space in workspaces)
         {
-            Destroy(br.gameObject);
+            foreach (BeatRow br in space.rows)
+            {
+                Destroy(br.gameObject);
+            }
         }
-        phraseEntries.Clear();
+
+        workspaces.Clear();
+        genDefWorkspaces();
+    }
+
+    public void genDefWorkspaces()
+    {
+        workspaces.Add(new Workspace(new List<BeatRow>(), "Main"));
+        workspaces.Add(new Workspace(new List<BeatRow>(), "Sub1"));
+        workspaces.Add(new Workspace(new List<BeatRow>(), "Sub2"));
+
+        activeWorkspace = workspaces[0];
     }
 
     public void import(Map map)
@@ -284,7 +327,7 @@ public class MapEditor : MonoBehaviour
         // Import to phrase entries
         for (int i = 0; i < map.phrases.Count; i++)
         {
-            workspace.addPhraseEntry(map.phrases[i].clone());
+            workspaceEditor.addPhraseEntry(map.phrases[i].clone());
         }
 
         songTitleField.text = map.name;
@@ -320,7 +363,7 @@ public class MapEditor : MonoBehaviour
 
     public void removePhraseEntry(BeatRow entry)
     {
-        phraseEntries.Remove(entry);
+        activeWorkspace.rows.Remove(entry);
         Destroy(entry.gameObject);
 
         markChange();

@@ -12,7 +12,6 @@ public class BeatRow : MonoBehaviour
 
     public GameObject editorSlotPrefab;
 
-
     // Start is called before the first frame update
     void Awake()
     {
@@ -69,7 +68,7 @@ public class BeatRow : MonoBehaviour
     {
         if (slots.Count == 0)
         {
-            MapEditor.sing.phraseEntries.Remove(this);
+            MapEditor.sing.activeWorkspace.rows.Remove(this);
             Destroy(gameObject);
         }
     }

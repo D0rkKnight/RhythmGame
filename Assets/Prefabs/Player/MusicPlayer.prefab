@@ -620,7 +620,8 @@ MonoBehaviour:
   showNoteWeight: 0
   comboCounter: {fileID: 1398898063}
   pauseKey: 112
-  state: 0
+  state: 3
+  pauseOnAwake: 0
   willUnpauseCD: 1
   accuracyPopupPrefab: {fileID: 7099239638739727420, guid: 48089a94e0dd7b043b7b4b6b703c989e,
     type: 3}
@@ -649,6 +650,7 @@ MonoBehaviour:
   width: 4
   noteBlockLen: 0.25
   loadQueued: 0
+  resetTrackPosition: 1
 --- !u!114 &6973395804611573917
 MonoBehaviour:
   m_ObjectHideFlags: 0

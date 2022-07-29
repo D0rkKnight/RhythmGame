@@ -77,13 +77,14 @@ public class MusicPlayer : MonoBehaviour
     // Pause functionality
     public enum STATE
     {
-        RUN, PAUSE, INTERIM
+        RUN, PAUSE, INTERIM, SLEEPING
     }
 
     public KeyCode pauseKey = KeyCode.P;
     private float pauseStart = 0f;
     private float pausedTotal;
-    public STATE state = STATE.RUN;
+    public STATE state = STATE.SLEEPING;
+    public bool pauseOnAwake = false;
 
     float interimTil = 0; // Deadline for interim period between songs
     public bool willUnpauseCD = true; // Countdown on unpause
@@ -134,6 +135,9 @@ public class MusicPlayer : MonoBehaviour
                 break;
             case STATE.INTERIM:
                 stateInter();
+                break;
+            case STATE.SLEEPING:
+                stateSleep();
                 break;
             default:
                 Debug.LogError("Illegal game state");
@@ -341,6 +345,22 @@ public class MusicPlayer : MonoBehaviour
         }
     }
 
+    private void stateSleep()
+    {
+        // Waits for a map to queue up, then resets the environment and pauses.
+
+        if (MapSerializer.sing.activeMap != null)
+        {
+            resetSongEnv();
+            MapSerializer.sing.playMap();
+
+            if (pauseOnAwake)
+                pause();
+            else
+                state = STATE.RUN;
+        }
+    }
+
     public void pause()
     {
         if (state != STATE.PAUSE) pauseStart = Time.time;
@@ -530,8 +550,6 @@ public class MusicPlayer : MonoBehaviour
     public float getTrackTime()
     {
         float tpTime = songTime + tpOffset + MapSerializer.sing.activeMap.offset;
-
-        Debug.Log(MapSerializer.sing.activeMap.offset);
 
         return tpTime;
     }
