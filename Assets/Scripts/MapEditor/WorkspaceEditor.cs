@@ -211,6 +211,9 @@ public class WorkspaceEditor : MonoBehaviour, Scrollable
 
         activeRow.addSlot(slot);
 
+        // Resort workspace
+        MapEditor.sing.workspace.sortRows();
+
         updatePhraseEntries();
     }
 

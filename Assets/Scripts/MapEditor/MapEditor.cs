@@ -13,13 +13,9 @@ public class MapEditor : MonoBehaviour
     public Phrase activePhrase = new NotePhrase(0, 0, 0);
     public Phrase nonePhrase = new NonePhrase(0);
 
-    public struct Workspace
-    {
-        public List<BeatRow> rows;
-        public PhraseGroup group;
-    }
+
     public List<PhraseGroup> groups = new List<PhraseGroup>();
-    public Workspace workspace;
+    public Workspace workspace = new Workspace(new List<BeatRow>(), null);
 
     public int ActiveLane
     {
@@ -326,10 +322,7 @@ public class MapEditor : MonoBehaviour
         groups.Add(new PhraseGroup(new List<Phrase>(), "Sub1"));
         groups.Add(new PhraseGroup(new List<Phrase>(), "Sub2"));
 
-        if (workspace.rows == null)
-            workspace.rows = new List<BeatRow>();
         workspace.rows.Clear();
-
         workspace.group = groups[0];
     }
 
