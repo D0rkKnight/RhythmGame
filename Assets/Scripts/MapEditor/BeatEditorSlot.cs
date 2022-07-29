@@ -41,6 +41,8 @@ public class BeatEditorSlot : MonoBehaviour, Clickable
             switch (phrase.type)
             {
                 case Phrase.TYPE.NOTE:
+                case Phrase.TYPE.ZIGZAG:
+                case Phrase.TYPE.MANY:
                     newCol = Color.cyan;
                     break;
                 case Phrase.TYPE.HOLD:

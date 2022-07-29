@@ -14,4 +14,13 @@ public class PhraseGroup
         phrases = phrases_;
         name = name_;
     }
+
+    public PhraseGroup clone()
+    {
+        List<Phrase> newPhrases = new List<Phrase>();
+        foreach (Phrase p in phrases)
+            newPhrases.Add(p.clone());
+
+        return new PhraseGroup(newPhrases, name);
+    }
 }

@@ -97,7 +97,7 @@ public class MapEditor : MonoBehaviour
         }
 
         // Create default workspace
-        resetWorkspaces();
+        genDefWorkspaces();
     }
 
     private void Start()
@@ -313,16 +313,17 @@ public class MapEditor : MonoBehaviour
         }
 
         groups.Clear();
-        resetWorkspaces();
+        workspace.rows.Clear();
+        workspace.group = null;
     }
 
-    public void resetWorkspaces()
+    public void genDefWorkspaces()
     {
+        clear();
+
         groups.Add(new PhraseGroup(new List<Phrase>(), "Main"));
         groups.Add(new PhraseGroup(new List<Phrase>(), "Sub1"));
         groups.Add(new PhraseGroup(new List<Phrase>(), "Sub2"));
-
-        workspace.rows.Clear();
         workspace.group = groups[0];
     }
 
@@ -330,11 +331,15 @@ public class MapEditor : MonoBehaviour
     {
         clear(); // Clean slate
 
-        // Import to phrase entries
-        for (int i = 0; i < map.groups[0].phrases.Count; i++)
+        foreach (PhraseGroup grp in map.groups)
         {
-            workspaceEditor.addPhraseEntry(map.groups[0].phrases[i].clone());
+            groups.Add(grp.clone());
         }
+        workspace.group = groups[0];
+
+        // Import to phrase entries
+        foreach (Phrase p in groups[0].phrases)
+            workspaceEditor.addPhraseEntry(p.clone());
 
         songTitleField.text = map.name;
         audioFileField.text = map.trackName;
