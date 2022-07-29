@@ -4,14 +4,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-public class Workspace
+public class PhraseGroup
 {
-    public List<BeatRow> rows;
+    public List<Phrase> phrases;
     public string name;
 
-    public Workspace(List<BeatRow> rows_, string name_)
+    public PhraseGroup(List<Phrase> phrases_, string name_)
     {
-        rows = rows_;
+        phrases = phrases_;
         name = name_;
     }
 }

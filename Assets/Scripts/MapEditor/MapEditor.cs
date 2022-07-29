@@ -12,8 +12,14 @@ public class MapEditor : MonoBehaviour
 
     public Phrase activePhrase = new NotePhrase(0, 0, 0);
     public Phrase nonePhrase = new NonePhrase(0);
-    public Workspace activeWorkspace = null;
-    public List<Workspace> workspaces = new List<Workspace>();
+
+    public struct Workspace
+    {
+        public List<BeatRow> rows;
+        public PhraseGroup group;
+    }
+    public List<PhraseGroup> groups = new List<PhraseGroup>();
+    public Workspace workspace;
 
     public int ActiveLane
     {
@@ -95,7 +101,7 @@ public class MapEditor : MonoBehaviour
         }
 
         // Create default workspace
-        genDefWorkspaces();
+        resetWorkspaces();
     }
 
     private void Start()
@@ -134,7 +140,7 @@ public class MapEditor : MonoBehaviour
         // Setup workspace dropdown
         workspaceDropdown.ClearOptions();
         options = new List<TMP_Dropdown.OptionData>();
-        foreach (Workspace space in workspaces)
+        foreach (PhraseGroup space in groups)
         {
             options.Add(new TMP_Dropdown.OptionData(space.name));
         }
@@ -143,15 +149,16 @@ public class MapEditor : MonoBehaviour
 
         workspaceDropdown.onValueChanged.AddListener((data) =>
         {
-            // Deactivate existing rows
-            foreach (BeatRow row in activeWorkspace.rows)
-                row.gameObject.SetActive(false);
+            // Destroy existing rows
+            foreach (BeatRow row in workspace.rows)
+                Destroy(row.gameObject);
+            workspace.rows.Clear();
 
-            activeWorkspace = workspaces[data];
+            // Load in active rows
+            foreach (Phrase p in groups[data].phrases)
+                workspaceEditor.addPhraseEntry(p.clone());
 
-            // Activate new rows
-            foreach (BeatRow row in activeWorkspace.rows)
-                row.gameObject.SetActive(true);
+            workspace.group = groups[data];
 
             Debug.Log("Activating workspace " + data);
         });
@@ -288,10 +295,15 @@ public class MapEditor : MonoBehaviour
 
         data.Add("\nstreamstart");
 
-        // TODO
-        foreach(BeatRow br in activeWorkspace.rows)
+        foreach (PhraseGroup group in groups)
         {
-            br.serialize(data);
+            //data.Add(group.name);
+            foreach (Phrase p in group.phrases)
+            {
+                data.Add(p.serialize());
+            }
+
+            //data.Add("End\n");
         }
 
         return data;
@@ -299,25 +311,26 @@ public class MapEditor : MonoBehaviour
 
     public void clear()
     {
-        foreach (Workspace space in workspaces)
+        foreach (BeatRow row in workspace.rows)
         {
-            foreach (BeatRow br in space.rows)
-            {
-                Destroy(br.gameObject);
-            }
+            Destroy(row.gameObject);
         }
 
-        workspaces.Clear();
-        genDefWorkspaces();
+        groups.Clear();
+        resetWorkspaces();
     }
 
-    public void genDefWorkspaces()
+    public void resetWorkspaces()
     {
-        workspaces.Add(new Workspace(new List<BeatRow>(), "Main"));
-        workspaces.Add(new Workspace(new List<BeatRow>(), "Sub1"));
-        workspaces.Add(new Workspace(new List<BeatRow>(), "Sub2"));
+        groups.Add(new PhraseGroup(new List<Phrase>(), "Main"));
+        groups.Add(new PhraseGroup(new List<Phrase>(), "Sub1"));
+        groups.Add(new PhraseGroup(new List<Phrase>(), "Sub2"));
 
-        activeWorkspace = workspaces[0];
+        if (workspace.rows == null)
+            workspace.rows = new List<BeatRow>();
+        workspace.rows.Clear();
+
+        workspace.group = groups[0];
     }
 
     public void import(Map map)
@@ -336,6 +349,11 @@ public class MapEditor : MonoBehaviour
         trackOffsetField.text = map.offset.ToString();
 
         edited = true;
+    }
+
+    public void importPhrases(PhraseGroup group)
+    {
+        
     }
 
     public void import()
@@ -363,7 +381,7 @@ public class MapEditor : MonoBehaviour
 
     public void removePhraseEntry(BeatRow entry)
     {
-        activeWorkspace.rows.Remove(entry);
+        workspace.rows.Remove(entry);
         Destroy(entry.gameObject);
 
         markChange();

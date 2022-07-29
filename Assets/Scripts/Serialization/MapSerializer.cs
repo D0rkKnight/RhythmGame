@@ -125,6 +125,7 @@ public partial class MapSerializer : MonoBehaviour
         {
             // Clean the token
             string trimmed = tok.Trim();
+            if (trimmed.Length == 0) continue; // Skip empty tokens
 
             switch (state)
             {

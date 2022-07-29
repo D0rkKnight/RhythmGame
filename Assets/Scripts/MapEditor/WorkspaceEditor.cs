@@ -93,6 +93,9 @@ public class WorkspaceEditor : MonoBehaviour, Scrollable
         {
             MapEditor.sing.dragging = false;
         }
+
+        // Regenerate phrase group data
+        MapEditor.sing.workspace.group.phrases = rowsToPhraseListing(MapEditor.sing.workspace.rows);
     }
 
     public void regenBeatMarkers()
@@ -153,7 +156,7 @@ public class WorkspaceEditor : MonoBehaviour, Scrollable
 
     public void updatePhraseEntries()
     {
-        foreach (BeatRow entry in MapEditor.sing.activeWorkspace.rows)
+        foreach (BeatRow entry in MapEditor.sing.workspace.rows)
         {
             // Set right altitude
             entry.transform.localPosition =
@@ -191,7 +194,7 @@ public class WorkspaceEditor : MonoBehaviour, Scrollable
     public void addPhraseEntry(BeatEditorSlot slot)
     {
         BeatRow activeRow = null;
-        foreach (BeatRow row in MapEditor.sing.activeWorkspace.rows)
+        foreach (BeatRow row in MapEditor.sing.workspace.rows)
         {
             if (row.slots[0].phrase.beat == slot.phrase.beat)
             {
@@ -203,7 +206,7 @@ public class WorkspaceEditor : MonoBehaviour, Scrollable
         if (activeRow == null)
         {
             activeRow = Instantiate(beatEntryPrefab, transform.Find("Canvas")).GetComponent<BeatRow>();
-            MapEditor.sing.activeWorkspace.rows.Add(activeRow);
+            MapEditor.sing.workspace.rows.Add(activeRow);
         }
 
         activeRow.addSlot(slot);
@@ -232,5 +235,17 @@ public class WorkspaceEditor : MonoBehaviour, Scrollable
 
         regenBeatMarkers();
         updatePhraseEntries();
+    }
+
+    public List<Phrase> rowsToPhraseListing(List<BeatRow> rows)
+    {
+        List<Phrase> o = new List<Phrase>();
+        foreach (BeatRow row in rows)
+        {
+            foreach (BeatEditorSlot slot in row.slots)
+                o.Add(slot.phrase);
+        }
+
+        return o;
     }
 }

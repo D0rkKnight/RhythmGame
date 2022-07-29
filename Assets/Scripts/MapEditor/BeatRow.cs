@@ -23,6 +23,9 @@ public class BeatRow : MonoBehaviour
 
     private void Update()
     {
+        // Laggy but will do for now
+        // Otherwise slots overlap each other when regenerating before text spacing is ready
+        regenerate();
     }
 
     public void setPhrase(Phrase p)
@@ -68,7 +71,7 @@ public class BeatRow : MonoBehaviour
     {
         if (slots.Count == 0)
         {
-            MapEditor.sing.activeWorkspace.rows.Remove(this);
+            MapEditor.sing.workspace.rows.Remove(this);
             Destroy(gameObject);
         }
     }

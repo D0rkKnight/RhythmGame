@@ -1,8 +1,0 @@
-mapname: dupeTest
-track: track1uc.wav
-bpm: 100
-
-streamstart
-[1]1
-[1]2
-[1]3
