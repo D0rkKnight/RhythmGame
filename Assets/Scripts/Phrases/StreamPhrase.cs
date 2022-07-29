@@ -83,10 +83,10 @@ public abstract class StreamPhrase : Phrase
         float zzBeat = spawnBeat;
 
         // Clone next phrase somehow
-        int myInd = mp.phraseQueue.IndexOf(this);
+        int myInd = ownerGroup.phrases.IndexOf(this);
         bool callRecurse = recurse;
 
-        if (myInd+1 >= mp.phraseQueue.Count) callRecurse = false; // Can't recure if there isn't a following phrase
+        if (myInd+1 >= ownerGroup.phrases.Count) callRecurse = false; // Can't recure if there isn't a following phrase
 
         // Stream notes
         for(int i=0; i<notes; i++)
@@ -94,11 +94,15 @@ public abstract class StreamPhrase : Phrase
             // Call the next phrase recursively
             if (callRecurse)
             {
-                Phrase recursePhrase = mp.phraseQueue[myInd + 1].clone(); // Clone the next element
+                Phrase recursePhrase = ownerGroup.phrases[myInd + 1].clone(); // Clone the next element
                 recursePhrase.beat = zzBeat;
 
                 // Try setting to the right column
                 recursePhrase.lane = zzLane;
+
+                // Set this phrase's group as the new phrase's owner
+                recursePhrase.ownerGroup = ownerGroup;
+                recursePhrase.ownerMap = ownerMap;
 
                 recursePhrase.rasterize(MapSerializer.sing);
             }
@@ -112,7 +116,7 @@ public abstract class StreamPhrase : Phrase
         }
 
         // Deactivate reference phrase if relevant
-        if (callRecurse) mp.phraseQueue[myInd + 1].active = false;
+        if (callRecurse) ownerGroup.phrases[myInd + 1].active = false;
     }
 
     // Determine the next lane when streaming

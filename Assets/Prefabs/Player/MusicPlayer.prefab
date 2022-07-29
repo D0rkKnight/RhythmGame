@@ -644,7 +644,7 @@ MonoBehaviour:
   lOff: 0
   rOff: 2
   accentLim: 0
-  genType: 0101000000
+  genType: 0101010101010101010101
   lDef: 1
   rDef: 2
   width: 4

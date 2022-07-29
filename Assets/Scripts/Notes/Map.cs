@@ -19,6 +19,10 @@ public partial class Map
     public void addPhraseToLastGroup(Phrase p)
     {
         // Add it regardless, checks are done later
-        groups[groups.Count-1].phrases.Add(p);
+        PhraseGroup grp = groups[groups.Count - 1];
+
+        grp.phrases.Add(p);
+        p.ownerMap = this;
+        p.ownerGroup = grp;
     }
 }

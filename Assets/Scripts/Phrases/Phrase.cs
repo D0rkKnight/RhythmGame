@@ -16,6 +16,9 @@ public abstract class Phrase
 
     public bool active = true; // Whether this phrase is to be rasterized, or just a reference phrase
 
+    public Map ownerMap = null;
+    public PhraseGroup ownerGroup = null;
+
     // Metadata
     protected string[] meta;
     public static List<TypeEntry> typeTable = new List<TypeEntry>();
@@ -37,7 +40,7 @@ public abstract class Phrase
 
     public enum TYPE
     {
-        NONE, NOTE, HOLD, ZIGZAG, SCATTER, REBOUND, SENTINEL
+        NONE, NOTE, HOLD, ZIGZAG, SCATTER, REBOUND, MANY, SENTINEL
     }
 
     public Phrase()
@@ -114,6 +117,12 @@ public abstract class Phrase
         typeTable.Add(new TypeEntry('X', TYPE.REBOUND,
             (lane_, beat_, accent_, meta_) => {
                 return new ReboundPhrase(lane_, beat_, accent_, meta_);
+            }
+            ));
+
+        typeTable.Add(new TypeEntry('M', TYPE.MANY,
+            (lane_, beat_, accent_, meta_) => {
+                return new ManyPhrase(lane_, beat_, accent_, meta_);
             }
             ));
     }
@@ -201,6 +210,9 @@ public abstract class Phrase
             Debug.LogWarning("Note rasterization blocked by inactivity");
             return;
         }
+
+        if (ownerGroup == null || ownerMap == null)
+            throw new Exception("Not in a rasterizable context");
 
         // Takes a phrase and spawns its notes
         // TODO: Don't use blocking frame, just check if it clashes with any notes in the buffer
