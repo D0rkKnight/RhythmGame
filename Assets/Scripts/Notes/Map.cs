@@ -3,21 +3,22 @@ using UnityEngine;
 public partial class Map
 {
     public string name;
-    public List<Phrase> phrases;
     public float endBeat;
     public string trackName;
     public int bpm;
     public float offset; // In beats
 
+    public List<PhraseGroup> groups;
+
     // Map is populated after creation
     public Map()
     {
-        phrases = new List<Phrase>();
+        groups = new List<PhraseGroup>();
     }
 
-    public void addPhrase(Phrase p)
+    public void addPhraseToLastGroup(Phrase p)
     {
         // Add it regardless, checks are done later
-        phrases.Add(p);
+        groups[groups.Count-1].phrases.Add(p);
     }
 }

@@ -297,13 +297,13 @@ public class MapEditor : MonoBehaviour
 
         foreach (PhraseGroup group in groups)
         {
-            //data.Add(group.name);
+            data.Add(group.name);
             foreach (Phrase p in group.phrases)
             {
                 data.Add(p.serialize());
             }
 
-            //data.Add("End\n");
+            data.Add("End\n");
         }
 
         return data;
@@ -338,9 +338,9 @@ public class MapEditor : MonoBehaviour
         clear(); // Clean slate
 
         // Import to phrase entries
-        for (int i = 0; i < map.phrases.Count; i++)
+        for (int i = 0; i < map.groups[0].phrases.Count; i++)
         {
-            workspaceEditor.addPhraseEntry(map.phrases[i].clone());
+            workspaceEditor.addPhraseEntry(map.groups[0].phrases[i].clone());
         }
 
         songTitleField.text = map.name;

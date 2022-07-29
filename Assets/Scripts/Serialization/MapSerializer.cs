@@ -8,7 +8,7 @@ public partial class MapSerializer : MonoBehaviour
 {
     private enum ParseState
     {
-        HEADER, STREAM, ERR
+        HEADER, STREAM, ERR, GROUP
     }
 
     public string currMapFname;
@@ -135,6 +135,9 @@ public partial class MapSerializer : MonoBehaviour
                 case ParseState.STREAM:
                     state = parseSTREAM(trimmed, map);
                     break;
+                case ParseState.GROUP:
+                    state = parseGROUP(trimmed, map);
+                    break;
                 case ParseState.ERR:
                     Debug.LogError("Filereader state machine error");
                     return null;
@@ -159,7 +162,7 @@ public partial class MapSerializer : MonoBehaviour
             mPlay.resetSongEnv(resetTrackPosition);
 
             // Map is populated now, load into music player
-            foreach (Phrase p in activeMap.phrases)
+            foreach (Phrase p in activeMap.groups[0].phrases)
             {
                 mPlay.enqueuePhrase(p);
             }
@@ -173,7 +176,7 @@ public partial class MapSerializer : MonoBehaviour
 
     private ParseState parseHEADER(string tok, Map map)
     {
-        if (tok.Equals("streamstart")) return ParseState.STREAM;
+        if (tok.Equals("streamstart")) return ParseState.GROUP;
         if (tok.Length == 0) return ParseState.HEADER;
 
         // Break up a selection of header tags
@@ -215,10 +218,19 @@ public partial class MapSerializer : MonoBehaviour
         return ParseState.ERR;
     }
 
+    private ParseState parseGROUP(string tok, Map map)
+    {
+        // Just read in main for now
+        if (tok.Length == 0) return ParseState.GROUP;
+
+        map.groups.Add(new PhraseGroup(new List<Phrase>(), tok));
+        return ParseState.STREAM;
+    }
     private ParseState parseSTREAM(string tok, Map map)
     {
         // Ignore empty tokens
         if (tok.Length == 0) return ParseState.STREAM;
+        if (tok.Equals("End")) return ParseState.GROUP;
 
         StringScanner scanner = new StringScanner(tok);
 
@@ -261,7 +273,7 @@ public partial class MapSerializer : MonoBehaviour
         float beat = float.Parse(timestamp);
         Phrase p = Phrase.staticCon(l, beat, accent, typeMeta, type);
 
-        map.addPhrase(p);
+        map.addPhraseToLastGroup(p);
 
         return ParseState.STREAM; // Persist state
     }
