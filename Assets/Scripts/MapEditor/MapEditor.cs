@@ -108,7 +108,7 @@ public class MapEditor : MonoBehaviour
         undoCache.Push(image);
 
         // Visual init
-        updateMetaField();
+        activePhraseToEditorUI();
 
         // Assign types to type dropdown
         typeDropdown.ClearOptions();
@@ -390,16 +390,16 @@ public class MapEditor : MonoBehaviour
         activePhrase.accent = Mathf.Max(0, activePhrase.accent + amt);
     }
 
-    public void updateMetaField()
-    {
-        // Flag metadata input fields
-        activePhrase.writeMetaFields(metaFields);
-    }
-
     public void setActivePhrase(Phrase p)
     {
+        bool uiUpdateQueued = false;
+        if (!activePhrase.Equals(p))
+            uiUpdateQueued = true;
+
         activePhrase = p;
-        updateMetaField();
+
+        if (uiUpdateQueued)
+            activePhraseToEditorUI();
     }
 
     public void markChange()
@@ -407,5 +407,22 @@ public class MapEditor : MonoBehaviour
         // Field has been edited
         edited = true;
         imageQueued = true;
+    }
+
+    public void activePhraseToEditorUI()
+    {
+        // Flag metadata input fields
+        activePhrase.writeMetaFields(metaFields);
+
+        // Select right type dropdown option
+        for (int i=0; i<typeDropdown.options.Count; i++)
+        {
+            TMP_Dropdown.OptionData option = typeDropdown.options[i];
+            if (option.text.Equals(activePhrase.type.ToString()))
+            {
+                // Pick this option
+                typeDropdown.value = i; // Hope this doesn't proc the value change cb
+            }
+        }
     }
 }

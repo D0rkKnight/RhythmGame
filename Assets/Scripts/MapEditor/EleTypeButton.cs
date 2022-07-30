@@ -20,6 +20,6 @@ public class EleTypeButton : MonoBehaviour
 
         Phrase p = MapEditor.sing.activePhrase;
         MapEditor.sing.activePhrase = Phrase.staticCon(p.lane, p.beat, p.accent, null, ele);
-        MapEditor.sing.updateMetaField();
+        MapEditor.sing.activePhraseToEditorUI();
     }
 }
