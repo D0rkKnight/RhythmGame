@@ -228,20 +228,14 @@ public class MusicPlayer : MonoBehaviour
                 colComp.highlight = 1;
 
             }
-
-            if (Input.GetKeyUp(col.Key))
-            {
-                // Mark held holds as dead
-                foreach (Note n in notes)
-                {
-                    if (n is HoldNote && n.lane.Equals(col) && ((HoldNote)n).held)
-                    {
-                        n.dead = true;
-                        n.highlight(Color.grey);
-                    }
-                }
-            }
         }
+
+        // Release behavior
+        foreach (Note n in notes)
+            if (Input.GetKeyUp(n.lane.Key))
+            {
+                n.onLaneRelease();
+            }
 
         // If no notes left, request note serializer to send more notes
         if (notes.Count == 0 && phraseQueue.Count == 0 && !MapSerializer.sing.loadQueued)
@@ -326,7 +320,11 @@ public class MusicPlayer : MonoBehaviour
         // Regenerate dead notes if scrolled past
         foreach (Note n in notes)
         {
-            if (n.dead && n.beat > currBeat) n.dead = false;
+            if (n.dead && n.beat > currBeat)
+            {
+                n.dead = false;
+                n.reset();
+            }
         }
 
         // Set pause label
@@ -471,19 +469,7 @@ public class MusicPlayer : MonoBehaviour
         // Handle holds
         foreach (Note n in notes)
         {
-            if (n is HoldNote)
-            {
-                HoldNote hn = (HoldNote)n;
-
-                // Don't give ticking when first hit
-                if (Mathf.Abs(hn.hitTime - songTime) < hitWindow) continue;
-
-                // If still within point range
-                if (hn.held && songTime < hn.hitTime + (hn.holdBeats * beatInterval))
-                {
-                    Score += 10;
-                }
-            }
+            n.onBeat(this);
         }
 
     }
