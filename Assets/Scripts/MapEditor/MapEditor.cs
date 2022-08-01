@@ -34,6 +34,8 @@ public class MapEditor : MonoBehaviour
     public float trackOffset;
 
     public TMP_Dropdown typeDropdown;
+    private bool blockTypeUpdate = false;
+
     public TMP_Dropdown workspaceDropdown;
     public BeatField beatInput;
 
@@ -124,6 +126,8 @@ public class MapEditor : MonoBehaviour
         // Submit event
         typeDropdown.onValueChanged.AddListener((data) =>
         {
+            if (blockTypeUpdate) return;
+
             System.Object newType;
             string typeName = typeDropdown.options[data].text;
             Enum.TryParse(typeof(Phrase.TYPE), typeName, out newType);
@@ -131,6 +135,8 @@ public class MapEditor : MonoBehaviour
             Phrase p = sing.activePhrase;
             Phrase newPhrase = Phrase.staticCon(p.lane, p.beat, p.accent, null, (Phrase.TYPE) newType);
             sing.setActivePhrase(newPhrase);
+
+            Debug.Log("type changed");
         });
 
         // Setup workspace dropdown
@@ -411,6 +417,8 @@ public class MapEditor : MonoBehaviour
 
     public void activePhraseToEditorUI()
     {
+        Debug.Log("UI: " + activePhrase.ToString());
+
         // Flag metadata input fields
         activePhrase.writeMetaFields(metaFields);
 
@@ -421,7 +429,9 @@ public class MapEditor : MonoBehaviour
             if (option.text.Equals(activePhrase.type.ToString()))
             {
                 // Pick this option
-                typeDropdown.value = i; // Hope this doesn't proc the value change cb
+                blockTypeUpdate = true; // Flag this bool to prevent the active phrase from being regenerated
+                typeDropdown.value = i; // Will proc cb
+                blockTypeUpdate = false;
             }
         }
     }
