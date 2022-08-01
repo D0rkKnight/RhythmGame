@@ -111,6 +111,7 @@ MonoBehaviour:
   killDelay: 0.5
   lerpSpeed: 20
   lerpDist: 0.7
+  noteBody: {fileID: 7507657329480572353}
 --- !u!1 &1196107105503589299
 GameObject:
   m_ObjectHideFlags: 0

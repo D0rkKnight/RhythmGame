@@ -32,16 +32,12 @@ public class Note : MonoBehaviour
     public float lerpDist = 0.7f;
     private Vector2 killLerpTo = Vector2.zero;
 
-    private SpriteRenderer rend;
-    private void Awake()
-    {
-        rend = GetComponent<SpriteRenderer>();
-    }
+    public SpriteRenderer noteBody;
 
     public void Update()
     {
-        if (!dead) rend.color = defaultColor;
-        else rend.color = deadColor;
+        if (!dead) noteBody.color = defaultColor;
+        else noteBody.color = deadColor;
 
         // Kill timer
         if (killTime > 0) {
@@ -55,7 +51,7 @@ public class Note : MonoBehaviour
             float intensity = (killTime - Time.time) / killDelay;
             intensity *= intensity * intensity;
             intensity -= 1.2f;
-            rend.material.SetFloat("_Intensity", intensity);
+            noteBody.material.SetFloat("_Intensity", intensity);
         }
     }
 

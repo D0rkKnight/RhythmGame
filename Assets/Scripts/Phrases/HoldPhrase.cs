@@ -26,11 +26,11 @@ public class HoldPhrase : Phrase
     {
         base.configNote(mp, nObj, spawnLane, spawnBeat, blockFrame, weight);
 
-        Transform bg = nObj.transform.Find("HoldBar");
 
         // Set hold length
         HoldNote hn = (HoldNote)nObj;
         hn.holdBeats = dur;
+        Transform bg = hn.bg;
 
         // Scale background bar appropriately
         bg.localScale = new Vector3(bg.localScale.x, mp.travelSpeed * mp.beatInterval * hn.holdBeats,
