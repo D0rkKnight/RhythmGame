@@ -114,4 +114,19 @@ public class Note : MonoBehaviour
     {
         return 0;
     }
+
+    public virtual void reset()
+    {
+        dead = false;
+    }
+
+    public virtual void onBeat(MusicPlayer mp)
+    {
+
+    }
+
+    public virtual void onLaneRelease()
+    {
+
+    }
 }
