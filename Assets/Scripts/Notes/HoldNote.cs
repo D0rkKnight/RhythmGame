@@ -19,9 +19,9 @@ public class HoldNote : Note
         return holdBeats * mp.beatInterval; ;
     }
 
-    public override void reset()
+    public override void resetInit(MusicPlayer mp)
     {
-        base.reset();
+        base.resetInit(mp);
 
         held = false;
     }
@@ -31,10 +31,10 @@ public class HoldNote : Note
         base.onBeat(mp);
 
         // Don't give ticking when first hit
-        if (Mathf.Abs(hitTime - mp.songTime) < mp.hitWindow) return;
+        if (Mathf.Abs(getHitTime() - mp.songTime) < mp.hitWindow) return;
 
         // If still within point range
-        if (held && mp.songTime < hitTime + (holdBeats * mp.beatInterval))
+        if (held && mp.songTime < getHitTime() + (holdBeats * mp.beatInterval))
         {
             mp.Score += 10;
         }

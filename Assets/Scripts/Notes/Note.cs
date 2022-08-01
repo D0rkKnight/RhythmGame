@@ -57,7 +57,7 @@ public class Note : MonoBehaviour
 
     public virtual void highlight(Color c)
     {
-        GetComponent<SpriteRenderer>().color = c;
+        noteBody.color = c;
     }
 
     public void remove()
@@ -89,7 +89,7 @@ public class Note : MonoBehaviour
         GameObject col = lane.gameObject;
         Vector2 tPos = col.transform.Find("TriggerBox").position;
 
-        float dt = hitTime - mp.songTime;
+        float dt = getHitTime() - mp.songTime;
 
         Vector2 dp = -mp.dir * dt * mp.travelSpeed;
         Vector2 p = tPos + dp;
@@ -115,7 +115,7 @@ public class Note : MonoBehaviour
         return 0;
     }
 
-    public virtual void reset()
+    public virtual void resetInit(MusicPlayer mp)
     {
         dead = false;
     }
@@ -128,5 +128,15 @@ public class Note : MonoBehaviour
     public virtual void onLaneRelease()
     {
 
+    }
+
+    public virtual void onScroll(MusicPlayer mp)
+    {
+
+    }
+
+    public virtual float getHitTime()
+    {
+        return hitTime;
     }
 }

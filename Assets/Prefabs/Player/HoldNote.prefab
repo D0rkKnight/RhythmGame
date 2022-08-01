@@ -52,7 +52,7 @@ MonoBehaviour:
   weight: 0
   lane: {fileID: 0}
   dead: 0
-  defaultColor: {r: 0, g: 1, b: 1, a: 1}
+  defaultColor: {r: 0, g: 1, b: 0.26041698, a: 1}
   deadColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
   text: {fileID: 7052191657182655997}
   killDelay: 1

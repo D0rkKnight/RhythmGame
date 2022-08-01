@@ -10,7 +10,7 @@ PrefabInstance:
     - target: {fileID: 848576772978090438, guid: e914aa2c2b6a2394f93aaeb0038a55eb,
         type: 3}
       propertyPath: m_Name
-      value: ReboundNote
+      value: ReboundNote Variant
       objectReference: {fileID: 0}
     - target: {fileID: 4464740409688138333, guid: e914aa2c2b6a2394f93aaeb0038a55eb,
         type: 3}
@@ -105,14 +105,35 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   hitTime: 0
   beat: 0
+  blockDur: 0
+  weight: 0
   lane: {fileID: 0}
   dead: 0
   defaultColor: {r: 0, g: 1, b: 1, a: 1}
   deadColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+  text: {fileID: 5457028050237446273}
   killDelay: 0.5
   lerpSpeed: 20
   lerpDist: 0.7
+  noteBody: {fileID: 8853118979949323084}
   reboundDelta: 1
   rebounds: 1
   currRebound: 0
-  reboundHeight: 3
+--- !u!114 &5457028050237446273 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6437706858258441740, guid: e914aa2c2b6a2394f93aaeb0038a55eb,
+    type: 3}
+  m_PrefabInstance: {fileID: 1363489380859772557}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!212 &8853118979949323084 stripped
+SpriteRenderer:
+  m_CorrespondingSourceObject: {fileID: 7507657329480572353, guid: e914aa2c2b6a2394f93aaeb0038a55eb,
+    type: 3}
+  m_PrefabInstance: {fileID: 1363489380859772557}
+  m_PrefabAsset: {fileID: 0}

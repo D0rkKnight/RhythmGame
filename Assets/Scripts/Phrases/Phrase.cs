@@ -419,6 +419,8 @@ public abstract class Phrase
         float bTime = mp.beatInterval * spawnBeat;
         nObj.hitTime = bTime;
         nObj.blockDur = blockFrame;
+
+        nObj.resetInit(mp); // Also serves as an intializer
     }
 
     public virtual float getBlockFrame()

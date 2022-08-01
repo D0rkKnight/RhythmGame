@@ -125,6 +125,9 @@ public class MusicPlayer : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        // Calculate songtime before going in
+        updateInternals()
+            ;
         switch (state)
         {
             case STATE.RUN:
@@ -145,12 +148,25 @@ public class MusicPlayer : MonoBehaviour
         }
     }
 
+    public void updateInternals()
+    {
+        switch (state)
+        {
+            case STATE.RUN:
+                songTime = Time.time - songStart - pausedTotal + scroll;
+                break;
+
+            case STATE.PAUSE:
+                songTime = pauseStart - songStart - pausedTotal + scroll;
+                break;
+
+        }
+
+        currBeat = songTime / beatInterval;
+    }
+
     private void stateRun()
     {
-        // This value anchors a lot of things
-        songTime = Time.time - songStart - pausedTotal + scroll;
-        currBeat = songTime / beatInterval;
-
         // Start song if ready
         float tpTime = getTrackTime();
         if (tpTime >= 0 && !TrackPlayer.sing.audio.isPlaying)
@@ -198,9 +214,9 @@ public class MusicPlayer : MonoBehaviour
                     // Check both assigned column and reroute for validity
                     if (!note.lane.Equals(col) && !note.lane.Equals(col.reroute)) continue;
 
-                    if (Mathf.Abs(note.hitTime - songTime) < hitWindow)
+                    if (Mathf.Abs(note.getHitTime() - songTime) < hitWindow)
                     {
-                        if (bestNote == null || note.hitTime < bestNote.hitTime) // Hits first available note in the window
+                        if (bestNote == null || note.getHitTime() < bestNote.getHitTime()) // Hits first available note in the window
                             bestNote = note;
                     }
                 }
@@ -219,7 +235,7 @@ public class MusicPlayer : MonoBehaviour
                     }
 
                     // Check accuracy of hit
-                    float delta = Mathf.Abs(bestNote.hitTime - songTime);
+                    float delta = Mathf.Abs(bestNote.getHitTime() - songTime);
                     broadCastHitAcc(delta);
                 }
 
@@ -279,12 +295,6 @@ public class MusicPlayer : MonoBehaviour
     float unpauseCountdown = -1000f;
     private void statePause()
     {
-
-        // Local song time + scroll delta
-        // Write some kinda method that simplifies this...
-        songTime = pauseStart-songStart-pausedTotal + scroll;
-        currBeat = songTime / beatInterval;
-
         // Load in phrases that might be hotswapped
         processPhraseQueue();
 
@@ -320,10 +330,10 @@ public class MusicPlayer : MonoBehaviour
         // Regenerate dead notes if scrolled past
         foreach (Note n in notes)
         {
-            if (n.dead && n.beat > currBeat)
+            if (n.dead && n.getHitTime() > songTime)
             {
                 n.dead = false;
-                n.reset();
+                n.resetInit(this);
             }
         }
 
@@ -538,5 +548,17 @@ public class MusicPlayer : MonoBehaviour
         float tpTime = songTime + tpOffset + MapSerializer.sing.activeMap.offset;
 
         return tpTime;
+    }
+
+    public void scrollBy(float amt)
+    {
+        if (amt == 0) return;
+
+        scroll += amt;
+        updateInternals();
+
+        // Also procs notes onscroll
+        foreach (Note n in notes)
+            n.onScroll(this);
     }
 }

@@ -4,11 +4,12 @@ using UnityEngine;
 
 public class ReboundNote : Note
 {
-    public float reboundDelta = 1.0f;
+    public float reboundDelta = 1.0f; // In seconds
     public int rebounds = 1;
     public int currRebound = 0; // 0 means before the initial hit
 
     private float linearExtend = 0.2f;
+    public float floatingHitTime;
 
     public override void updateNote(MusicPlayer mp, List<Note> passed)
     {
@@ -23,7 +24,7 @@ public class ReboundNote : Note
         GameObject col = lane.gameObject;
         Vector2 tPos = col.transform.Find("TriggerBox").position;
 
-        float dt = hitTime - mp.songTime; // Song approach for mechanical purposes 
+        float dt = getHitTime() - mp.songTime; // Song approach for mechanical purposes 
         float reboundTime = reboundDelta - dt;
         float lerp = reboundTime / reboundDelta;
         float alt;
@@ -51,6 +52,7 @@ public class ReboundNote : Note
         transform.position = new Vector3(p.x, p.y, -1);
 
         // Check if strictly unhittable
+        // TODO: Have mp handle this
         if (dt < -mp.hitWindow && !dead)
         {
             mp.miss(this);
@@ -68,12 +70,50 @@ public class ReboundNote : Note
     public override void hit(out bool remove)
     {
         remove = false;
+
         if (currRebound < rebounds)
         {
-            hitTime += reboundDelta; // Important: hit time gets kicked back in runtime
+            floatingHitTime += reboundDelta; // Important: hit time gets kicked back in runtime
             currRebound++;
         }
         else
             base.hit(out remove);
+    }
+
+    public override void resetInit(MusicPlayer mp)
+    {
+        base.resetInit(mp);
+
+        onChange(mp);
+    }
+
+    public override void onScroll(MusicPlayer mp)
+    {
+        base.onScroll(mp);
+
+        onChange(mp);
+    }
+
+    private void onChange(MusicPlayer mp)
+    {
+        float sDelta = mp.songTime - hitTime;
+        if (sDelta < 0)
+        {
+            currRebound = 0;
+            floatingHitTime = hitTime;
+
+            return; // Hasn't reached this phrase yet
+        }
+
+        // Set the rebound so the note is still flying
+        currRebound = (int)(sDelta / reboundDelta) + 1;
+        currRebound = Mathf.Min(currRebound, rebounds); // Limit the value
+
+        floatingHitTime = hitTime + currRebound * reboundDelta; // Set the right hit time
+    }
+
+    public override float getHitTime()
+    {
+        return floatingHitTime;
     }
 }
