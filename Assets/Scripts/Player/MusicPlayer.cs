@@ -85,6 +85,7 @@ public class MusicPlayer : MonoBehaviour
     private float pausedTotal;
     public STATE state = STATE.SLEEPING;
     public bool pauseOnAwake = false;
+    public bool maploadWhenSleeping = false;
 
     float interimTil = 0; // Deadline for interim period between songs
     public bool willUnpauseCD = true; // Countdown on unpause
@@ -277,7 +278,7 @@ public class MusicPlayer : MonoBehaviour
         if (InputManager.checkKeyDown(resetKey))
         {
             resetSongEnv();
-            MapSerializer.sing.playMap(); // Same behavior as end of song
+            MapSerializer.sing.playMap(); // Resets to start of the current map
         }
 
         // State transitions
@@ -347,7 +348,7 @@ public class MusicPlayer : MonoBehaviour
         if (Time.time > interimTil)
         {
             resetSongEnv();
-            MapSerializer.sing.playMap();
+            Timeliner.sing.playNextMap();
 
             state = STATE.RUN;
         }
@@ -356,11 +357,21 @@ public class MusicPlayer : MonoBehaviour
     private void stateSleep()
     {
         // Waits for a map to queue up, then resets the environment and pauses.
-
         if (MapSerializer.sing.activeMap != null)
         {
             resetSongEnv();
             MapSerializer.sing.playMap();
+
+            if (pauseOnAwake)
+                pause();
+            else
+                state = STATE.RUN;
+        }
+
+        // Can also force an awake by itself
+        if (maploadWhenSleeping)
+        {
+            Timeliner.sing.playNextMap();
 
             if (pauseOnAwake)
                 pause();
@@ -384,7 +395,7 @@ public class MusicPlayer : MonoBehaviour
 
         // Resync music (if music is to be played)
         float tpTime = getTrackTime();
-        if (songTime >= 0)
+        if (songTime >= 0 && tpTime > 0)
         {
             TrackPlayer.sing.play();
             TrackPlayer.sing.setTime(tpTime);

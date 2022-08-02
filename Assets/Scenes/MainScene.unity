@@ -197,6 +197,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cloak: {fileID: 630751028}
   newStart: 0
+  mapList:
+  - Pendulum.txt
+  - rhythm_1.txt
+  mapQueue: []
 --- !u!4 &504201493
 Transform:
   m_ObjectHideFlags: 0
@@ -1177,12 +1181,17 @@ PrefabInstance:
         type: 3}
       propertyPath: holdPrefab
       value: 
-      objectReference: {fileID: 7763410180275696510, guid: 8d5f1d16cd5058e48943c469f038cca5,
+      objectReference: {fileID: 4073856287875325575, guid: aaab07d840ef14b4e80a716c5804b34e,
         type: 3}
     - target: {fileID: 6973395804611573912, guid: 3e5a8fe67b687dc4b81f154ed99e82af,
         type: 3}
       propertyPath: showNoteWeight
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6973395804611573912, guid: 3e5a8fe67b687dc4b81f154ed99e82af,
+        type: 3}
+      propertyPath: maploadWhenSleeping
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6973395804611573912, guid: 3e5a8fe67b687dc4b81f154ed99e82af,
         type: 3}
