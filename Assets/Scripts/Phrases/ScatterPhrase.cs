@@ -17,10 +17,12 @@ public class ScatterPhrase : StreamPhrase
 
     System.Random rnd;
 
-    public override void spawn(MusicPlayer mp, int spawnLane, float spawnBeat, float blockFrame, float weight)
+    public override List<Note> spawn(MusicPlayer mp, int spawnLane, float spawnBeat, float blockFrame, float weight)
     {
         rnd = new System.Random();
         base.spawn(mp, spawnLane, spawnBeat, blockFrame, weight);
+
+        return null;
     }
     public override int streamNextLane(int currLane, MusicPlayer mp, int spawnLane, int endLane, float spawnBeat, float blockFrame)
     {

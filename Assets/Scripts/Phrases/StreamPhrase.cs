@@ -52,7 +52,7 @@ public abstract class StreamPhrase : Phrase
         if (meta[3].Trim().Equals("T")) recurse = true;
     }
 
-    public override void spawn(MusicPlayer mp, int spawnLane, float spawnBeat, float blockFrame, float weight)
+    public override List<Note> spawn(MusicPlayer mp, int spawnLane, float spawnBeat, float blockFrame, float weight)
     {
         // Calculate actual width and spawnlane given the situation
         // Shift bound first since the spawnLane ought to be valid
@@ -117,6 +117,8 @@ public abstract class StreamPhrase : Phrase
 
         // Deactivate reference phrase if relevant
         if (callRecurse) ownerGroup.phrases[myInd + 1].active = false;
+
+        return null; // Unsupported
     }
 
     // Determine the next lane when streaming

@@ -499,6 +499,11 @@ public class MusicPlayer : MonoBehaviour
         n.ShowWeight = showNoteWeight;
     }
 
+    public void removeNote(Note n)
+    {
+        Destroy(n.gameObject);
+        notes.Remove(n);
+    }
     private void processPhraseQueue()
     {
         List<Phrase> dump = new List<Phrase>();

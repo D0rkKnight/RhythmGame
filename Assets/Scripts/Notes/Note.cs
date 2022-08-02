@@ -144,4 +144,14 @@ public class Note : MonoBehaviour
     {
         return hitTime;
     }
+
+    public virtual void blocked()
+    {
+
+    }
+
+    public virtual void childBlocked(Note child)
+    {
+
+    }
 }

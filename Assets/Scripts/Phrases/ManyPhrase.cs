@@ -23,13 +23,13 @@ public class ManyPhrase : Phrase
         throw new Exception("Cannot instantiate ManyPhrase");
     }
 
-    public override void spawn(MusicPlayer mp, int spawnLane, float spawnBeat, float blockFrame, float weight)
+    public override List<Note> spawn(MusicPlayer mp, int spawnLane, float spawnBeat, float blockFrame, float weight)
     {
-        if (group.Equals("NULL")) return;
+        if (group.Equals("NULL")) return null;
         if (group.Equals(ownerGroup.name))
         {
             Debug.LogWarning("Would cause an infinite loop");
-            return;
+            return null;
         }
 
         // Looks up phrase group and shifts to right beat, then instantiates
@@ -43,7 +43,7 @@ public class ManyPhrase : Phrase
             }
         }
 
-        if (grp == null) return;
+        if (grp == null) return null;
 
         // Clone every phrase in the new group and rasterize
         foreach (Phrase p in grp.phrases)
@@ -56,7 +56,8 @@ public class ManyPhrase : Phrase
             pc.lane = (pc.lane + lane) % MusicPlayer.sing.columns.Length; // Cycle spilled phrases
             pc.rasterize(MapSerializer.sing);
         }
-        
+
+        return null; // Guess this is unsupported for now
     }
 
     public override void writeMetaFields(List<InputField> fields)

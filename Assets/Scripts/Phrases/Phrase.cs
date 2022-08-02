@@ -285,18 +285,18 @@ public abstract class Phrase
 
     // Generates this phrase attached to the given music player
     // Accepts generic arguments for mutability between phrase types
-    public virtual void spawn(MusicPlayer mp, int spawnLane, float spawnBeat, float blockFrame, float weight)
+    public virtual List<Note> spawn(MusicPlayer mp, int spawnLane, float spawnBeat, float blockFrame, float weight)
     {
         if (!noteValid(mp, spawnLane, spawnBeat, blockFrame))
         {
             Debug.LogWarning("Illegal note spawn blocked at " + lane + ", " + beat);
-            return;
+            return null;
         }
 
         if (!checkNoteCollisions(mp, spawnLane, spawnBeat, blockFrame, weight))
         {
             Debug.LogWarning("Note spawn blocked at " + lane + ", " + beat);
-            return;
+            return null;
         }
 
         // Spawn note
@@ -304,6 +304,10 @@ public abstract class Phrase
 
         configNote(mp, nObj, spawnLane, spawnBeat, blockFrame, weight);
         mp.addNote(nObj);
+
+        List<Note> o = new List<Note>();
+        o.Add(nObj);
+        return o;
     }
     public virtual bool noteValid(MusicPlayer mp, int lane, float beat, float blockDur)
     {
@@ -358,6 +362,8 @@ public abstract class Phrase
             {
                 foreach (Note n in collisions)
                 {
+                    n.blocked();
+
                     mp.notes.Remove(n);
                     UnityEngine.Object.Destroy(n.gameObject);
                 }

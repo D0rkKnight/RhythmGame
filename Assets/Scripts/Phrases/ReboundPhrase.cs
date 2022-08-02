@@ -33,7 +33,7 @@ public class ReboundPhrase : Phrase
         return MapSerializer.sing.noteBlockLen;
     }
 
-    public override void spawn(MusicPlayer mp, int spawnLane, float spawnBeat, float blockFrame, float weight)
+    public override List<Note> spawn(MusicPlayer mp, int spawnLane, float spawnBeat, float blockFrame, float weight)
     {
         // Doubles up (depending on if rebounds are spawned as pairs or rebounders)
         /*for (int i=0; i<times; i++)
@@ -41,17 +41,25 @@ public class ReboundPhrase : Phrase
             base.spawn(mp, spawnLane, spawnBeat + reboundDelta * i, blockFrame);
         }*/
 
+        ReboundNote reboundN = (ReboundNote) base.spawn(mp, spawnLane, spawnBeat, blockFrame, weight)[0];
+
         // Generates a sequence of ghosts
+        // Ghosts also double as representatives of the rebound's future position
+        // So they can block and be blocked
         for (int i=0; i<times; i++)
         {
             GhostNote ghost = Object.Instantiate(mp.ghostPrefab);
+            ghost.parent = reboundN;
+
             float ghostBeat = spawnBeat + (i + 1) * reboundBeatDist;
 
-            configNote(mp, ghost, spawnLane, ghostBeat, 0, 0);
+            configNote(mp, ghost, spawnLane, ghostBeat, blockFrame, weight);
             mp.addNote(ghost);
+
+            reboundN.ghosts.Add(ghost);
         }
 
-        base.spawn(mp, spawnLane, spawnBeat, blockFrame, weight);
+        return null;
     }
 
     public override void writeMetaFields(List<InputField> fields)

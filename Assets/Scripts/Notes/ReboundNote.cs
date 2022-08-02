@@ -11,6 +11,8 @@ public class ReboundNote : Note
     private float linearExtend = 0.2f;
     public float floatingHitTime;
 
+    public List<GhostNote> ghosts = new List<GhostNote>();
+
     public override void updateNote(MusicPlayer mp, List<Note> passed)
     {
         if (currRebound == 0)
@@ -115,5 +117,23 @@ public class ReboundNote : Note
     public override float getHitTime()
     {
         return floatingHitTime;
+    }
+
+    public override void childBlocked(Note child)
+    {
+        base.childBlocked(child);
+
+        GhostNote ghost = (GhostNote)child;
+
+        int reboundNum = ghosts.IndexOf(ghost);
+        if (reboundNum < 0) return; // Somehow there's a floating child out there
+
+        for (int i = ghosts.Count - 1; i >= reboundNum; i--)
+        {
+            MusicPlayer.sing.removeNote(ghosts[i]);
+            ghosts.RemoveAt(i);
+        }
+
+        rebounds = reboundNum; // Limit rebounds to before the blocked note
     }
 }
