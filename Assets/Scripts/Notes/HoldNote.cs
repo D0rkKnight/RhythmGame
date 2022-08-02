@@ -21,7 +21,7 @@ public class HoldNote : Note
 
     protected override float getNoteExtension(MusicPlayer mp)
     {
-        return holdBeats * mp.beatInterval; ;
+        return holdBeats * mp.beatInterval;
     }
 
     public override void resetInit(MusicPlayer mp)

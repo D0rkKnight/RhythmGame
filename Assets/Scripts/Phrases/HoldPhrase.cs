@@ -63,6 +63,6 @@ public class HoldPhrase : Phrase
 
     public override float getBlockFrame()
     {
-        return dur;
+        return Mathf.Max(dur, MapSerializer.sing.noteBlockLen);
     }
 }
