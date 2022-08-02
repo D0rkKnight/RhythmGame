@@ -96,7 +96,7 @@ public class Note : MonoBehaviour
         transform.position = new Vector3(p.x, p.y, -1);
 
         // Check if strictly unhittable
-        if (dt < -mp.hitWindow && !dead)
+        if (checkMiss(mp, dt))
         {
             mp.miss(this);
         }
@@ -108,6 +108,11 @@ public class Note : MonoBehaviour
 
             if (dt < -(mp.noteTimeout + noteExtension)) passed.Add(this);
         }
+    }
+
+    public virtual bool checkMiss(MusicPlayer mp, float dt)
+    {
+        return dt < -mp.hitWindow && !dead;
     }
 
     protected virtual float getNoteExtension(MusicPlayer mp)

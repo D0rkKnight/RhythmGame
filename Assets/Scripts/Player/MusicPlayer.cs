@@ -225,15 +225,7 @@ public class MusicPlayer : MonoBehaviour
                 if (bestNote != null)
                 {
                     addNoteScore();
-                    if (bestNote is HoldNote)
-                    {
-                        ((HoldNote)bestNote).held = true;
-                        bestNote.highlight(Color.white);
-                    }
-                    else // Kill if regular note
-                    {
-                        hit(bestNote);
-                    }
+                    hit(bestNote);
 
                     // Check accuracy of hit
                     float delta = Mathf.Abs(bestNote.getHitTime() - songTime);

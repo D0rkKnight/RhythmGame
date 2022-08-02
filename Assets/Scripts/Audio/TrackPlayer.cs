@@ -77,6 +77,6 @@ public class TrackPlayer : MonoBehaviour
     {
         audio.time = time + latency;
 
-        Debug.Log("Time set");
+        Debug.Log("Time set: " + audio.time);
     }
 }

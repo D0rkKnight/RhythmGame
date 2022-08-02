@@ -162,7 +162,7 @@ public class GameManager : MonoBehaviour
         if (Timeliner.sing != null)
         {
             Timeliner.sing.Stage = _stage;
-            Debug.Log("Stage: " + _stage);
+            // Debug.Log("Stage: " + _stage);
         }
 
         // Recompile

@@ -14,6 +14,11 @@ public class HoldNote : Note
         bg.GetComponent<SpriteRenderer>().color = c;
     }
 
+    public override bool checkMiss(MusicPlayer mp, float dt)
+    {
+        return base.checkMiss(mp, dt) && !held;
+    }
+
     protected override float getNoteExtension(MusicPlayer mp)
     {
         return holdBeats * mp.beatInterval; ;
@@ -49,5 +54,13 @@ public class HoldNote : Note
             dead = true;
             highlight(Color.grey);
         }
+    }
+
+    public override void hit(out bool remove)
+    {
+        remove = false;
+
+        held = true;
+        highlight(Color.white);
     }
 }
