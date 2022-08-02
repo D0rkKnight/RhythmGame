@@ -13,6 +13,10 @@ public class CustomButton : MonoBehaviour
     public Button btn;
     public SpriteRenderer outline;
 
+    private void Start()
+    {
+    }
+
     public float bgOpacity {
         get { return bg.color.a; }
         set { 

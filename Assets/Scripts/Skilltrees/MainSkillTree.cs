@@ -118,6 +118,7 @@ public class MainSkillTree : SkillTree
         bool[] nodeMask = new bool[(int) NODE.SENTINEL];
 
         // Find active flags
+        // TODO: Make UI a separate process, maybe delegated to the buttons
         for (int i = 0; i < nodes.Length; i++)
         {
             buttonPair nodeData = nodes[i];
@@ -155,6 +156,9 @@ public class MainSkillTree : SkillTree
                     if (tokens >= nodeData.cost) bgOpacity = 0.5f; // Highlight when purchasable
                 }
             }
+
+            // Just disable the button, I think interactable will always grey it out
+            nodeData.btn.btn.enabled = tokens >= nodeData.cost && !purchasedFlags[index]; 
 
             nodeData.btn.bgOpacity = bgOpacity;
             nodeData.btn.outlineOpacity = outlineOpacity;
@@ -206,56 +210,66 @@ public class MainSkillTree : SkillTree
         // Gen new lines
         foreach (buttonPair bp in nodes)
         {
-            if (bp.btn.btn.IsActive())
+            // Check that every prereq is fulfilled
+            bool allPrereqs = true;
+            foreach (NODE prereq in bp.prereqs)
             {
-
-                // Draw lines between active skills (from an active skill to its parent)
-                // 4 points: base, turn 1, turn 2, end
-
-                RectTransform bpBounds = bp.btn.GetComponent<RectTransform>();
-                Vector3 bpBase = bpBounds.position;
-
-                foreach (NODE prereq in bp.prereqs)
+                if (!purchasedFlags[(int) prereq])
                 {
-                    // Find node to hook to (going upstream)
-                    Button target = null;
-                    foreach (buttonPair search in nodes) if (search.node == prereq)
-                        {
-                            target = search.btn.btn;
-                            break;
-                        }
-
-                    RectTransform endBounds = target.GetComponent<RectTransform>();
-                    Vector3[] sCorn = new Vector3[4];
-                    Vector3[] eCorn = new Vector3[4];
-
-                    endBounds.GetWorldCorners(eCorn);
-                    bpBounds.GetWorldCorners(sCorn);
-
-                    float endY = eCorn[0].y;
-                    float startY = sCorn[2].y;
-
-                    Vector3 bpEnd = endBounds.position;
-                    Vector3 turn1 = new Vector3(bpBase.x, (bpBase.y + bpEnd.y) * 0.5f, bpBase.z);
-                    Vector3 turn2 = new Vector3(bpEnd.x, (bpBase.y + bpEnd.y) * 0.5f, bpEnd.z);
-
-                    // Draw a line between the 2 for now
-                    LineRenderer lr = Instantiate(lineRendPrefab, transform).GetComponent<LineRenderer>();
-                    lr.positionCount = 4;
-                    lr.SetPosition(0, new Vector3(bpBase.x, startY, bpBase.z));
-                    lr.SetPosition(1, turn1);
-                    lr.SetPosition(2, turn2);
-                    lr.SetPosition(3, new Vector3(bpEnd.x, endY, bpEnd.z));
-
-                    // set lr opacity to source btn opacity
-                    Color col = Color.white * bp.btn.bgOpacity;
-                    col.a = 1f;
-
-                    lr.startColor = col;
-                    lr.endColor = col;
-
-                    lineRends.Add(lr);
+                    allPrereqs = false;
+                    break;
                 }
+
+            }
+            if (!allPrereqs) // Skip invalid nodes
+                continue;
+
+            // Draw lines between active skills (from an active skill to its parent)
+            // 4 points: base, turn 1, turn 2, end
+
+            RectTransform bpBounds = bp.btn.GetComponent<RectTransform>();
+            Vector3 bpBase = bpBounds.position;
+
+            foreach (NODE prereq in bp.prereqs)
+            {
+                // Find node to hook to (going upstream)
+                Button target = null;
+                foreach (buttonPair search in nodes) if (search.node == prereq)
+                    {
+                        target = search.btn.btn;
+                        break;
+                    }
+
+                RectTransform endBounds = target.GetComponent<RectTransform>();
+                Vector3[] sCorn = new Vector3[4];
+                Vector3[] eCorn = new Vector3[4];
+
+                endBounds.GetWorldCorners(eCorn);
+                bpBounds.GetWorldCorners(sCorn);
+
+                float endY = eCorn[0].y;
+                float startY = sCorn[2].y;
+
+                Vector3 bpEnd = endBounds.position;
+                Vector3 turn1 = new Vector3(bpBase.x, (bpBase.y + bpEnd.y) * 0.5f, bpBase.z);
+                Vector3 turn2 = new Vector3(bpEnd.x, (bpBase.y + bpEnd.y) * 0.5f, bpEnd.z);
+
+                // Draw a line between the 2 for now
+                LineRenderer lr = Instantiate(lineRendPrefab, transform).GetComponent<LineRenderer>();
+                lr.positionCount = 4;
+                lr.SetPosition(0, new Vector3(bpBase.x, startY, bpBase.z));
+                lr.SetPosition(1, turn1);
+                lr.SetPosition(2, turn2);
+                lr.SetPosition(3, new Vector3(bpEnd.x, endY, bpEnd.z));
+
+                // set lr opacity to source btn opacity
+                Color col = Color.white * bp.btn.bgOpacity;
+                col.a = 1f;
+
+                lr.startColor = col;
+                lr.endColor = col;
+
+                lineRends.Add(lr);
             }
         }
     }
