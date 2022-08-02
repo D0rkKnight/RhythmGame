@@ -41,6 +41,16 @@ public class ReboundPhrase : Phrase
             base.spawn(mp, spawnLane, spawnBeat + reboundDelta * i, blockFrame);
         }*/
 
+        // Generates a sequence of ghosts
+        for (int i=0; i<times; i++)
+        {
+            GhostNote ghost = Object.Instantiate(mp.ghostPrefab);
+            float ghostBeat = spawnBeat + (i + 1) * reboundBeatDist;
+
+            configNote(mp, ghost, spawnLane, ghostBeat, 0, 0);
+            mp.addNote(ghost);
+        }
+
         base.spawn(mp, spawnLane, spawnBeat, blockFrame, weight);
     }
 

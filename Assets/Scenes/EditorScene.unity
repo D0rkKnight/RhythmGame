@@ -3467,7 +3467,7 @@ PrefabInstance:
         type: 3}
       propertyPath: reboundPrefab
       value: 
-      objectReference: {fileID: 1813497413674491723, guid: c4fcec6be473cd44d8f9f43eb2cf5946,
+      objectReference: {fileID: 3808203092527240491, guid: c4fcec6be473cd44d8f9f43eb2cf5946,
         type: 3}
     - target: {fileID: 6973395804611573912, guid: 3e5a8fe67b687dc4b81f154ed99e82af,
         type: 3}

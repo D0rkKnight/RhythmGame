@@ -588,11 +588,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d112a1289cc3ff94f924e60de4dbc4b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  notePrefab: {fileID: 848576772978090438, guid: e914aa2c2b6a2394f93aaeb0038a55eb,
+  notePrefab: {fileID: 3171469808494968198, guid: e914aa2c2b6a2394f93aaeb0038a55eb,
     type: 3}
-  holdPrefab: {fileID: 4073856287875325575, guid: aaab07d840ef14b4e80a716c5804b34e,
+  holdPrefab: {fileID: 4073856287875325574, guid: aaab07d840ef14b4e80a716c5804b34e,
     type: 3}
-  reboundPrefab: {fileID: 1813497413674491723, guid: c4fcec6be473cd44d8f9f43eb2cf5946,
+  reboundPrefab: {fileID: 3808203092527240491, guid: c4fcec6be473cd44d8f9f43eb2cf5946,
+    type: 3}
+  ghostPrefab: {fileID: 8812033195928707392, guid: 994eb8b90eee1164c81b7c4a0c319456,
     type: 3}
   columns:
   - {fileID: 4200360234680489265}
@@ -622,6 +624,7 @@ MonoBehaviour:
   pauseKey: 112
   state: 3
   pauseOnAwake: 0
+  maploadWhenSleeping: 0
   willUnpauseCD: 1
   accuracyPopupPrefab: {fileID: 7099239638739727420, guid: 48089a94e0dd7b043b7b4b6b703c989e,
     type: 3}

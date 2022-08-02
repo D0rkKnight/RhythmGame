@@ -301,8 +301,8 @@ public abstract class Phrase
 
         // Spawn note
         Note nObj = instantiateNote(mp);
-        configNote(mp, nObj, spawnLane, spawnBeat, blockFrame, weight);
 
+        configNote(mp, nObj, spawnLane, spawnBeat, blockFrame, weight);
         mp.addNote(nObj);
     }
     public virtual bool noteValid(MusicPlayer mp, int lane, float beat, float blockDur)

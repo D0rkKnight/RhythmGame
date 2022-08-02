@@ -1186,7 +1186,19 @@ PrefabInstance:
         type: 3}
       propertyPath: holdPrefab
       value: 
-      objectReference: {fileID: 4073856287875325575, guid: aaab07d840ef14b4e80a716c5804b34e,
+      objectReference: {fileID: 4073856287875325574, guid: aaab07d840ef14b4e80a716c5804b34e,
+        type: 3}
+    - target: {fileID: 6973395804611573912, guid: 3e5a8fe67b687dc4b81f154ed99e82af,
+        type: 3}
+      propertyPath: notePrefab
+      value: 
+      objectReference: {fileID: 3171469808494968198, guid: e914aa2c2b6a2394f93aaeb0038a55eb,
+        type: 3}
+    - target: {fileID: 6973395804611573912, guid: 3e5a8fe67b687dc4b81f154ed99e82af,
+        type: 3}
+      propertyPath: reboundPrefab
+      value: 
+      objectReference: {fileID: 3808203092527240491, guid: c4fcec6be473cd44d8f9f43eb2cf5946,
         type: 3}
     - target: {fileID: 6973395804611573912, guid: 3e5a8fe67b687dc4b81f154ed99e82af,
         type: 3}

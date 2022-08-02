@@ -14,7 +14,7 @@ public class NotePhrase : Phrase
 
     public override Note instantiateNote(MusicPlayer mp)
     {
-        return UnityEngine.Object.Instantiate(mp.notePrefab).GetComponent<Note>();
+        return UnityEngine.Object.Instantiate(mp.notePrefab);
     }
 
     public override float getBlockFrame()

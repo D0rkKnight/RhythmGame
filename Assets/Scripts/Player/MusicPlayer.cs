@@ -6,9 +6,10 @@ using TMPro;
 
 public class MusicPlayer : MonoBehaviour
 {
-    public GameObject notePrefab;
-    public GameObject holdPrefab;
-    public GameObject reboundPrefab;
+    public Note notePrefab;
+    public HoldNote holdPrefab;
+    public ReboundNote reboundPrefab;
+    public GhostNote ghostPrefab;
 
     public NoteColumn[] columns;
     private float bpm = 60;
