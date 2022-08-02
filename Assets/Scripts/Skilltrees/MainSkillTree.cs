@@ -123,7 +123,8 @@ public class MainSkillTree : SkillTree
             buttonPair nodeData = nodes[i];
             int index = (int)nodeData.node;
 
-            float opacity = 0; // Unpurchased items have an opacity of 0
+            float bgOpacity = 0; // Unpurchased items have an opacity of 0
+            float outlineOpacity = 0;
 
             // Skip unpurchased nodes
             if (purchasedFlags[index])
@@ -132,7 +133,8 @@ public class MainSkillTree : SkillTree
                 nodeMask[index] = true;
 
                 // Set opacity of purchased buttons
-                opacity = activeFlags[index] ? 1 : 0.5f;
+                bgOpacity = activeFlags[index] ? 1 : 0.5f;
+                outlineOpacity = 1;
             }
 
             // Check if node is an adjacent element
@@ -146,10 +148,16 @@ public class MainSkillTree : SkillTree
                         break;
                     }
 
-                if (adj) opacity = 0.25f;
+                if (adj)
+                {
+                    bgOpacity = 0.25f;
+
+                    if (tokens >= nodeData.cost) bgOpacity = 0.5f; // Highlight when purchasable
+                }
             }
 
-            nodeData.btn.Opacity = opacity;
+            nodeData.btn.bgOpacity = bgOpacity;
+            nodeData.btn.outlineOpacity = outlineOpacity;
         }
 
         // Fill in values not dictated by buttons
@@ -240,7 +248,7 @@ public class MainSkillTree : SkillTree
                     lr.SetPosition(3, new Vector3(bpEnd.x, endY, bpEnd.z));
 
                     // set lr opacity to source btn opacity
-                    Color col = Color.white * bp.btn.Opacity;
+                    Color col = Color.white * bp.btn.bgOpacity;
                     col.a = 1f;
 
                     lr.startColor = col;
