@@ -41,7 +41,10 @@ public class ReboundPhrase : Phrase
             base.spawn(mp, spawnLane, spawnBeat + reboundDelta * i, blockFrame);
         }*/
 
-        ReboundNote reboundN = (ReboundNote) base.spawn(mp, spawnLane, spawnBeat, blockFrame, weight)[0];
+        List<Note> nList = base.spawn(mp, spawnLane, spawnBeat, blockFrame, weight);
+        if (nList == null) return null; // Failed to spawn
+
+        ReboundNote reboundN = (ReboundNote) nList[0];
 
         // Generates a sequence of ghosts
         // Ghosts also double as representatives of the rebound's future position

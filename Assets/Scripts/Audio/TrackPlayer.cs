@@ -75,8 +75,7 @@ public class TrackPlayer : MonoBehaviour
 
     public void setTime(float time)
     {
+        if (time + latency >= audio.clip.length) return; // Out of bounds
         audio.time = time + latency;
-
-        Debug.Log("Time set: " + audio.time);
     }
 }

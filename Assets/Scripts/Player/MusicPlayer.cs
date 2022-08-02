@@ -61,6 +61,7 @@ public class MusicPlayer : MonoBehaviour
     public float lagspikeTolerance = 0.05f;
 
     public bool showNoteWeight = false;
+    public bool trackPlayQueued = false;
 
     // Combo
     public Text comboCounter;
@@ -171,10 +172,12 @@ public class MusicPlayer : MonoBehaviour
     {
         // Start song if ready
         float tpTime = getTrackTime();
-        if (tpTime >= 0 && !TrackPlayer.sing.audio.isPlaying)
+        if (tpTime >= 0 && !TrackPlayer.sing.audio.isPlaying && trackPlayQueued)
         {
             TrackPlayer.sing.play();
             TrackPlayer.sing.setTime(tpTime); // Sync song time
+
+            trackPlayQueued = false;
         }
 
         // Resync on lagspike
@@ -263,8 +266,6 @@ public class MusicPlayer : MonoBehaviour
             // Zero out other stuff
             Score = 0;
             Combo = 0;
-
-            Debug.Log("Interim");
         }
 
         // Reset key

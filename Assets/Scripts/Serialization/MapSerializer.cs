@@ -171,6 +171,9 @@ public partial class MapSerializer : MonoBehaviour
             TrackPlayer.sing.resetTrack();
             loadQueued = false;
             resetTrackPosition = true; // Default value
+
+            // Tell MP to start watching for a track start
+            mPlay.trackPlayQueued = true;
         }
     }
 
