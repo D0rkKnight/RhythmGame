@@ -95,8 +95,8 @@ public class Note : MonoBehaviour
         Vector2 p = tPos + dp;
         transform.position = new Vector3(p.x, p.y, -1);
 
-        // Check if strictly unhittable
-        if (checkMiss(mp, dt))
+        // Check if strictly unhittable (also can't miss a dead note no matter what)
+        if (!dead && checkMiss(mp, dt))
         {
             mp.miss(this);
         }
@@ -112,7 +112,7 @@ public class Note : MonoBehaviour
 
     public virtual bool checkMiss(MusicPlayer mp, float dt)
     {
-        return dt < -mp.hitWindow && !dead;
+        return dt < -mp.hitWindow;
     }
 
     protected virtual float getNoteExtension(MusicPlayer mp)
