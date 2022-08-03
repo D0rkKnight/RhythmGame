@@ -20,21 +20,26 @@ public class HoldPhrase : Phrase
 
     public override Note instantiateNote(MusicPlayer mp)
     {
+        if (!MapSerializer.sing.genType[(int)TYPE.HOLD])
+            return UnityEngine.Object.Instantiate(mp.notePrefab).GetComponent<Note>();
+
         return UnityEngine.Object.Instantiate(mp.holdPrefab).GetComponent<Note>();
     }
     public override void configNote(MusicPlayer mp, Note nObj, int spawnLane, float spawnBeat, float blockFrame, float weight)
     {
         base.configNote(mp, nObj, spawnLane, spawnBeat, blockFrame, weight);
 
+        if (MapSerializer.sing.genType[(int)TYPE.HOLD])
+        {
+            // Set hold length
+            HoldNote hn = (HoldNote)nObj;
+            hn.holdBeats = dur;
+            Transform bg = hn.bg;
 
-        // Set hold length
-        HoldNote hn = (HoldNote)nObj;
-        hn.holdBeats = dur;
-        Transform bg = hn.bg;
-
-        // Scale background bar appropriately
-        bg.localScale = new Vector3(bg.localScale.x, mp.travelSpeed * mp.beatInterval * hn.holdBeats,
-            bg.localScale.z);
+            // Scale background bar appropriately
+            bg.localScale = new Vector3(bg.localScale.x, mp.travelSpeed * mp.beatInterval * hn.holdBeats,
+                bg.localScale.z);
+        }
     }
 
     public override void writeMetaFields(List<InputField> fields)

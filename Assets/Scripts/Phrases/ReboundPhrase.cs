@@ -35,11 +35,17 @@ public class ReboundPhrase : Phrase
 
     public override List<Note> spawn(MusicPlayer mp, int spawnLane, float spawnBeat, float blockFrame, float weight)
     {
-        // Doubles up (depending on if rebounds are spawned as pairs or rebounders)
-        /*for (int i=0; i<times; i++)
+        // Backup
+        if (!MapSerializer.sing.genType[(int)TYPE.REBOUND])
         {
-            base.spawn(mp, spawnLane, spawnBeat + reboundDelta * i, blockFrame);
-        }*/
+            for (int i = 0; i < times + 1; i++)
+            {
+                Note note = Object.Instantiate(mp.notePrefab).GetComponent<Note>();
+                base.configNote(mp, note, spawnLane, spawnBeat + i * reboundBeatDist, blockFrame, weight);
+                mp.addNote(note);
+            }
+            return null;
+        }
 
         List<Note> nList = base.spawn(mp, spawnLane, spawnBeat, blockFrame, weight);
         if (nList == null) return null; // Failed to spawn

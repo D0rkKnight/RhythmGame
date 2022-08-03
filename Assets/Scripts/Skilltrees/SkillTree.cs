@@ -8,7 +8,7 @@ public class SkillTree : MonoBehaviour
     public enum NODE
     {
         L_EXPAND, R_EXPAND, ACCENT_1, ACCENT_2, ACCENT_3, HOLD, L_REROUTE, R_REROUTE, QUANT_1, QUANT_2, QUANT_3,
-        CORE_L, CORE_R, SKILLTREE, AUD_VIZ, SCORE, COMBO, HEAT, SENTINEL,
+        CORE_L, CORE_R, SKILLTREE, AUD_VIZ, SCORE, COMBO, HEAT, REBOUND, SENTINEL,
     }
 
     public bool[] purchasedFlags = new bool[(int)NODE.SENTINEL];
@@ -76,7 +76,8 @@ public class SkillTree : MonoBehaviour
         if (activeFlags[(int)NODE.ACCENT_1]) ns.accentLim++;
         if (activeFlags[(int)NODE.ACCENT_2]) ns.accentLim++;
 
-        if (activeFlags[(int)NODE.HOLD]) ns.genType[(int)Phrase.TYPE.HOLD] = true;
+        ns.genType[(int)Phrase.TYPE.HOLD] = activeFlags[(int)NODE.HOLD];
+        ns.genType[(int)Phrase.TYPE.REBOUND] = activeFlags[(int)NODE.REBOUND];
 
         ns.noteBlockLen = 0.5f;
         if (activeFlags[(int)NODE.QUANT_1]) ns.noteBlockLen = 0.25f;

@@ -219,16 +219,6 @@ public abstract class Phrase
 
         // Collapse types
         TYPE mutType = type;
-        if (!ms.genType[(int)type])
-        {
-            // Create a ghost phrase and rasterize that phrase instead
-            NotePhrase ghost = (NotePhrase) staticCon(lane, beat, accent, null, TYPE.NOTE);
-            ghost.rasterize(ms);
-
-            Debug.Log("Phrase ghosted");
-
-            return;
-        }
 
         // Short circuit if none type
         if (mutType == TYPE.NONE) return;
@@ -287,6 +277,8 @@ public abstract class Phrase
     // Accepts generic arguments for mutability between phrase types
     public virtual List<Note> spawn(MusicPlayer mp, int spawnLane, float spawnBeat, float blockFrame, float weight)
     {
+
+        // TODO: Use this check for all higher complexity phrases
         if (!noteValid(mp, spawnLane, spawnBeat, blockFrame))
         {
             Debug.LogWarning("Illegal note spawn blocked at " + lane + ", " + beat);

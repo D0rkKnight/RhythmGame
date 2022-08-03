@@ -16,7 +16,7 @@ public class EditorSkillTree : SkillTree
         Transform par = transform.Find("Canvas/Scroll View/Viewport/Content");
 
         // Generate toggles
-        for(int i=0; i<(int)NODE.SENTINEL-1; i++)
+        for(int i=0; i<(int)NODE.SENTINEL; i++)
         {
             GameObject obj = Instantiate(togglePrefab, par);
 
@@ -41,7 +41,7 @@ public class EditorSkillTree : SkillTree
 
     protected override void setActiveFlags()
     {
-        for (int i = 0; i < (int)NODE.SENTINEL - 1; i++)
+        for (int i = 0; i < (int)NODE.SENTINEL; i++)
             activeFlags[i] = toggles[i] != null ? toggles[i].isOn : false;
     }
 }

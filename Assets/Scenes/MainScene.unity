@@ -1250,6 +1250,11 @@ PrefabInstance:
       propertyPath: genType.Array.data[4]
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 6973395804611573914, guid: 3e5a8fe67b687dc4b81f154ed99e82af,
+        type: 3}
+      propertyPath: genType.Array.data[5]
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6973395804611573915, guid: 3e5a8fe67b687dc4b81f154ed99e82af,
         type: 3}
       propertyPath: m_RootOrder
