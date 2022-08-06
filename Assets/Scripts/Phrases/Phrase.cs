@@ -277,7 +277,12 @@ public abstract class Phrase
     // Accepts generic arguments for mutability between phrase types
     public virtual List<Note> spawn(MusicPlayer mp, int spawnLane, float spawnBeat, float blockFrame, float weight)
     {
+        return spawn(mp, spawnLane, spawnBeat, blockFrame, weight, instantiateNote);
+    }
 
+    // Spawn accepts an instantiator override
+    public virtual List<Note> spawn(MusicPlayer mp, int spawnLane, float spawnBeat, float blockFrame, float weight, Func<MusicPlayer, Note> instantiator)
+    {
         // TODO: Use this check for all higher complexity phrases
         if (!noteValid(mp, spawnLane, spawnBeat, blockFrame))
         {
@@ -292,7 +297,7 @@ public abstract class Phrase
         }
 
         // Spawn note
-        Note nObj = instantiateNote(mp);
+        Note nObj = instantiator(mp);
 
         configNote(mp, nObj, spawnLane, spawnBeat, blockFrame, weight);
         mp.addNote(nObj);
@@ -301,6 +306,7 @@ public abstract class Phrase
         o.Add(nObj);
         return o;
     }
+
     public virtual bool noteValid(MusicPlayer mp, int lane, float beat, float blockDur)
     {
         NoteColumn col = mp.columns[lane];

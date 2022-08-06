@@ -18,6 +18,23 @@ public class HoldPhrase : Phrase
         return new HoldPhrase(lane, beat, accent, (string[]) meta.Clone());
     }
 
+    public override List<Note> spawn(MusicPlayer mp, int spawnLane, float spawnBeat, float blockFrame, float weight)
+    {
+        if (!MapSerializer.sing.genType[(int)TYPE.HOLD])
+        {
+            base.spawn(mp, spawnLane, spawnBeat, MapSerializer.sing.noteBlockLen, weight,
+                (MusicPlayer mp) =>
+                {
+                    return UnityEngine.Object.Instantiate(mp.notePrefab).GetComponent<Note>();
+                });
+
+            return null;
+        }
+
+        base.spawn(mp, spawnLane, spawnBeat, blockFrame, weight);
+        return null;
+    }
+
     public override Note instantiateNote(MusicPlayer mp)
     {
         if (!MapSerializer.sing.genType[(int)TYPE.HOLD])
