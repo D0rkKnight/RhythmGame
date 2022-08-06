@@ -10,10 +10,18 @@ public class InputManager : MonoBehaviour
     public bool focusedInField;
     public List<InputField> fields = new List<InputField>();
     public static InputManager sing;
+
+    public static bool[] banList;
+
     private void Awake()
     {
         if (sing != null) Debug.LogError("Singleton broken");
         sing = this;
+
+        // Init banlist
+        banList = new bool[Enum.GetValues(typeof(KeyCode)).Length];
+        for (int i = 0; i < banList.Length; i++)
+            banList[i] = false;
     }
     private void Update()
     {
@@ -55,11 +63,31 @@ public class InputManager : MonoBehaviour
 
         focusedInField = false;
         foreach (InputField f in fields) if (f.isFocused) focusedInField = true;
+
+
+        // Wipe banlist if anything is released
+        foreach (KeyCode key in Enum.GetValues(typeof(KeyCode)))
+        {
+            if (Input.GetKeyUp(key))
+                banList[(int)key] = false;
+        }
     }
 
     public static bool checkKeyDown(KeyCode c)
     {
-        if (!sing.focusedInField && Input.GetKeyDown(c)) return true;
+        if (!sing.focusedInField && Input.GetKeyDown(c) && !banList[(int) c]) return true;
         return false;
+    }
+
+    public static void banKey(KeyCode c)
+    {
+        banList[(int)c] = true;
+    }
+
+    // For gameplay purposes
+    // Will do nothing if UI is on the GM stack
+    public static bool checkKeyDownGame(KeyCode c)
+    {
+        return checkKeyDown(c) && GameManager.sing.panelStack.Count == 0;
     }
 }

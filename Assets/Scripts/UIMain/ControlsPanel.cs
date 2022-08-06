@@ -9,26 +9,28 @@ public class ControlsPanel : MonoBehaviour
 {
 
     public GameObject[] colInput;
+    public GameObject pauseInput;
     [SerializeField] private GameObject clickBlocker;
 
-    public int selectedCol = -1;
+    public bool selectingKey = false;
+    private Action<KeyCode> onSelect;
 
 
     // Start is called before the first frame update
     void Start()
     {
-
         updateButtons();
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (selectedCol >= 0)
+        if (selectingKey)
         {
             if (Input.anyKeyDown)
             {
-                KeyCode newKey = GameManager.sing.colKeys[selectedCol];
+                // Do defaults later once input is standardized
+                KeyCode newKey = KeyCode.None;
 
                 // Search for which key was pressed
                 foreach (KeyCode key in Enum.GetValues(typeof(KeyCode)))
@@ -40,9 +42,12 @@ public class ControlsPanel : MonoBehaviour
                     }
                 }
 
-                GameManager.sing.colKeys[selectedCol] = newKey;
-                selectedCol = -1;
+                onSelect(newKey);
                 GameManager.sing.popPanelStack(); // Release the click blocker
+                selectingKey = false;
+
+                // Make sure this doesn't proc other behavior
+                InputManager.banKey(newKey);
 
                 // Proc a visual update
                 updateButtons();
@@ -62,11 +67,33 @@ public class ControlsPanel : MonoBehaviour
             col.transform.Find("Label").GetComponent<TMP_Text>().text = "COL " + (i + 1);
             col.transform.Find("Button/Text").GetComponent<TMP_Text>().text = GameManager.sing.colKeys[i].ToString();
         }
+
+        pauseInput.transform.Find("Button/Text").GetComponent<TMP_Text>().text = MusicPlayer.sing.pauseKey.ToString();
+    }
+
+    private void queueKeyChange()
+    {
+        GameManager.sing.pushPanelStack(clickBlocker, false);
+        selectingKey = true;
     }
 
     public void selectCol(int col)
     {
-        selectedCol = col;
-        GameManager.sing.pushPanelStack(clickBlocker, false);
+        onSelect = (KeyCode newKey) =>
+        {
+            GameManager.sing.colKeys[col] = newKey;
+        };
+
+        queueKeyChange();
+    }
+
+    public void selectPause()
+    {
+        onSelect = (KeyCode newKey) =>
+        {
+            MusicPlayer.sing.pauseKey = newKey;
+        };
+
+        queueKeyChange();
     }
 }

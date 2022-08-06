@@ -207,7 +207,7 @@ public class MusicPlayer : MonoBehaviour
         // Input
         foreach (NoteColumn col in columns)
         {
-            if (InputManager.checkKeyDown(col.Key))
+            if (InputManager.checkKeyDownGame(col.Key))
             {
                 // Get best note within the acceptable input range
                 Note bestNote = null;
@@ -278,14 +278,14 @@ public class MusicPlayer : MonoBehaviour
         }
 
         // Reset key
-        if (InputManager.checkKeyDown(resetKey))
+        if (InputManager.checkKeyDownGame(resetKey))
         {
             resetSongEnv();
             MapSerializer.sing.playMap(); // Resets to start of the current map
         }
 
         // State transitions
-        if (InputManager.checkKeyDown(pauseKey))
+        if (InputManager.checkKeyDownGame(pauseKey))
         {
             pause();
         }
@@ -302,11 +302,15 @@ public class MusicPlayer : MonoBehaviour
         // Load in phrases that might be hotswapped
         processPhraseQueue();
 
+        // Set pause label
+        pauseText.gameObject.SetActive(true);
+        pauseText.text = "Press " + pauseKey.ToString() + " to Unpause";
+
         // Draw notes
         foreach (Note n in notes) n.updateNote(this, null);
 
         // State transitions
-        if (InputManager.checkKeyDown(pauseKey))
+        if (InputManager.checkKeyDownGame(pauseKey))
         {
             if (willUnpauseCD)
             {
@@ -323,7 +327,6 @@ public class MusicPlayer : MonoBehaviour
             if (unpauseCountdown < 0)
             {
                 unpause();
-                pauseText.text = "PAUSE";
             }
             else
             {
@@ -340,9 +343,6 @@ public class MusicPlayer : MonoBehaviour
                 n.resetInit(this);
             }
         }
-
-        // Set pause label
-        pauseText.gameObject.SetActive(true);
     }
 
     // Buffer period to avoid excessive flip flopping
@@ -374,7 +374,7 @@ public class MusicPlayer : MonoBehaviour
         }
 
         // Can also force an awake by itself
-        if (Input.GetKey(pauseKey))
+        if (InputManager.checkKeyDownGame(pauseKey))
         {
             Timeliner.sing.playNextMap();
 
@@ -391,8 +391,7 @@ public class MusicPlayer : MonoBehaviour
         state = STATE.PAUSE;
         TrackPlayer.sing.audio.Stop();
 
-        pauseText.text = "Press " + pauseKey.ToString() + " to Unpause";
-
+        Debug.Log("Pausing");
     }
 
     public void unpause()
