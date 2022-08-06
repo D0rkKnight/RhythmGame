@@ -87,7 +87,6 @@ public class MusicPlayer : MonoBehaviour
     private float pausedTotal;
     public STATE state = STATE.SLEEPING;
     public bool pauseOnAwake = false;
-    public bool maploadWhenSleeping = false;
 
     float interimTil = 0; // Deadline for interim period between songs
     public bool willUnpauseCD = true; // Countdown on unpause
@@ -350,6 +349,8 @@ public class MusicPlayer : MonoBehaviour
 
     private void stateSleep()
     {
+        pauseText.text = "Press " + pauseKey.ToString() + " to Play";
+
         // Waits for a map to queue up, then resets the environment and pauses.
         if (MapSerializer.sing.activeMap != null)
         {
@@ -363,7 +364,7 @@ public class MusicPlayer : MonoBehaviour
         }
 
         // Can also force an awake by itself
-        if (maploadWhenSleeping)
+        if (Input.GetKey(pauseKey))
         {
             Timeliner.sing.playNextMap();
 
