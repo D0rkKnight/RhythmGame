@@ -381,6 +381,8 @@ public class MusicPlayer : MonoBehaviour
         state = STATE.PAUSE;
         TrackPlayer.sing.audio.Stop();
 
+        pauseText.text = "Press " + pauseKey.ToString() + " to Unpause";
+
     }
 
     public void unpause()
