@@ -1047,6 +1047,12 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5365092800069189189, guid: 4b410983daa7d1640bfc1b88d4bdc2f9,
         type: 3}
+      propertyPath: pulseBG
+      value: 
+      objectReference: {fileID: 796651872425410585, guid: 423d6f5e74f422540a027dca98df6b2b,
+        type: 3}
+    - target: {fileID: 5365092800069189189, guid: 4b410983daa7d1640bfc1b88d4bdc2f9,
+        type: 3}
       propertyPath: pointsPerToken
       value: 500
       objectReference: {fileID: 0}

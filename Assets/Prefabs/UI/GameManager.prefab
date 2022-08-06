@@ -433,7 +433,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &4975832984025035520
 RectTransform:
   m_ObjectHideFlags: 0
@@ -518,6 +518,7 @@ MonoBehaviour:
   indicatorPressScale: 1.5
   aveDelta: 0
   samples: 0
+  maxSamples: 20
 --- !u!82 &8115493320498275451
 AudioSource:
   m_ObjectHideFlags: 0

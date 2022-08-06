@@ -643,3 +643,5 @@ MonoBehaviour:
   txt: {fileID: 3364124303560126149}
   btn: {fileID: 4508612373223010344}
   outline: {fileID: 8843620100335405184}
+  pulsing: 0
+  pulseBG: {fileID: 796651872425410585, guid: 423d6f5e74f422540a027dca98df6b2b, type: 3}

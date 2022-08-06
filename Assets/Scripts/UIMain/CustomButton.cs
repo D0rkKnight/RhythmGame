@@ -13,8 +13,12 @@ public class CustomButton : MonoBehaviour
     public Button btn;
     public SpriteRenderer outline;
 
+    public bool pulsing = false;
+    public GameObject pulseBG;
+
     private void Start()
     {
+        StartCoroutine("pulse");
     }
 
     public float bgOpacity {
@@ -31,6 +35,20 @@ public class CustomButton : MonoBehaviour
         set
         {
             outline.color = new Vector4(outline.color.r, outline.color.g, outline.color.b, value);
+        }
+    }
+
+    private IEnumerator pulse()
+    {
+        while (true)
+        {
+            if (pulsing)
+            {
+                GameObject bg = Instantiate(pulseBG, transform);
+                bg.transform.localPosition = new Vector3(0, 0, 3);
+            }
+
+            yield return new WaitForSeconds(1f);
         }
     }
 }

@@ -101,6 +101,8 @@ public class MainSkillTree : SkillTree
 
     public GameObject audViz;
 
+    public buttonPair firstSkillNode; // Picks a first skill node to pulse
+
     public override void init()
     {
         base.init();
@@ -111,6 +113,38 @@ public class MainSkillTree : SkillTree
         }
 
         lineRends = new List<LineRenderer>();
+
+        // Grab the first skill node
+        firstSkillNode = null;
+        foreach (buttonPair pair in nodes)
+        {
+            if (pair.prereqs.Length == 0 && (firstSkillNode == null || pair.cost < firstSkillNode.cost))
+            {
+                Debug.Log("Assigned");
+                firstSkillNode = pair;
+            }
+        }
+    }
+
+    public void Update()
+    {
+        base.Update();
+
+        // Weird switch structure
+        bool pulsing = firstSkillNode.btn.pulsing;
+        if (tokens >= firstSkillNode.cost && !pulsing)
+        {
+            // Begin pulsing
+            pulsing = true;
+        } 
+        else if (tokens < firstSkillNode.cost && pulsing)
+        {
+            pulsing = false;
+        }
+        if (purchasedFlags[(int)firstSkillNode.node])
+            pulsing = false;
+
+        firstSkillNode.btn.pulsing = pulsing;
     }
 
     protected override void setActiveFlags()

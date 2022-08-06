@@ -29,6 +29,11 @@ public class SkillTree : MonoBehaviour
         if (purchaseAll) for (int i = 0; i < purchasedFlags.Length - 1; i++) purchasedFlags[i] = true;
     }
 
+    public virtual void Start()
+    {
+
+    }
+
     public virtual void init()
     {
 
@@ -38,6 +43,11 @@ public class SkillTree : MonoBehaviour
 
     }
     protected virtual void enableNewOptions()
+    {
+
+    }
+
+    protected virtual void Update()
     {
 
     }
