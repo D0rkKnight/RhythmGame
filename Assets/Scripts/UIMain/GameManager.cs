@@ -52,10 +52,10 @@ public class GameManager : MonoBehaviour
         SceneManager.LoadScene(scene);
     }
 
-    public void pushPanelStack(GameObject obj)
+    public void pushPanelStack(GameObject obj, bool wipesLastPanel = true)
     {
         // Deactivate last element
-        if (panelStack.Count > 0)
+        if (panelStack.Count > 0 && wipesLastPanel)
             panelStack.Peek().SetActive(false);
 
         // Activate new element

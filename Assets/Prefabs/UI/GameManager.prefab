@@ -124,6 +124,7 @@ MonoBehaviour:
   settings: {fileID: 1136174380943972679}
   colKeys: 64000000660000006a0000006b000000
   activePanel: {fileID: 0}
+  forceSave: 
 --- !u!1 &1136174380943972679
 GameObject:
   m_ObjectHideFlags: 0
@@ -327,7 +328,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1452156305786297118
 RectTransform:
   m_ObjectHideFlags: 0

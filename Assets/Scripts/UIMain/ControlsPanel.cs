@@ -11,7 +11,7 @@ public class ControlsPanel : MonoBehaviour
     public GameObject[] colInput;
     [SerializeField] private GameObject clickBlocker;
 
-    int selectedCol = -1;
+    public int selectedCol = -1;
 
 
     // Start is called before the first frame update
@@ -67,6 +67,6 @@ public class ControlsPanel : MonoBehaviour
     public void selectCol(int col)
     {
         selectedCol = col;
-        GameManager.sing.pushPanelStack(clickBlocker);
+        GameManager.sing.pushPanelStack(clickBlocker, false);
     }
 }
