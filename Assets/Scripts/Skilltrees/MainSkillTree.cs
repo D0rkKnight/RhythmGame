@@ -224,6 +224,8 @@ public class MainSkillTree : SkillTree
             if (!allPrereqs) // Skip invalid nodes
                 continue;
 
+            Debug.Log(bp.node.ToString());
+
             // Draw lines between active skills (from an active skill to its parent)
             // 4 points: base, turn 1, turn 2, end
 
