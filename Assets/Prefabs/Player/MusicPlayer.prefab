@@ -611,6 +611,7 @@ MonoBehaviour:
   dir: {x: 0, y: -1}
   hitWindow: 0.1
   perfectWindow: 0.05
+  missWindow: 0.3
   streamNotes: 1
   scroll: 0
   noteAdvance: 5
@@ -620,11 +621,11 @@ MonoBehaviour:
   tpOffset: 0
   lagspikeTolerance: 0.05
   showNoteWeight: 0
+  trackPlayQueued: 0
   comboCounter: {fileID: 1398898063}
   pauseKey: 112
   state: 3
   pauseOnAwake: 0
-  maploadWhenSleeping: 0
   willUnpauseCD: 1
   accuracyPopupPrefab: {fileID: 7099239638739727420, guid: 48089a94e0dd7b043b7b4b6b703c989e,
     type: 3}

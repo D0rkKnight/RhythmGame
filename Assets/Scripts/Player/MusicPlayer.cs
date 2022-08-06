@@ -34,6 +34,7 @@ public class MusicPlayer : MonoBehaviour
 
     public float hitWindow = 0.5f;
     public float perfectWindow = 0.25f;
+    public float missWindow = 1f; // Any press in this window that is not a hit is a miss
 
     public bool streamNotes = true;
     public float scroll = 0f; // Custom time offset 
@@ -218,21 +219,30 @@ public class MusicPlayer : MonoBehaviour
                     // Check both assigned column and reroute for validity
                     if (!note.lane.Equals(col) && !note.lane.Equals(col.reroute)) continue;
 
-                    if (Mathf.Abs(note.getHitTime() - songTime) < hitWindow)
-                    {
-                        if (bestNote == null || note.getHitTime() < bestNote.getHitTime()) // Hits first available note in the window
-                            bestNote = note;
-                    }
+                    if (bestNote == null || note.getHitTime() < bestNote.getHitTime()) // Hits earliest note
+                        bestNote = note;
                 }
 
                 if (bestNote != null)
                 {
-                    addNoteScore();
-                    hit(bestNote);
+                    if (Mathf.Abs(bestNote.getHitTime() - songTime) < hitWindow)
+                    {
+                        addNoteScore();
+                        hit(bestNote);
 
-                    // Check accuracy of hit
-                    float delta = Mathf.Abs(bestNote.getHitTime() - songTime);
-                    broadCastHitAcc(delta);
+                        // Check accuracy of hit
+                        float delta = Mathf.Abs(bestNote.getHitTime() - songTime);
+                        broadCastHitAcc(delta);
+                    }
+
+                    // Check if its a miss since it's not a hit
+                    else if (Mathf.Abs(bestNote.getHitTime() - songTime) < missWindow)
+                    {
+                        miss(bestNote);
+
+                        float delta = Mathf.Abs(bestNote.getHitTime() - songTime);
+                        broadCastHitAcc(delta);
+                    }
                 }
 
                 // Highlight BG
@@ -534,17 +544,24 @@ public class MusicPlayer : MonoBehaviour
         GameObject popup = Instantiate(accuracyPopupPrefab, canv);
         popup.transform.position = accuracyPopupLoc.position;
 
+        string txt;
         if (delta < perfectWindow)
         {
             // Perfect hit
-            popup.GetComponent<Text>().text = "Perfect!";
+            txt = "Perfect!";
+        }
+        else if (delta < hitWindow)
+        {
+            // Regular hit
+            txt = "OK!";
         }
         else
         {
-            // Regular hit
-            popup.GetComponent<Text>().text = "OK!";
+            // Miss
+            txt = "Miss";
         }
 
+        popup.GetComponent<Text>().text = txt;
     }
 
     public int getReroute(int col)
