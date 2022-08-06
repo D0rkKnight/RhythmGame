@@ -24,6 +24,8 @@ public class Calibrator : MonoBehaviour
     public float aveDelta = 0f;
     public int samples = 0;
 
+    public int maxSamples = 20;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -37,7 +39,7 @@ public class Calibrator : MonoBehaviour
 
         cancelBut.onClick.AddListener(() =>
         {
-            TrackPlayer.sing.latency = aveDelta;
+            onExit();
         });
     }
 
@@ -72,5 +74,16 @@ public class Calibrator : MonoBehaviour
 
         // Lerp down indicator
         indicator.transform.localScale = Vector3.Lerp(indicator.transform.localScale, Vector3.one, Time.deltaTime * 4);
+
+        if (samples >= maxSamples)
+        {
+            onExit();
+            GameManager.sing.popPanelStack();
+        }
+    }
+
+    private void onExit()
+    {
+        TrackPlayer.sing.latency = aveDelta;
     }
 }
