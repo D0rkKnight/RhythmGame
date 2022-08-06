@@ -80,8 +80,8 @@ public class SkillTree : MonoBehaviour
         mp.columns[3].StreamOn = activeFlags[(int)NODE.R_EXPAND];
 
         // Whether to reroute input on the two columns
-        mp.columns[0].reroute = activeFlags[(int)NODE.L_REROUTE] ? mp.columns[1] : null;
-        mp.columns[3].reroute = activeFlags[(int)NODE.R_REROUTE] ? mp.columns[2] : null;
+        mp.columns[0].reroute = activeFlags[(int)NODE.L_REROUTE] && !activeFlags[(int)NODE.L_EXPAND] ? mp.columns[1] : null;
+        mp.columns[3].reroute = activeFlags[(int)NODE.R_REROUTE] && !activeFlags[(int)NODE.R_EXPAND] ? mp.columns[2] : null;
 
         if (activeFlags[(int)NODE.ACCENT_1]) ns.accentLim++;
         if (activeFlags[(int)NODE.ACCENT_2]) ns.accentLim++;

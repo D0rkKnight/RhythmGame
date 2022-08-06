@@ -211,13 +211,19 @@ public class MusicPlayer : MonoBehaviour
             {
                 // Get best note within the acceptable input range
                 Note bestNote = null;
+                Note closestNote = null; // Could be dead already
 
                 foreach (Note note in notes)
                 {
-                    if (note.dead) continue;
-
                     // Check both assigned column and reroute for validity
                     if (!note.lane.Equals(col) && !note.lane.Equals(col.reroute)) continue;
+
+                    // Grab closest note regardless of if it's alive or not
+                    if (closestNote == null || 
+                        Mathf.Abs(songTime - note.getHitTime()) < Mathf.Abs(songTime - closestNote.getHitTime()))
+                        closestNote = note;
+
+                    if (note.dead) continue;
 
                     if (bestNote == null || note.getHitTime() < bestNote.getHitTime()) // Hits earliest note
                         bestNote = note;
@@ -236,7 +242,10 @@ public class MusicPlayer : MonoBehaviour
                     }
 
                     // Check if its a miss since it's not a hit
-                    else if (Mathf.Abs(bestNote.getHitTime() - songTime) < missWindow)
+                    // Assume you were aiming for the closest note and check if it's outside of the hit window
+                    // Means the player did not hit any note, but the closest note (the note they were aiming for) is also alive
+                    // Which means they should be penalized
+                    else if (!closestNote.dead && Mathf.Abs(closestNote.getHitTime() - songTime) < missWindow)
                     {
                         miss(bestNote);
 
