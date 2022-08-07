@@ -11,8 +11,8 @@ public abstract class StreamPhrase : Phrase
     public float noteLen = 1.0f;
     public bool recurse = false;
 
-    public StreamPhrase(int lane_, float beat_, int accent_, TYPE type_, string[] _meta, int metaLen_) : 
-        base(lane_, beat_, accent_, type_, _meta, metaLen_)
+    public StreamPhrase(int lane_, float beat_, int accent_, TYPE type_, string[] _meta, int metaLen_, float priority_) : 
+        base(lane_, beat_, accent_, type_, _meta, metaLen_, priority_)
     {
     }
 

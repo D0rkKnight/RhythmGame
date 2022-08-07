@@ -21,6 +21,7 @@ public partial class MapSerializer : MonoBehaviour
     List<char> lanePool;
     List<char> accentPool;
     List<char> beatPool;
+    List<char> priorPool;
 
     MusicPlayer mPlay;
 
@@ -57,6 +58,7 @@ public partial class MapSerializer : MonoBehaviour
         lanePool = new List<char>();
         accentPool = new List<char>();
         beatPool = new List<char>();
+        priorPool = new List<char>();
 
         // TODO: Read the typepool from Phrase's type-char listing
         catPool.Add('L');
@@ -65,7 +67,12 @@ public partial class MapSerializer : MonoBehaviour
         foreach (Phrase.TypeEntry entry in Phrase.typeTable)
             if (entry.charCode != '\0') typePool.Add(entry.charCode);
 
-        for (char c = '0'; c <= '9'; c++) lanePool.Add(c);
+        for (char c = '0'; c <= '9'; c++)
+        {
+            lanePool.Add(c);
+            priorPool.Add(c);
+        }
+        priorPool.Add('.');
 
         accentPool.Add('~');
         beatPool.Add('|');
@@ -249,6 +256,7 @@ public partial class MapSerializer : MonoBehaviour
         string part = scanner.getSegment(catPool);
         string lane = scanner.getSegment(lanePool);
         int accent = scanner.getSegment(accentPool).Length;
+        string priorSeg = scanner.getEnclosed('{', '}');
 
         // Write to note
         Phrase.TYPE type = Phrase.TYPE.NONE;
@@ -273,8 +281,11 @@ public partial class MapSerializer : MonoBehaviour
             type = codeOver;
         }
 
+        bool succ = float.TryParse(priorSeg, out float priority);
+        if (!succ) priority = 1f;
+
         float beat = float.Parse(timestamp);
-        Phrase p = Phrase.staticCon(l, beat, accent, typeMeta, type);
+        Phrase p = Phrase.staticCon(l, beat, accent, typeMeta, priority, type);
 
         map.addPhraseToLastGroup(p);
 

@@ -19,7 +19,7 @@ public class EleTypeButton : MonoBehaviour
         // All metadata will be nulled upon doing this
 
         Phrase p = MapEditor.sing.activePhrase;
-        MapEditor.sing.activePhrase = Phrase.staticCon(p.lane, p.beat, p.accent, null, ele);
+        MapEditor.sing.activePhrase = Phrase.staticCon(p.lane, p.beat, p.accent, null, p.priority, ele);
         MapEditor.sing.activePhraseToEditorUI();
     }
 }

@@ -19,6 +19,8 @@ public abstract class Phrase
     public Map ownerMap = null;
     public PhraseGroup ownerGroup = null;
 
+    public float priority;
+
     // Metadata
     protected string[] meta;
     public static List<TypeEntry> typeTable = new List<TypeEntry>();
@@ -27,9 +29,9 @@ public abstract class Phrase
         public char charCode;
         public TYPE type;
 
-        public Func<int, float, int, string[], Phrase> con;
+        public Func<int, float, int, string[], float, Phrase> con;
 
-        public TypeEntry(char charCode_, TYPE type_, Func<int, float, int, string[], Phrase> con_)
+        public TypeEntry(char charCode_, TYPE type_, Func<int, float, int, string[], float, Phrase> con_)
         {
             charCode = charCode_;
             type = type_;
@@ -50,13 +52,14 @@ public abstract class Phrase
         type = TYPE.NOTE;
     }
 
-    public Phrase(int lane_, float beat_, int accent_, TYPE type_, string[] meta_, int _metaLen)
+    public Phrase(int lane_, float beat_, int accent_, TYPE type_, string[] meta_, int _metaLen, float priority_)
     {
         lane = lane_;
         beat = beat_;
         accent = accent_;
         type = type_;
         meta = meta_;
+        priority = priority_;
 
         if (meta == null)
         {
@@ -85,50 +88,50 @@ public abstract class Phrase
     {
         // Build phrase lookup table
         typeTable.Add(new TypeEntry('\0', TYPE.NONE,
-            (lane_, beat_, accent_, meta_) => {
+            (lane_, beat_, accent_, meta_, priority_) => {
                 return new NonePhrase(beat_);
             }
             ));
 
         typeTable.Add(new TypeEntry('\0', TYPE.NOTE,
-            (lane_, beat_, accent_, meta_) => {
-                return new NotePhrase(lane_, beat_, accent_);
+            (lane_, beat_, accent_, meta_, priority_) => {
+                return new NotePhrase(lane_, beat_, accent_, priority_);
             }
             ));
 
         typeTable.Add(new TypeEntry('H', TYPE.HOLD,
-            (lane_, beat_, accent_, meta_) => {
-                return new HoldPhrase(lane_, beat_, accent_, meta_);
+            (lane_, beat_, accent_, meta_, priority_) => {
+                return new HoldPhrase(lane_, beat_, accent_, meta_, priority_);
             }
             ));
 
         typeTable.Add(new TypeEntry('Z', TYPE.ZIGZAG,
-            (lane_, beat_, accent_, meta_) => {
-                return new ZigzagPhrase(lane_, beat_, accent_, meta_);
+            (lane_, beat_, accent_, meta_, priority_) => {
+                return new ZigzagPhrase(lane_, beat_, accent_, meta_, priority_);
             }
             ));
 
         typeTable.Add(new TypeEntry('S', TYPE.SCATTER,
-            (lane_, beat_, accent_, meta_) => {
-                return new ScatterPhrase(lane_, beat_, accent_, meta_);
+            (lane_, beat_, accent_, meta_, priority_) => {
+                return new ScatterPhrase(lane_, beat_, accent_, meta_, priority_);
             }
             ));
 
         typeTable.Add(new TypeEntry('X', TYPE.REBOUND,
-            (lane_, beat_, accent_, meta_) => {
-                return new ReboundPhrase(lane_, beat_, accent_, meta_);
+            (lane_, beat_, accent_, meta_, priority_) => {
+                return new ReboundPhrase(lane_, beat_, accent_, meta_, priority_);
             }
             ));
 
         typeTable.Add(new TypeEntry('M', TYPE.MANY,
-            (lane_, beat_, accent_, meta_) => {
-                return new ManyPhrase(lane_, beat_, accent_, meta_);
+            (lane_, beat_, accent_, meta_, priority_) => {
+                return new ManyPhrase(lane_, beat_, accent_, meta_, priority_);
             }
             ));
     }
 
     // Generates a phrase object given a universal list of parameters
-    public static Phrase staticCon(int lane_, float beat_, int accent_, string[] typeMeta, TYPE type_)
+    public static Phrase staticCon(int lane_, float beat_, int accent_, string[] typeMeta, float priority_, TYPE type_)
     {
         Phrase p = null;
         
@@ -136,7 +139,7 @@ public abstract class Phrase
         {
             if (entry.type == type_)
             {
-                p = entry.con(lane_, beat_, accent_, typeMeta);
+                p = entry.con(lane_, beat_, accent_, typeMeta, priority_);
                 break;
             }
         }
@@ -199,6 +202,8 @@ public abstract class Phrase
         for (int i = 0; i < accent; i++)
             o += "~";
 
+        o += "{" + priority + "}";
+
         return o;
     }
 
@@ -242,7 +247,7 @@ public abstract class Phrase
 
         // Get block frame
         float blockFrame = getBlockFrame();
-        float weight = 1 + accent; // Weight is based off of raw accent
+        float weight = priority + accent; // Weight is based off of raw accent
 
 
         // Double/triple up according to accents
@@ -471,7 +476,8 @@ public abstract class Phrase
             p.beat != beat || 
             p.accent != accent || 
             p.type != type || 
-            p.active != active)
+            p.active != active ||
+            p.priority != priority)
             return false;
 
         // Check meta fields
@@ -490,7 +496,7 @@ public abstract class Phrase
 
 public class NonePhrase : Phrase
 {
-    public NonePhrase(float beat_) : base(0, beat_, 0, TYPE.NONE, null, 0)
+    public NonePhrase(float beat_) : base(0, beat_, 0, TYPE.NONE, null, 0, 0)
     {
 
     }

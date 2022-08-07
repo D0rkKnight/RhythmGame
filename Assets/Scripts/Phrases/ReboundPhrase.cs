@@ -8,15 +8,15 @@ public class ReboundPhrase : Phrase
     float reboundBeatDist = 1.0f; // Distance of rebounded note (in beats)
     int times = 1;
 
-    public ReboundPhrase(int lane_, float beat_, int accent_, string[] typeMeta_) :
-    base(lane_, beat_, accent_, TYPE.REBOUND, typeMeta_, 2)
+    public ReboundPhrase(int lane_, float beat_, int accent_, string[] typeMeta_, float priority_) :
+    base(lane_, beat_, accent_, TYPE.REBOUND, typeMeta_, 2, priority_)
     {
 
     }
 
     public override Phrase clone()
     {
-        return new ReboundPhrase(lane, beat, accent, (string[]) meta.Clone());
+        return new ReboundPhrase(lane, beat, accent, (string[]) meta.Clone(), priority);
     }
 
     // Core instantiator used by default spawner

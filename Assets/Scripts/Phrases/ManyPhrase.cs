@@ -8,14 +8,14 @@ public class ManyPhrase : Phrase
 {
     public string group = "NULL"; // which group to mirror
 
-    public ManyPhrase(int lane_, float beat_, int accent_, string[] meta_) : 
-        base(lane_, beat_, accent_, TYPE.MANY, meta_, 1)
+    public ManyPhrase(int lane_, float beat_, int accent_, string[] meta_, float priority_) : 
+        base(lane_, beat_, accent_, TYPE.MANY, meta_, 1, priority_)
     {
     }
 
     public override Phrase clone()
     {
-        return new ManyPhrase(lane, beat, accent, (string[]) meta.Clone());
+        return new ManyPhrase(lane, beat, accent, (string[]) meta.Clone(), priority);
     }
 
     public override Note instantiateNote(MusicPlayer mp)

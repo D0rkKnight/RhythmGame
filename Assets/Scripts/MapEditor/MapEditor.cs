@@ -10,7 +10,7 @@ public class MapEditor : MonoBehaviour
 {
     public static MapEditor sing;
 
-    public Phrase activePhrase = new NotePhrase(0, 0, 0);
+    public Phrase activePhrase = new NotePhrase(0, 0, 0, 1);
     public Phrase nonePhrase = new NonePhrase(0);
 
 
@@ -37,7 +37,8 @@ public class MapEditor : MonoBehaviour
     private bool blockTypeUpdate = false;
 
     public TMP_Dropdown workspaceDropdown;
-    public BeatField beatInput;
+    public FloatLockedField beatInput;
+    public FloatLockedField priorityInput;
 
     public Text codeInd;
     public Transform phraseMarker;
@@ -133,7 +134,7 @@ public class MapEditor : MonoBehaviour
             Enum.TryParse(typeof(Phrase.TYPE), typeName, out newType);
 
             Phrase p = sing.activePhrase;
-            Phrase newPhrase = Phrase.staticCon(p.lane, p.beat, p.accent, null, (Phrase.TYPE) newType);
+            Phrase newPhrase = Phrase.staticCon(p.lane, p.beat, p.accent, null, p.priority, (Phrase.TYPE) newType);
             sing.setActivePhrase(newPhrase);
 
             Debug.Log("type changed");
@@ -164,6 +165,23 @@ public class MapEditor : MonoBehaviour
 
             Debug.Log("Activating workspace " + data);
         });
+
+        // Setup field cbs
+        beatInput.cb = (float parse) =>
+        {
+            Phrase newPhrase = activePhrase.clone();
+            newPhrase.beat = parse;
+
+            setActivePhrase(newPhrase);
+        };
+
+        priorityInput.cb = (float parse) =>
+        {
+            Phrase newPhrase = activePhrase.clone();
+            newPhrase.priority = parse;
+
+            setActivePhrase(newPhrase);
+        };
     }
 
     private void Update()
@@ -370,8 +388,6 @@ public class MapEditor : MonoBehaviour
 
     public void undo()
     {
-        Debug.Log("Undo");
-
         if (undoCache.Count > 1)
         {
             undoCache.Pop();
@@ -417,8 +433,6 @@ public class MapEditor : MonoBehaviour
 
     public void activePhraseToEditorUI()
     {
-        Debug.Log("UI: " + activePhrase.ToString());
-
         // Flag metadata input fields
         activePhrase.writeMetaFields(metaFields);
 
@@ -434,5 +448,9 @@ public class MapEditor : MonoBehaviour
                 blockTypeUpdate = false;
             }
         }
+
+        // Write to beat and priority input fields
+        beatInput.setValue(activePhrase.beat);
+        priorityInput.setValue(activePhrase.priority);
     }
 }
