@@ -130,6 +130,9 @@ public class MainSkillTree : SkillTree
                 firstSkillNode = pair;
             }
         }
+
+        // Sets initial token text
+        Tokens = Tokens;
     }
 
     public void Update()
