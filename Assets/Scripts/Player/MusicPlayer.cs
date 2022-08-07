@@ -60,9 +60,7 @@ public class MusicPlayer : MonoBehaviour
     public float tpOffset = 0f; // # of seconds off the music is vs the game
                                 // positive -> music plays first
     public float lagspikeTolerance = 0.05f;
-
     public bool showNoteWeight = false;
-    public bool trackPlayQueued = false;
 
     // Combo
     public Text comboCounter;
@@ -172,12 +170,10 @@ public class MusicPlayer : MonoBehaviour
     {
         // Start song if ready
         float tpTime = getTrackTime();
-        if (tpTime >= 0 && !TrackPlayer.sing.audio.isPlaying && trackPlayQueued)
+        if (tpTime >= 0 && !TrackPlayer.sing.audio.isPlaying)
         {
             TrackPlayer.sing.play();
             TrackPlayer.sing.setTime(tpTime); // Sync song time
-
-            trackPlayQueued = false;
         }
 
         // Resync on lagspike
