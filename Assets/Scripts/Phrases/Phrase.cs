@@ -429,6 +429,8 @@ public abstract class Phrase
         nObj.hitTime = bTime;
         nObj.blockDur = blockFrame;
 
+        nObj.phrase = this; // Setup backlink
+
         nObj.resetInit(mp); // Also serves as an intializer
     }
 

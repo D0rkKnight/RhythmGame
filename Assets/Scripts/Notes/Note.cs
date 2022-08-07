@@ -33,6 +33,7 @@ public class Note : MonoBehaviour
     private Vector2 killLerpTo = Vector2.zero;
 
     public SpriteRenderer noteBody;
+    public Phrase phrase = null;
 
     public void Update()
     {

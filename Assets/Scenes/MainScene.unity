@@ -1054,7 +1054,7 @@ PrefabInstance:
     - target: {fileID: 5365092800069189189, guid: 4b410983daa7d1640bfc1b88d4bdc2f9,
         type: 3}
       propertyPath: pointsPerToken
-      value: 500
+      value: 1000
       objectReference: {fileID: 0}
     - target: {fileID: 5365092800069189194, guid: 4b410983daa7d1640bfc1b88d4bdc2f9,
         type: 3}

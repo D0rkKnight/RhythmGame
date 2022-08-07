@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 public class ReboundNote : Note
 {
@@ -135,5 +136,15 @@ public class ReboundNote : Note
         }
 
         rebounds = reboundNum; // Limit rebounds to before the blocked note
+
+        if (rebounds == 0)
+        {
+            // Swap with regular note
+            int laneInd = Array.IndexOf(MusicPlayer.sing.columns, lane);
+            phrase.spawn(MusicPlayer.sing, laneInd, beat, blockDur, weight, (MusicPlayer mp) =>
+            {
+                return Instantiate(mp.notePrefab);
+            });
+        }
     }
 }
