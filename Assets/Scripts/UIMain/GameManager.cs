@@ -162,10 +162,32 @@ public class GameManager : MonoBehaviour
         if (Timeliner.sing != null)
         {
             Timeliner.sing.Stage = _stage;
-            // Debug.Log("Stage: " + _stage);
         }
 
         // Recompile
         SkillTree.sing.compile();
+    }
+
+    public static void writeSave(string name)
+    {
+        string o = "";
+        o += "stage: " + Timeliner.sing.Stage + "\n";
+
+        o += "\n";
+        o += "nodes\n";
+
+        foreach (bool b in SkillTree.sing.purchasedFlags)
+            o += b ? "1\n" : "0\n";
+
+        o += "\n";
+        o += "editor\n";
+        o += "active: \n"; // Doesn't write in an active file
+
+        // Write to file
+        string path = Application.streamingAssetsPath + "/Saves/" + name + ".txt";
+        StreamWriter writer = new StreamWriter(path);
+
+        writer.WriteLine(o);
+        writer.Close();
     }
 }
