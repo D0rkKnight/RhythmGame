@@ -53,6 +53,7 @@ public class MusicPlayer : MonoBehaviour
             scoreText.text = value.ToString();
         }
     }
+    public Scoreboard scoreboard;
 
     public List<Note> notes;
     public List<Phrase> phraseQueue;
@@ -361,18 +362,32 @@ public class MusicPlayer : MonoBehaviour
     // Buffer period to avoid excessive flip flopping
     private void stateInter()
     {
-        if (Time.time > interimTil)
+        /*if (Time.time > interimTil)
         {
             resetSongEnv();
             Timeliner.sing.playNextMap();
 
             state = STATE.RUN;
+        }*/
+
+        scoreboard.footer.text = "Press " + pauseKey.ToString() + " to Play";
+        scoreboard.gameObject.SetActive(true);
+
+        // Can also force an awake by itself
+        if (InputManager.checkKeyDownGame(pauseKey))
+        {
+            resetSongEnv();
+            Timeliner.sing.playNextMap();
+
+            state = STATE.RUN;
+            scoreboard.gameObject.SetActive(false);
         }
     }
 
     private void stateSleep()
     {
         pauseText.text = "Press " + pauseKey.ToString() + " to Play";
+        pauseText.gameObject.SetActive(true);
 
         // Waits for a map to queue up, then resets the environment and pauses.
         if (MapSerializer.sing.activeMap != null)

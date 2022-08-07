@@ -652,6 +652,7 @@ MonoBehaviour:
   noteAdvance: 5
   noteTimeout: 3
   scoreText: {fileID: 105423348}
+  scoreboard: {fileID: 2782141929218905561}
   notes: []
   tpOffset: 0
   lagspikeTolerance: 0.05
@@ -995,6 +996,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &2782141929218905561 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6447747917299250305, guid: cc0008fb2a55496489e9ca45fca854a9,
+    type: 3}
+  m_PrefabInstance: {fileID: 9216378909601489240}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f91b68cb164a0144ba2ae0005500f8cb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!114 &3967842325482352364 stripped
