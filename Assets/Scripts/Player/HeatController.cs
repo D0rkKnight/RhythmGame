@@ -32,8 +32,8 @@ public class HeatController : MonoBehaviour
 
     public float heatTierDist = 30; // How much heat to tier up once
     public float maxHeat = 100; // Maximum heat achievable
-    private Transform bar1;
-    private Transform bar2;
+    public Transform bar1;
+    public Transform bar2;
 
     public Color[] colors;
     public static HeatController sing;
@@ -43,9 +43,6 @@ public class HeatController : MonoBehaviour
     {
         if (sing != null) Debug.LogError("Singleton broken");
         sing = this;
-
-        bar1 = transform.Find("FillBar1");
-        bar2 = transform.Find("FillBar2");
     }
 
     private void Start()

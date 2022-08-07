@@ -13,18 +13,12 @@ public class MainSkillTree : SkillTree
     public class buttonPair
     {
         public NODE node;
-        public CustomButton btn;
+        public SkillButton btn;
         public NODE[] prereqs;
         public int cost = 100;
         public float heatReq = 0;
 
         private MainSkillTree owner;
-
-        public buttonPair(NODE node_, CustomButton btn_)
-        {
-            node = node_;
-            btn = btn_;
-        }
 
         public void init(MainSkillTree owner_)
         {
@@ -205,6 +199,10 @@ public class MainSkillTree : SkillTree
 
             nodeData.btn.bgOpacity = bgOpacity;
             nodeData.btn.outlineOpacity = outlineOpacity;
+            nodeData.btn.HeatOpacity = bgOpacity;
+
+            // Set heat text
+            nodeData.btn.heatText.text = "" + nodeData.heatReq;
         }
 
         // Fill in values not dictated by buttons
@@ -229,7 +227,7 @@ public class MainSkillTree : SkillTree
 
         mpTrans.Find("Canvas/Score").gameObject.SetActive(activeFlags[(int)NODE.SCORE]);
         mpTrans.Find("Canvas/Combo").gameObject.SetActive(activeFlags[(int)NODE.COMBO]);
-        mpTrans.Find("HeatMeter").gameObject.SetActive(activeFlags[(int)NODE.HEAT]);
+        mpTrans.Find("Heat").gameObject.SetActive(activeFlags[(int)NODE.HEAT]);
     }
 
     protected override void enableNewOptions()
