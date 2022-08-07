@@ -8,12 +8,19 @@ public class HeatController : MonoBehaviour
     private float heat = 0; // Spiciness levels
     public float Heat
     {
-        get { return heat; }
+        get { 
+            if (!SkillTree.sing.activeFlags[(int)SkillTree.NODE.HEAT])
+                return 0;
+            return heat;
+        }
         set
         {
             heat = Mathf.Clamp(value, 0, maxHeat);
 
             if (capHeat) heat = maxHeat;
+
+            if (!SkillTree.sing.activeFlags[(int)SkillTree.NODE.HEAT])
+                heat = 0;
 
             // Recompile skill tree
             SkillTree.sing.compile();

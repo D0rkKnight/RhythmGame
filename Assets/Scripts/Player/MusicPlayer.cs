@@ -67,10 +67,18 @@ public class MusicPlayer : MonoBehaviour
     private float combo;
     public float Combo
     {
-        get { return combo; }
+        get {
+            if (!SkillTree.sing.activeFlags[(int)SkillTree.NODE.COMBO]) 
+                return 0;
+
+            return combo; 
+        }
         set
         {
             combo = value;
+            if (!SkillTree.sing.activeFlags[(int)SkillTree.NODE.COMBO])
+                combo = 0;
+
             comboCounter.text = "x"+combo.ToString();
         }
     }

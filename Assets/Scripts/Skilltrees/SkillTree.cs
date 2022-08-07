@@ -18,6 +18,8 @@ public class SkillTree : MonoBehaviour
     public bool activateAll;
     public bool purchaseAll;
 
+    public bool recompileQueued = false;
+
     // separate initialize function
     public virtual void Awake()
     {
@@ -49,7 +51,11 @@ public class SkillTree : MonoBehaviour
 
     protected virtual void Update()
     {
-
+        if (recompileQueued)
+        {
+            compile();
+            recompileQueued = false;
+        }
     }
 
     // Recompiles the game state depending on the given skill flags

@@ -68,10 +68,16 @@ public class MainSkillTree : SkillTree
     private int tokens = 0;
     public int Tokens
     {
-        get { return tokens; }
+        get { 
+            return tokens; 
+        }
         set
         {
+            if (tokens != value)
+                recompileQueued = true;
+
             tokens = value;
+
             if (tokenText != null)
                 tokenText.text = "$"+value.ToString();
         }
