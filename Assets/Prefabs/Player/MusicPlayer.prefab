@@ -667,6 +667,8 @@ MonoBehaviour:
   accuracyPopupLoc: {fileID: 4927838112510624482}
   resetKey: 114
   pauseText: {fileID: 2105126854943499032}
+  pauseTickSoundObj: {fileID: 4909283717331284990, guid: f69f631b2424af54a9255d265286a4cb,
+    type: 3}
 --- !u!114 &6973395804611573914
 MonoBehaviour:
   m_ObjectHideFlags: 0

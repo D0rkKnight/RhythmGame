@@ -300,7 +300,8 @@ public class MusicPlayer : MonoBehaviour
     }
 
     // Very local variables
-    float unpauseCountMax = 3f;
+    float unpauseCountSec = 3f;
+    int unpauseCountSubdivisions = 4;
     float unpauseCountdown = -1000f;
     private void statePause()
     {
@@ -319,7 +320,9 @@ public class MusicPlayer : MonoBehaviour
         {
             if (willUnpauseCD)
             {
-                unpauseCountdown = unpauseCountMax;
+                float beatsExpected = Mathf.Ceil(unpauseCountSec / beatInterval);
+                unpauseCountdown = (beatsExpected / unpauseCountSubdivisions + (currBeat % (1.0f/unpauseCountSubdivisions))) 
+                                    * beatInterval;
             }
             else
                 unpause();
@@ -335,7 +338,10 @@ public class MusicPlayer : MonoBehaviour
             }
             else
             {
-                pauseText.text = "" + Mathf.Ceil(unpauseCountdown);
+                float pBeatTime = unpauseCountdown/beatInterval - (currBeat % (1.0f / unpauseCountSubdivisions));
+                int pauseVal = (int) Mathf.Ceil(pBeatTime * unpauseCountSubdivisions);
+
+                pauseText.text = pauseVal > 0 ? ""+pauseVal : "";
             }
         }
 
