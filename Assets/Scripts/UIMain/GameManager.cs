@@ -86,6 +86,7 @@ public class GameManager : MonoBehaviour
         string fpath = Path.Combine(Application.streamingAssetsPath, "Saves", name + ".txt");
         StreamReader reader = new StreamReader(fpath);
         string data = reader.ReadToEnd();
+        reader.Close();
 
         sing.activeSave = name;
 
@@ -95,6 +96,8 @@ public class GameManager : MonoBehaviour
     public static void loadSave(string data)
     {
         int _stage = 0; // Tutorial stage by default
+        int _tokens = 0;
+        int _heat = 0;
         string[] tokens = data.Split('\n');
 
         int block = 0; // Block 0 is the header
@@ -121,6 +124,12 @@ public class GameManager : MonoBehaviour
                     {
                         case "stage":
                             _stage = int.Parse(toks[1]);
+                            break;
+                        case "tokens":
+                            _tokens = int.Parse(toks[1]);
+                            break;
+                        case "heat":
+                            _heat = int.Parse(toks[1]);
                             break;
                         case "nodes":
                             block++;
@@ -190,7 +199,14 @@ public class GameManager : MonoBehaviour
             Timeliner.sing.Stage = _stage;
         }
 
-        // Recompile
+        ((MainSkillTree)SkillTree.sing).Tokens = _tokens;
+
+        // Recompile (activates heat mechanic)
+        SkillTree.sing.compile();
+
+        HeatController.sing.Heat = _heat;
+
+        // Recompile again (enables heat gated skills)
         SkillTree.sing.compile();
     }
 
@@ -198,6 +214,8 @@ public class GameManager : MonoBehaviour
     {
         string o = "";
         o += "stage: " + Timeliner.sing.Stage + "\n";
+        o += "tokens: " + ((MainSkillTree) SkillTree.sing).Tokens + "\n";
+        o += "heat: " + HeatController.sing.Heat + "\n";
 
         o += "\n";
         o += "nodes\n";
