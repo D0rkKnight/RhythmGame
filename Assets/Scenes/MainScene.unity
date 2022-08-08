@@ -197,7 +197,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cloak: {fileID: 630751028}
   newStart: 0
-  forceProfile: save1.txt
+  forceProfile: save1
   mapList:
   - Pendulum.txt
   - rhythm_1.txt
