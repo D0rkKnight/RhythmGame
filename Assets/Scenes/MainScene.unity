@@ -123,18 +123,6 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
---- !u!114 &9634215 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 2782141929218905561, guid: 3e5a8fe67b687dc4b81f154ed99e82af,
-    type: 3}
-  m_PrefabInstance: {fileID: 6973395804644566473}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f91b68cb164a0144ba2ae0005500f8cb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &124204656 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 3967842326132484187, guid: 3e5a8fe67b687dc4b81f154ed99e82af,
@@ -209,6 +197,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cloak: {fileID: 630751028}
   newStart: 0
+  forceProfile: save1.txt
   mapList:
   - Pendulum.txt
   - rhythm_1.txt
@@ -1140,6 +1129,11 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 11232
       objectReference: {fileID: 0}
+    - target: {fileID: 1520986810829164594, guid: 3e5a8fe67b687dc4b81f154ed99e82af,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2032751054897296815, guid: 3e5a8fe67b687dc4b81f154ed99e82af,
         type: 3}
       propertyPath: colors.Array.data[0].a
@@ -1217,11 +1211,6 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 3171469808494968198, guid: e914aa2c2b6a2394f93aaeb0038a55eb,
         type: 3}
-    - target: {fileID: 6973395804611573912, guid: 3e5a8fe67b687dc4b81f154ed99e82af,
-        type: 3}
-      propertyPath: scoreboard
-      value: 
-      objectReference: {fileID: 9634215}
     - target: {fileID: 6973395804611573912, guid: 3e5a8fe67b687dc4b81f154ed99e82af,
         type: 3}
       propertyPath: reboundPrefab

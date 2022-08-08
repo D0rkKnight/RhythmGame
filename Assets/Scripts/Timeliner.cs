@@ -10,6 +10,7 @@ public class Timeliner : MonoBehaviour
 
     // Config
     public bool newStart = true;
+    public string forceProfile = "";
     private int stage = 0;
     public int Stage
     {
@@ -38,14 +39,17 @@ public class Timeliner : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        string activeProfile = "main.txt";
+        string activeProfile = "main";
 
         if (newStart)
         {
             cloak.SetActive(true); // Turn on cloak to begin with
 
-            activeProfile = "new.txt";
+            activeProfile = "new";
         }
+
+        if (forceProfile.Length > 0)
+            activeProfile = forceProfile;
 
         string saveData = GameManager.getSave(activeProfile);
 

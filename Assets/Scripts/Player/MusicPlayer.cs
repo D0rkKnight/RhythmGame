@@ -128,7 +128,10 @@ public class MusicPlayer : MonoBehaviour
             c.Active = true;
             c.StreamOn = true;
         }
+    }
 
+    private void Start()
+    {
         Combo = 0;
     }
 
@@ -276,19 +279,7 @@ public class MusicPlayer : MonoBehaviour
         // If no notes left, request note serializer to send more notes
         if (notes.Count == 0 && phraseQueue.Count == 0 && !MapSerializer.sing.loadQueued)
         {
-            state = STATE.INTERIM;
-            interimTil = Time.time + 1f;
-
-            // Convert score to tokens
-            if (SkillTree.sing.GetType() == typeof(MainSkillTree))
-            {
-                MainSkillTree mst = (MainSkillTree) SkillTree.sing;
-                mst.SubToken += score / 2;
-            }
-
-            // Zero out other stuff
-            Score = 0;
-            Combo = 0;
+            inter();
         }
 
         // Reset key
@@ -384,10 +375,34 @@ public class MusicPlayer : MonoBehaviour
         }
     }
 
+    private void inter()
+    {
+        state = STATE.INTERIM;
+        interimTil = Time.time + 1f;
+
+        // Convert score to tokens
+        if (SkillTree.sing.GetType() == typeof(MainSkillTree))
+        {
+            MainSkillTree mst = (MainSkillTree)SkillTree.sing;
+            mst.SubToken += score / 2;
+        }
+
+        // Add score to highscore
+        GameManager.sing.addScore(MapSerializer.sing.activeMap.name, Score);
+        scoreboard.loadScores(MapSerializer.sing.activeMap.name);
+
+        // Zero out other stuff
+        Score = 0;
+        Combo = 0;
+
+        // Save game
+        GameManager.writeSave();
+    }
+
     private void stateSleep()
     {
-        pauseText.text = "Press " + pauseKey.ToString() + " to Play";
         pauseText.gameObject.SetActive(true);
+        pauseText.text = "Press " + pauseKey.ToString() + " to Play";
 
         // Waits for a map to queue up, then resets the environment and pauses.
         if (MapSerializer.sing.activeMap != null)

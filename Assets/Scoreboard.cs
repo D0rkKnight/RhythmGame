@@ -21,4 +21,21 @@ public class Scoreboard : MonoBehaviour
     {
         
     }
+
+    public void loadScores(string name)
+    {
+        Ledger l = GameManager.sing.highscores.Find((Ledger l) =>
+        {
+            return l.name.Equals(name);
+        });
+
+        if (l != null)
+        {
+            string o = "";
+            foreach (int score in l.scores)
+                o = score + "\n" + o;
+
+            scores.text = o;
+        }
+    }
 }
