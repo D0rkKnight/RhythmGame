@@ -18,9 +18,13 @@ public class GameManager : MonoBehaviour
 
     public string forceSave = "";
     public string activeSave = "";
+    public bool saveOnInter = true;
 
     public List<Ledger> highscores = new List<Ledger>();
     public int maxHighscores = 5;
+
+    public string[] mapList;
+    public List<string> mapQueue = new List<string>();
 
     // Start is called before the first frame update
     void Awake()
@@ -274,5 +278,39 @@ public class GameManager : MonoBehaviour
 
         if (led.scores.Count > maxHighscores)
             led.scores.RemoveAt(0);
+    }
+
+    public void playNextMap()
+    {
+        // Doesn't use the map queue if map editor is active
+        if (MapEditor.sing != null && MapEditor.sing.isActiveAndEnabled)
+        {
+            MapEditor.sing.play();
+            return;
+        }
+            
+
+        if (mapQueue.Count == 0)
+        {
+            // Regenerate queue
+            foreach (string s in mapList)
+                mapQueue.Add(s);
+
+            // Shuffle
+            for (int i = 0; i < mapQueue.Count; i++)
+            {
+                // Choose a random spot to swap to
+                int nextInd = UnityEngine.Random.Range(0, mapQueue.Count);
+
+                string tmp = mapQueue[nextInd];
+                mapQueue[nextInd] = mapQueue[i];
+                mapQueue[i] = tmp;
+            }
+        }
+
+        string nextMapName = mapQueue[0];
+        mapQueue.RemoveAt(0);
+
+        MapSerializer.sing.playMap(nextMapName);
     }
 }

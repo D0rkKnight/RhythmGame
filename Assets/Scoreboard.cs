@@ -19,7 +19,10 @@ public class Scoreboard : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        bool active = MusicPlayer.sing.state == MusicPlayer.STATE.INTERIM;
+        header.gameObject.SetActive(active);
+        scores.gameObject.SetActive(active);
+        footer.gameObject.SetActive(active);
     }
 
     public void loadScores(string name)

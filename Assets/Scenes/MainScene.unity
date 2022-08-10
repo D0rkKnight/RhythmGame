@@ -198,10 +198,6 @@ MonoBehaviour:
   cloak: {fileID: 630751028}
   newStart: 0
   forceProfile: save1
-  mapList:
-  - Pendulum.txt
-  - rhythm_1.txt
-  mapQueue: []
 --- !u!4 &504201493
 Transform:
   m_ObjectHideFlags: 0

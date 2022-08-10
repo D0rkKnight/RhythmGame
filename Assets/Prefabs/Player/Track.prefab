@@ -381,7 +381,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &9023783678921392847
 RectTransform:
   m_ObjectHideFlags: 0
@@ -777,6 +777,11 @@ PrefabInstance:
         type: 3}
       propertyPath: colNum
       value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 6329493833904675439, guid: c02a83ed66d74574aafbf5f374aa6eb9,
+        type: 3}
+      propertyPath: showBeat
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 9211611189950074266, guid: c02a83ed66d74574aafbf5f374aa6eb9,
         type: 3}

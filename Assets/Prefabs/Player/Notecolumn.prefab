@@ -5581,7 +5581,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   highlight: 0
   decaySpeed: 4
+  bg: {fileID: 3135258354658911275}
   charTxt: {fileID: 3882851088035016108}
-  key: 0
-  blockedTil: 0
+  colNum: 0
+  beatLinePrefab: {fileID: 4463449778151367625, guid: 100be6ed2b4e0b74aa42741acf479d11,
+    type: 3}
+  beatLines: []
   reroute: {fileID: 0}
+  defNoteReroute: 0

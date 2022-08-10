@@ -11,8 +11,14 @@ public class NoteColumn : MonoBehaviour
     Material buttonOverlay;
 
     ParticleSystem burstSys;
+    public GameObject bg;
+
     public GameObject charTxt;
     public int colNum;
+
+    public Transform beatLinePrefab;
+    public List<Transform> beatLines = new List<Transform>();
+    public bool showBeat = false;
 
     public KeyCode Key
     {
@@ -47,7 +53,7 @@ public class NoteColumn : MonoBehaviour
             streamOn = value;
 
             // Assign value to background and lights
-            transform.Find("ColumnBG").gameObject.SetActive(value);
+            bg.gameObject.SetActive(value);
             transform.Find("HitLight").gameObject.SetActive(value);
             transform.Find("HitBurst").gameObject.SetActive(value);
         }
@@ -67,6 +73,19 @@ public class NoteColumn : MonoBehaviour
     private void Start()
     {
         Key = Key; // Update graphics
+
+        // Load in beat lines
+        float stackHeight = bg.transform.localScale.y;
+        float stackDist = MusicPlayer.sing.beatInterval * MusicPlayer.sing.travelSpeed;
+
+        for (float alt=0; alt<=stackHeight; alt += stackDist)
+        {
+            Transform line = Instantiate(beatLinePrefab, transform);
+            beatLines.Add(line);
+
+            line.Find("Canvas/BeatMarker").gameObject.SetActive(showBeat);
+        }
+        updateLines();
     }
 
     // Update is called once per frame
@@ -82,6 +101,8 @@ public class NoteColumn : MonoBehaviour
         // Decrease highlight back to 0
         // highlight = Mathf.Lerp(highlight, 0, Time.deltaTime * decaySpeed);
         highlight = Mathf.Max(0, highlight - Time.deltaTime * decaySpeed);
+
+        updateLines();
     }
 
     public void hitBurst()
@@ -94,5 +115,46 @@ public class NoteColumn : MonoBehaviour
         // Proc the delegate behavior
         foreach (NoteColumn col in MusicPlayer.sing.columns)
             col.Key = col.Key;
+    }
+
+    public void updateLines()
+    {
+        MusicPlayer mp = MusicPlayer.sing;
+        float stackHeight = bg.transform.localScale.y;
+        float distPerBeat = mp.beatInterval * mp.travelSpeed;
+
+        float minBeat = Mathf.Ceil( mp.getCurrBeat());
+
+        for (int i = 0; i < beatLines.Count; i++)
+        {
+
+            Transform line = beatLines[i];
+            line.gameObject.SetActive(true);
+
+            // Make sure this value is valid
+            if (mp.beatInterval == 0 || !float.IsFinite(mp.beatInterval))
+            {
+                line.gameObject.SetActive(false);
+                continue;
+            }
+
+                float beatOn = minBeat + i;
+            float alt = beatOn * distPerBeat - (mp.getCurrBeat() / mp.beatInterval * mp.travelSpeed);
+
+            Vector2 dir = mp.dir;
+            Vector2 lPos = -dir * alt;
+
+            Vector2 perp = new Vector2(dir.y, -dir.x);
+            lPos -= perp * 0.5f;
+
+            line.localPosition = new Vector3(lPos.x, lPos.y, 0);
+
+            Transform lineR = line.Find("Line");
+            Vector3 lineRScale = lineR.localScale;
+            lineRScale.x = transform.localScale.x;
+            lineR.localScale = lineRScale;
+
+            line.Find("Canvas/BeatMarker").GetComponent<TMPro.TMP_Text>().text = "" + beatOn;
+        }
     }
 }

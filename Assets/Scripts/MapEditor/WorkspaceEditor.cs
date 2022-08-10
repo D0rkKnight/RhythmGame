@@ -129,15 +129,17 @@ public class WorkspaceEditor : MonoBehaviour, Scrollable
             // Get parity for opacity
             float scrollOff = intervalHeight - scroll % intervalHeight;
 
-            marker.transform.localPosition = Vector3.down * (intervalHeight * i + scrollOff);
+            marker.transform.localPosition = Vector3.down * (intervalHeight * i + scrollOff) +
+                Vector3.right * transform.Find("BG").localScale.x;
             float trueAlt = scroll + scrollOff + i * intervalHeight;
 
             float par = scroll % (2 * intervalHeight);
             bool weighted =  par > intervalHeight ^ i%2 == 0; // Checks for indexed parity and starting parity
 
             // Set opacity
-            Color col = marker.GetComponent<SpriteRenderer>().color;
-            marker.GetComponent<SpriteRenderer>().color = new Color(col.r, col.g, col.b, weighted ? 1.0f : 0.5f);
+            Transform line = marker.transform.Find("Line");
+            Color col = line.GetComponent<SpriteRenderer>().color;
+            line.GetComponent<SpriteRenderer>().color = new Color(col.r, col.g, col.b, weighted ? 1.0f : 0.5f);
 
             // Set beat text
             float beat = trueAlt / beatHeight;

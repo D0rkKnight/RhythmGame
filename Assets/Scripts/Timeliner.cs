@@ -24,9 +24,6 @@ public class Timeliner : MonoBehaviour
 
     public static Timeliner sing;
 
-    public string[] mapList;
-    public List<string> mapQueue = new List<string>();
-
     private void Awake()
     {
         if (sing != null) Debug.LogError("Singleton broken");
@@ -61,33 +58,5 @@ public class Timeliner : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-    }
-
-    public void playNextMap()
-    {
-        if (mapQueue.Count == 0)
-        {
-            // Regenerate queue
-            foreach (string s in mapList)
-                mapQueue.Add(s);
-
-            // Shuffle
-            for (int i=0; i<mapQueue.Count; i++)
-            {
-                // Choose a random spot to swap to
-                int nextInd = Random.Range(0, mapQueue.Count);
-
-                string tmp = mapQueue[nextInd];
-                mapQueue[nextInd] = mapQueue[i];
-                mapQueue[i] = tmp;
-            }
-        }
-
-        string nextMapName = mapQueue[0];
-        mapQueue.RemoveAt(0);
-
-        Debug.Log(nextMapName);
-
-        MapSerializer.sing.playMap(nextMapName);
     }
 }

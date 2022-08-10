@@ -125,7 +125,13 @@ MonoBehaviour:
   colKeys: 64000000660000006a0000006b000000
   activePanel: {fileID: 0}
   forceSave: 
+  activeSave: 
+  saveOnInter: 1
   maxHighscores: 5
+  mapList:
+  - Pendulum.txt
+  - rhythm_1.txt
+  mapQueue: []
 --- !u!1 &1136174380943972679
 GameObject:
   m_ObjectHideFlags: 0

@@ -30,7 +30,7 @@ public class MusicPlayer : MonoBehaviour
     public float songTime; // Time in seconds progressed through the song
 
     public float travelSpeed = 5; // In Unity units per second
-    public Vector2 dir = new Vector2(0, -1);
+    public Vector2 dir = new Vector2(0, -1); // Direction of travel
 
     public float hitWindow = 0.5f;
     public float perfectWindow = 0.25f;
@@ -368,16 +368,14 @@ public class MusicPlayer : MonoBehaviour
         }*/
 
         scoreboard.footer.text = "Press " + pauseKey.ToString() + " to Play";
-        scoreboard.gameObject.SetActive(true);
 
         // Can also force an awake by itself
         if (InputManager.checkKeyDownGame(pauseKey))
         {
             resetSongEnv();
-            Timeliner.sing.playNextMap();
+            GameManager.sing.playNextMap();
 
             state = STATE.RUN;
-            scoreboard.gameObject.SetActive(false);
         }
     }
 
@@ -402,7 +400,8 @@ public class MusicPlayer : MonoBehaviour
         Combo = 0;
 
         // Save game
-        GameManager.writeSave();
+        if (GameManager.sing.saveOnInter)
+            GameManager.writeSave();
     }
 
     private void stateSleep()
@@ -425,7 +424,7 @@ public class MusicPlayer : MonoBehaviour
         // Can also force an awake by itself
         if (InputManager.checkKeyDownGame(pauseKey))
         {
-            Timeliner.sing.playNextMap();
+            GameManager.sing.playNextMap();
 
             if (pauseOnAwake)
                 pause();

@@ -1,5 +1,5 @@
 stage: 2
-tokens: 132
+tokens: 252
 heat: 100
 
 nodes
@@ -33,6 +33,7 @@ rhythm_1
 65300
 72040
 81520
+120810
 
 Pendulum
 66000
