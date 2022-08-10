@@ -23,8 +23,6 @@ public class ReboundNote : Note
         }
 
         // Hittime is always referring to the next rebound hit
-
-        GameObject col = lane.gameObject;
         Vector2 tPos = col.transform.Find("TriggerBox").position;
 
         float dt = getHitTime() - mp.songTime; // Song approach for mechanical purposes 
@@ -140,7 +138,7 @@ public class ReboundNote : Note
         if (rebounds == 0)
         {
             // Swap with regular note
-            int laneInd = Array.IndexOf(MusicPlayer.sing.columns, lane);
+            int laneInd = Array.IndexOf(MusicPlayer.sing.columns, col);
             phrase.spawn(MusicPlayer.sing, laneInd, beat, blockDur, weight, (MusicPlayer mp) =>
             {
                 return Instantiate(mp.notePrefab);

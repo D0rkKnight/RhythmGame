@@ -224,7 +224,7 @@ public class MusicPlayer : MonoBehaviour
                 foreach (Note note in notes)
                 {
                     // Check both assigned column and reroute for validity
-                    if (!note.lane.Equals(col) && !note.lane.Equals(col.reroute)) continue;
+                    if (!note.col.Equals(col) && !note.col.Equals(col.reroute)) continue;
 
                     // Grab closest note regardless of if it's alive or not
                     if (closestNote == null || 
@@ -271,7 +271,7 @@ public class MusicPlayer : MonoBehaviour
 
         // Release behavior
         foreach (Note n in notes)
-            if (Input.GetKeyUp(n.lane.Key))
+            if (Input.GetKeyUp(n.col.Key))
             {
                 n.onLaneRelease();
             }
@@ -516,7 +516,7 @@ public class MusicPlayer : MonoBehaviour
             else note.dead = true;
         }
 
-        note.lane.hitBurst();
+        note.col.hitBurst();
 
         // Increment combo
         Combo++;

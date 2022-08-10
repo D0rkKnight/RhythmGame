@@ -127,7 +127,7 @@ public class BeatEditorSlot : MonoBehaviour, Clickable
 
         me.setActivePhrase(phrase.hardClone());
         me.selectedPhraseSlot = this;
-        me.dragging = dragAction;
+        me.draggingPhraseSlot = dragAction;
     }
     public void deselect()
     {

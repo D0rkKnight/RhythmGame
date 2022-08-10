@@ -5,6 +5,7 @@ using UnityEngine;
 public class NoteClick : MonoBehaviour, Clickable
 {
     public Note parent; // Is written to externally
+    public BeatEditorSlot parSlot = null; // Discovered on click
 
     public int onClick(int code)
     {
@@ -18,7 +19,10 @@ public class NoteClick : MonoBehaviour, Clickable
             {
                 if (slot.phrase.hardEquals(parent.phrase))
                 {
+                    parSlot = slot;
                     slot.select();
+
+                    MapEditor.sing.dragCol = parent.col;
                     return 1;
                 }
             }

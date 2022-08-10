@@ -65,7 +65,7 @@ public class WorkspaceEditor : MonoBehaviour, Scrollable
         ghost.SetActive(MapEditor.sing.InteractMode == MapEditor.MODE.WRITE &&
             -ghostY <= height && ghostY <= 0);
 
-        if (MapEditor.sing.dragging)
+        if (MapEditor.sing.draggingPhraseSlot)
         {
             // Move around the slot
             BeatEditorSlot slot = MapEditor.sing.selectedPhraseSlot;
@@ -84,12 +84,6 @@ public class WorkspaceEditor : MonoBehaviour, Scrollable
                 // Add to new slot
                 addPhraseEntry(slot);
             }
-        }
-
-        // Mouse up
-        if (Input.GetMouseButtonUp(0))
-        {
-            MapEditor.sing.dragging = false;
         }
 
         // Regenerate phrase group data

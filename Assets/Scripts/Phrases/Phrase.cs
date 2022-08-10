@@ -353,12 +353,12 @@ public abstract class Phrase
         foreach (Note n in mp.notes)
         {   
             // Check opposing note's tail and head
-            if (n.beat+n.blockDur >= beat_ && n.beat <= beat_ + blockDur_ && col == n.lane)
+            if (n.beat+n.blockDur >= beat_ && n.beat <= beat_ + blockDur_ && col == n.col)
             {
                 collisions.Add(n);
             }
 
-            if (n.beat == beat_ && n.lane == col)
+            if (n.beat == beat_ && n.col == col)
             {
                 collisions.Add(n);
             }
@@ -440,7 +440,7 @@ public abstract class Phrase
 
     public virtual void configNote(MusicPlayer mp, Note nObj, int spawnLane, float spawnBeat, float blockFrame, float weight)
     {
-        nObj.lane = mp.columns[spawnLane];
+        nObj.col = mp.columns[spawnLane];
         nObj.beat = spawnBeat;
         nObj.weight = weight;
 

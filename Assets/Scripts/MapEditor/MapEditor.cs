@@ -60,6 +60,8 @@ public class MapEditor : MonoBehaviour
 
     public WorkspaceEditor workspaceEditor;
 
+    public NoteColumn dragCol = null; // Null means not dragging
+
     public enum MODE
     {
         EDIT, WRITE
@@ -78,7 +80,7 @@ public class MapEditor : MonoBehaviour
         }
     }
     public BeatEditorSlot selectedPhraseSlot = null;
-    public bool dragging = false;
+    public bool draggingPhraseSlot = false;
 
     // Start is called before the first frame update
     void Awake()
@@ -236,6 +238,13 @@ public class MapEditor : MonoBehaviour
         {
             trackOffset = tryTrackOffset;
             markChange();
+        }
+
+        // Mouse up (deselector)
+        if (Input.GetMouseButtonUp(0))
+        {
+            draggingPhraseSlot = false;
+            dragCol = null;
         }
     }
 

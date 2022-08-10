@@ -9,7 +9,7 @@ public class Note : MonoBehaviour
     public float blockDur = 0; // How long this note blocks other notes during rasterization
     public float weight = 0; // Priority when rasterizing
 
-    public NoteColumn lane;
+    public NoteColumn col;
     public bool dead = false;
     private bool showWeight = false;
     public bool ShowWeight
@@ -95,7 +95,7 @@ public class Note : MonoBehaviour
     public virtual void kill()
     {
         // Lock to column?
-        transform.position = lane.gameObject.transform.position;
+        transform.position = col.gameObject.transform.position;
 
         // Is released from the music player already
         killTime = Time.time + killDelay;
@@ -107,7 +107,6 @@ public class Note : MonoBehaviour
 
     public virtual void updateNote(MusicPlayer mp, List<Note> passed)
     {
-        GameObject col = lane.gameObject;
         Vector2 tPos = col.transform.Find("TriggerBox").position;
 
         float dt = getHitTime() - mp.songTime;
