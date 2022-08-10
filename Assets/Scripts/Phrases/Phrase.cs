@@ -75,7 +75,7 @@ public abstract class Phrase
     // Behaves akin to a double serialization (passes through static constructor)
     public Phrase hardClone()
     {
-        return staticCon(lane, beat, accent, meta, priority, type);
+        return staticCon(lane, beat, accent, (string[]) meta.Clone(), priority, type);
     }
 
     // Copies all values (needed for editor metadata)
@@ -480,7 +480,9 @@ public abstract class Phrase
     public void readMetaFields(List<InputField> fields)
     {
         for (int i = 0; i < meta.Length; i++)
+        {
             meta[i] = fields[i].text;
+        }
 
         readFromMeta(); // Writes newly read inputfield values into object fields
     }

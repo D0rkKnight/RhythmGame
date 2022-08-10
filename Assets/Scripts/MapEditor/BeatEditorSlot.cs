@@ -78,9 +78,7 @@ public class BeatEditorSlot : MonoBehaviour, Clickable
 
         // Mark a change if the phrase is different
         if (phrase == null || !phrase.Equals(p))
-        {
             MapEditor.sing.markChange();
-        }
 
         setPhraseNoHotswap(p);
     }

@@ -212,6 +212,7 @@ public class MapEditor : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Z) /*&& Input.GetKey(KeyCode.LeftControl)*/) undo();
 
         // Write field data and timestamp to phrase
+        // Change in meta field should queue hotswap
         activePhrase.readMetaFields(metaFields);
 
         // Sketchy and probably laggy
@@ -365,11 +366,6 @@ public class MapEditor : MonoBehaviour
         trackOffsetField.text = map.offset.ToString();
 
         edited = true;
-    }
-
-    public void importPhrases(PhraseGroup group)
-    {
-        
     }
 
     public void import()
