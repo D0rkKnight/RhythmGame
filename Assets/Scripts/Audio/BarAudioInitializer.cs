@@ -25,7 +25,7 @@ public class BarAudioInitializer : MonoBehaviour
 
             _bar.position = leftTrans.position + (rightTrans.position - leftTrans.position) * ratio;
             Vector3 newScale = _bar.localScale;
-            newScale.x = ratio * (rightTrans.position - leftTrans.position).x;
+            newScale.x = (1.0f / barCount) * (rightTrans.position - leftTrans.position).x;
             _bar.localScale = newScale;
 
             bars[i] = _bar.GetComponent<BarAudioVisualizer>();
