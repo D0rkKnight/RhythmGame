@@ -60,6 +60,7 @@ MonoBehaviour:
   lerpDist: 0.7
   noteBody: {fileID: 5816874069299252784}
   highlightRend: {fileID: 5932378471419121823}
+  clickListener: {fileID: 6584733897716677981}
   holdBeats: 4
   held: 0
   bg: {fileID: 4073856288480711784}
@@ -236,6 +237,18 @@ SpriteRenderer:
     type: 3}
   m_PrefabInstance: {fileID: 4073856288278139889}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &6584733897716677981 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7199164680977215148, guid: e914aa2c2b6a2394f93aaeb0038a55eb,
+    type: 3}
+  m_PrefabInstance: {fileID: 4073856288278139889}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9e9845af18d39ce43a081e3d3d1ad2ea, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &7052191657182655997 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 6437706858258441740, guid: e914aa2c2b6a2394f93aaeb0038a55eb,

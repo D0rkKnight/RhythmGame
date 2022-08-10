@@ -117,6 +117,7 @@ MonoBehaviour:
   lerpDist: 0.7
   noteBody: {fileID: 8853118979949323084}
   highlightRend: {fileID: 8660741088102464995}
+  clickListener: {fileID: 8143779695780335649}
   reboundDelta: 1
   rebounds: 1
   currRebound: 0
@@ -132,6 +133,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &8143779695780335649 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7199164680977215148, guid: e914aa2c2b6a2394f93aaeb0038a55eb,
+    type: 3}
+  m_PrefabInstance: {fileID: 1363489380859772557}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9e9845af18d39ce43a081e3d3d1ad2ea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!212 &8660741088102464995 stripped

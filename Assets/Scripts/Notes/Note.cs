@@ -46,7 +46,14 @@ public class Note : MonoBehaviour
 
     public SpriteRenderer noteBody;
     public SpriteRenderer highlightRend;
+    public NoteClick clickListener;
+
     public Phrase phrase = null;
+
+    public void Start()
+    {
+        clickListener.parent = this;
+    }
 
     public void Update()
     {

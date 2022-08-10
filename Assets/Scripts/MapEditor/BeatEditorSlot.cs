@@ -110,23 +110,27 @@ public class BeatEditorSlot : MonoBehaviour, Clickable
     public int onClick(int code)
     {
         // Set active phrase as this
-        MapEditor me = MapEditor.sing;
 
-        if (me.InteractMode == MapEditor.MODE.EDIT)
+        if (MapEditor.sing.InteractMode == MapEditor.MODE.EDIT)
         {
-            if (me.selectedPhraseSlot != null)
-                me.selectedPhraseSlot.deselect();
-
-            me.setActivePhrase(phrase.hardClone());
-            me.selectedPhraseSlot = this;
-            me.dragging = true;
-
+            select(true);
             return 0; // Catches input
         }
 
         return 1; // Lets input through if not editing
     }
 
+    public void select(bool dragAction = false)
+    {
+        MapEditor me = MapEditor.sing;
+
+        if (me.selectedPhraseSlot != null)
+            me.selectedPhraseSlot.deselect();
+
+        me.setActivePhrase(phrase.hardClone());
+        me.selectedPhraseSlot = this;
+        me.dragging = dragAction;
+    }
     public void deselect()
     {
         phrase.highlight = Color.clear;
