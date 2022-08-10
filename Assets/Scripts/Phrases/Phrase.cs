@@ -73,12 +73,14 @@ public abstract class Phrase
     }
 
     // Behaves akin to a double serialization (passes through static constructor)
+    // Hard properties are ones that affect general rasterization and collision
     public Phrase hardClone()
     {
         return staticCon(lane, beat, accent, (string[]) meta.Clone(), priority, type);
     }
 
     // Copies all values (needed for editor metadata)
+    // Copies surface visual properties as well
     public Phrase fullClone()
     {
         Phrase p = hardClone();
