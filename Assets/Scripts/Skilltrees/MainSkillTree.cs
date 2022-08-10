@@ -227,7 +227,7 @@ public class MainSkillTree : SkillTree
 
         mpTrans.Find("Canvas/Score").gameObject.SetActive(activeFlags[(int)NODE.SCORE]);
         mpTrans.Find("Canvas/Combo").gameObject.SetActive(activeFlags[(int)NODE.COMBO]);
-        mpTrans.Find("Heat").gameObject.SetActive(activeFlags[(int)NODE.HEAT]);
+        mpTrans.Find("Canvas/Heat").gameObject.SetActive(activeFlags[(int)NODE.HEAT]);
     }
 
     protected override void enableNewOptions()
