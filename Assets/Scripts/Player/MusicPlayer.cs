@@ -297,6 +297,9 @@ public class MusicPlayer : MonoBehaviour
 
         // Pause label is inactive
         pauseText.gameObject.SetActive(false);
+
+        // Link w/ wEdit
+        linkWEditScroll();
     }
 
     // Very local variables
@@ -637,5 +640,17 @@ public class MusicPlayer : MonoBehaviour
         // Also procs notes onscroll
         foreach (Note n in notes)
             n.onScroll(this);
+
+        linkWEditScroll();
+    }
+
+    public void linkWEditScroll()
+    {
+        // Link scrolls w/ workspace
+        if (MapEditor.sing != null)
+        {
+            WorkspaceEditor wEdit = MapEditor.sing.workspaceEditor;
+            wEdit.setScroll(songTime / beatInterval * wEdit.beatHeight);
+        }
     }
 }

@@ -238,6 +238,20 @@ public class WorkspaceEditor : MonoBehaviour, Scrollable
             scroll = Mathf.Max(0, scroll);
         }
 
+        // Lock mp to scroll as well (in beats)
+        // This is some weird math lol
+        MusicPlayer mp = MusicPlayer.sing;
+        float scrollessST = mp.songTime - mp.scroll;
+        MusicPlayer.sing.scroll = scroll / beatHeight - scrollessST;
+
+        regenBeatMarkers();
+        updatePhraseEntries();
+    }
+
+    public void setScroll(float val)
+    {
+        scroll = val;
+
         regenBeatMarkers();
         updatePhraseEntries();
     }
