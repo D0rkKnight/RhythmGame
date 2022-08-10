@@ -46,3 +46,6 @@ TagManager:
   - name: AudViz
     uniqueID: 2441779009
     locked: 0
+  - name: Highlight
+    uniqueID: 2442687265
+    locked: 0

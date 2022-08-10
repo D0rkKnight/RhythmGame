@@ -13,13 +13,15 @@ public abstract class Phrase
                        // Used in music player and in map editor but is regenerated every read/write cycle
 
     public TYPE type;
-
     public bool active = true; // Whether this phrase is to be rasterized, or just a reference phrase
 
     public Map ownerMap = null;
     public PhraseGroup ownerGroup = null;
 
     public float priority;
+
+    public Color highlight = Color.clear;
+    public float opacity = 1f;
 
     // Metadata
     protected string[] meta;
@@ -70,7 +72,22 @@ public abstract class Phrase
             readFromMeta(); // Read meta store into object fields
     }
 
-    public abstract Phrase clone();
+    // Behaves akin to a double serialization (passes through static constructor)
+    public Phrase hardClone()
+    {
+        return staticCon(lane, beat, accent, meta, priority, type);
+    }
+
+    // Copies all values (needed for editor metadata)
+    public Phrase fullClone()
+    {
+        Phrase p = hardClone();
+
+        p.highlight = highlight;
+        p.opacity = opacity;
+
+        return p;
+    }
 
     public override string ToString()
     {
@@ -431,6 +448,10 @@ public abstract class Phrase
 
         nObj.phrase = this; // Setup backlink
 
+        // Setup visuals
+        nObj.highlightRend.color = highlight;
+        nObj.Opacity = opacity;
+
         nObj.resetInit(mp); // Also serves as an intializer
     }
 
@@ -492,6 +513,11 @@ public abstract class Phrase
                 return false;
         }
 
+        // Check visuals
+        if (highlight != p.highlight ||
+            opacity != p.opacity)
+            return false;
+
         return true;
     }
 }
@@ -501,11 +527,6 @@ public class NonePhrase : Phrase
     public NonePhrase(float beat_) : base(0, beat_, 0, TYPE.NONE, null, 0, 0)
     {
 
-    }
-
-    public override Phrase clone()
-    {
-        return new NonePhrase(beat);
     }
 
     public override Note instantiateNote(MusicPlayer mp)

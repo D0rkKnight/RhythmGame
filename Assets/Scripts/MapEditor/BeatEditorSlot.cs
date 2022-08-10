@@ -72,6 +72,10 @@ public class BeatEditorSlot : MonoBehaviour, Clickable
 
     public void setPhrase(Phrase p)
     {
+        // Config the phrase before it gets checked for a delta
+        if (this == MapEditor.sing.selectedPhraseSlot)
+            p.highlight = Color.yellow;
+
         // Mark a change if the phrase is different
         if (phrase == null || !phrase.Equals(p))
         {
@@ -97,7 +101,7 @@ public class BeatEditorSlot : MonoBehaviour, Clickable
         if (Input.GetKeyDown(MapEditor.sing.copyKey))
         {
             // Write phrase to active phrase
-            MapEditor.sing.setActivePhrase(phrase.clone());
+            MapEditor.sing.setActivePhrase(phrase.hardClone());
         }
 
         return 0;
@@ -106,19 +110,29 @@ public class BeatEditorSlot : MonoBehaviour, Clickable
     public int onClick(int code)
     {
         // Set active phrase as this
-        if (MapEditor.sing.InteractMode == MapEditor.MODE.EDIT)
-        {
-            MapEditor.sing.setActivePhrase(phrase.clone());
-            MapEditor.sing.selectedPhraseSlot = this;
-            MapEditor.sing.dragging = true;
+        MapEditor me = MapEditor.sing;
 
-            Debug.Log(phrase.ToString());
+        if (me.InteractMode == MapEditor.MODE.EDIT)
+        {
+            if (me.selectedPhraseSlot != null)
+                me.selectedPhraseSlot.deselect();
+
+            me.setActivePhrase(phrase.hardClone());
+            me.selectedPhraseSlot = this;
+            me.dragging = true;
 
             return 0; // Catches input
         }
 
         return 1; // Lets input through if not editing
     }
+
+    public void deselect()
+    {
+        phrase.highlight = Color.clear;
+        MapEditor.sing.selectedPhraseSlot = null; // Clears out selection as well
+    }
+
     public void unsubSlot()
     {
         parent.slots.Remove(this);

@@ -59,6 +59,7 @@ MonoBehaviour:
   lerpSpeed: 3
   lerpDist: 0.7
   noteBody: {fileID: 5816874069299252784}
+  highlightRend: {fileID: 5932378471419121823}
   holdBeats: 4
   held: 0
   bg: {fileID: 4073856288480711784}
@@ -226,6 +227,12 @@ Transform:
 --- !u!212 &5816874069299252784 stripped
 SpriteRenderer:
   m_CorrespondingSourceObject: {fileID: 7507657329480572353, guid: e914aa2c2b6a2394f93aaeb0038a55eb,
+    type: 3}
+  m_PrefabInstance: {fileID: 4073856288278139889}
+  m_PrefabAsset: {fileID: 0}
+--- !u!212 &5932378471419121823 stripped
+SpriteRenderer:
+  m_CorrespondingSourceObject: {fileID: 7700368645705417582, guid: e914aa2c2b6a2394f93aaeb0038a55eb,
     type: 3}
   m_PrefabInstance: {fileID: 4073856288278139889}
   m_PrefabAsset: {fileID: 0}

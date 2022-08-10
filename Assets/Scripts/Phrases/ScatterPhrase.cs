@@ -10,11 +10,6 @@ public class ScatterPhrase : StreamPhrase
     {
     }
 
-    public override Phrase clone()
-    {
-        return new ScatterPhrase(lane, beat, accent, (string[])meta.Clone(), priority);
-    }
-
     System.Random rnd;
 
     public override List<Note> spawn(MusicPlayer mp, int spawnLane, float spawnBeat, float blockFrame, float weight)

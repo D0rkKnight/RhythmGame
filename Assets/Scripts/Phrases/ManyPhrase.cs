@@ -13,11 +13,6 @@ public class ManyPhrase : Phrase
     {
     }
 
-    public override Phrase clone()
-    {
-        return new ManyPhrase(lane, beat, accent, (string[]) meta.Clone(), priority);
-    }
-
     public override Note instantiateNote(MusicPlayer mp)
     {
         throw new Exception("Cannot instantiate ManyPhrase");
@@ -48,9 +43,12 @@ public class ManyPhrase : Phrase
         // Clone every phrase in the new group and rasterize
         foreach (Phrase p in grp.phrases)
         {
-            Phrase pc = p.clone();
+            Phrase pc = p.fullClone();
             pc.ownerGroup = ownerGroup;
             pc.ownerMap = ownerMap;
+
+            pc.highlight = highlight;
+            pc.opacity = opacity;
 
             pc.beat += beat; // Root their beat 0 at this phrase's beat
             pc.lane = (pc.lane + lane) % MusicPlayer.sing.columns.Length; // Cycle spilled phrases

@@ -94,7 +94,7 @@ public abstract class StreamPhrase : Phrase
             // Call the next phrase recursively
             if (callRecurse)
             {
-                Phrase recursePhrase = ownerGroup.phrases[myInd + 1].clone(); // Clone the next element
+                Phrase recursePhrase = ownerGroup.phrases[myInd + 1].fullClone(); // Clone the next element
                 recursePhrase.beat = zzBeat;
 
                 // Try setting to the right column

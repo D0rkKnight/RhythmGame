@@ -139,7 +139,7 @@ public class NoteColumn : MonoBehaviour
             }
 
                 float beatOn = minBeat + i;
-            float alt = beatOn * distPerBeat - (mp.getCurrBeat() / mp.beatInterval * mp.travelSpeed);
+            float alt = beatOn * distPerBeat - (mp.getCurrBeat() * mp.beatInterval * mp.travelSpeed);
 
             Vector2 dir = mp.dir;
             Vector2 lPos = -dir * alt;

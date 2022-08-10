@@ -14,11 +14,6 @@ public class ReboundPhrase : Phrase
 
     }
 
-    public override Phrase clone()
-    {
-        return new ReboundPhrase(lane, beat, accent, (string[]) meta.Clone(), priority);
-    }
-
     // Core instantiator used by default spawner
     public override Note instantiateNote(MusicPlayer mp)
     {

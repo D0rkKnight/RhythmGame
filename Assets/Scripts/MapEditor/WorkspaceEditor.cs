@@ -24,7 +24,7 @@ public class WorkspaceEditor : MonoBehaviour, Scrollable
         if (height <= 0) height = transform.Find("BG").localScale.y;
 
         BeatRow ghostRow = ghost.GetComponent<BeatRow>();
-        ghostRow.addPhrase(MapEditor.sing.activePhrase.clone());
+        ghostRow.addPhrase(MapEditor.sing.activePhrase.hardClone());
         ghostRow.slots[0].enabled = false;
 
         SpriteRenderer slotRend = ghostRow.slots[0].GetComponentInChildren<SpriteRenderer>();
@@ -55,7 +55,7 @@ public class WorkspaceEditor : MonoBehaviour, Scrollable
 
         // Set ghost phrase
         BeatRow row = ghost.GetComponent<BeatRow>();
-        Phrase newPhrase = MapEditor.sing.activePhrase.clone();
+        Phrase newPhrase = MapEditor.sing.activePhrase.hardClone();
         newPhrase.beat = snapBeat;
 
         row.slots[0].setPhraseNoHotswap(newPhrase);
@@ -72,12 +72,10 @@ public class WorkspaceEditor : MonoBehaviour, Scrollable
 
             if (slot != null && snapBeat != slot.phrase.beat)
             {
-                Debug.Log(MapEditor.sing.selectedPhraseSlot.isActiveAndEnabled);
-
                 slot.unsubSlot();
 
 
-                Phrase slotP = slot.phrase.clone();
+                Phrase slotP = slot.phrase.fullClone();
                 slotP.beat = snapBeat;
                 slot.setPhrase(slotP); // Set new beat
 
@@ -178,7 +176,7 @@ public class WorkspaceEditor : MonoBehaviour, Scrollable
         float unroundBeat = mAlt / beatHeight;
         float beat = Mathf.Round(unroundBeat / beatSnap) * beatSnap;
 
-        Phrase p = MapEditor.sing.activePhrase.clone();
+        Phrase p = MapEditor.sing.activePhrase.hardClone();
         p.beat = beat;
 
         addPhraseEntry(p);

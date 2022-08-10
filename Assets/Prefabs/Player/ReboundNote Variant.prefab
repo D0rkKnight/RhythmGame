@@ -116,6 +116,7 @@ MonoBehaviour:
   lerpSpeed: 20
   lerpDist: 0.7
   noteBody: {fileID: 8853118979949323084}
+  highlightRend: {fileID: 8660741088102464995}
   reboundDelta: 1
   rebounds: 1
   currRebound: 0
@@ -133,6 +134,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!212 &8660741088102464995 stripped
+SpriteRenderer:
+  m_CorrespondingSourceObject: {fileID: 7700368645705417582, guid: e914aa2c2b6a2394f93aaeb0038a55eb,
+    type: 3}
+  m_PrefabInstance: {fileID: 1363489380859772557}
+  m_PrefabAsset: {fileID: 0}
 --- !u!212 &8853118979949323084 stripped
 SpriteRenderer:
   m_CorrespondingSourceObject: {fileID: 7507657329480572353, guid: e914aa2c2b6a2394f93aaeb0038a55eb,

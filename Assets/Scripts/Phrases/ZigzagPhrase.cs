@@ -9,11 +9,6 @@ public class ZigzagPhrase : StreamPhrase
     {
     }
 
-    public override Phrase clone()
-    {
-        return new ZigzagPhrase(lane, beat, accent, (string[]) meta.Clone(), priority);
-    }
-
     int spawnDir; // Used during note generation
 
     public override List<Note> spawn(MusicPlayer mp, int spawnLane, float spawnBeat, float blockFrame, float weight)

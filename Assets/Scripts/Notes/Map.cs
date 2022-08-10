@@ -3,7 +3,6 @@ using UnityEngine;
 public partial class Map
 {
     public string name;
-    public float endBeat;
     public string trackName;
     public int bpm;
     public float offset; // In beats
@@ -14,6 +13,33 @@ public partial class Map
     public Map()
     {
         groups = new List<PhraseGroup>();
+    }
+
+    public Map(string name_, string trackName_, int bpm_, float offset_, List<PhraseGroup> groups_)
+    {
+        name = name_;
+        trackName = trackName_;
+        bpm = bpm_;
+        offset = offset_;
+
+        groups = new List<PhraseGroup>();
+
+        // Go through groups and link them properly
+        foreach (PhraseGroup gp in groups_)
+        {
+            PhraseGroup ngp = new PhraseGroup(new List<Phrase>(), gp.name);
+
+            foreach (Phrase p in gp.phrases)
+            {
+                Phrase np = p.fullClone();
+                np.ownerGroup = ngp;
+                np.ownerMap = this;
+
+                ngp.phrases.Add(np);
+            }
+
+            groups.Add(ngp);
+        }
     }
 
     public void addPhraseToLastGroup(Phrase p)

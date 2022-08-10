@@ -19,7 +19,7 @@ public class PhraseGroup
     {
         List<Phrase> newPhrases = new List<Phrase>();
         foreach (Phrase p in phrases)
-            newPhrases.Add(p.clone());
+            newPhrases.Add(p.hardClone());
 
         return new PhraseGroup(newPhrases, name);
     }

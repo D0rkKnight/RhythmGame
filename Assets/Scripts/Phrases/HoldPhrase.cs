@@ -13,11 +13,6 @@ public class HoldPhrase : Phrase
     {
     }
 
-    public override Phrase clone()
-    {
-        return new HoldPhrase(lane, beat, accent, (string[]) meta.Clone(), priority);
-    }
-
     public override List<Note> spawn(MusicPlayer mp, int spawnLane, float spawnBeat, float blockFrame, float weight)
     {
         if (!MapSerializer.sing.genType[(int)TYPE.HOLD])

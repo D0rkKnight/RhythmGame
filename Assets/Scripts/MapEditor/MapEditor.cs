@@ -159,7 +159,7 @@ public class MapEditor : MonoBehaviour
 
             // Load in active rows
             foreach (Phrase p in groups[data].phrases)
-                workspaceEditor.addPhraseEntry(p.clone());
+                workspaceEditor.addPhraseEntry(p.hardClone());
 
             workspace.group = groups[data];
 
@@ -169,7 +169,7 @@ public class MapEditor : MonoBehaviour
         // Setup field cbs
         beatInput.cb = (float parse) =>
         {
-            Phrase newPhrase = activePhrase.clone();
+            Phrase newPhrase = activePhrase.hardClone();
             newPhrase.beat = parse;
 
             setActivePhrase(newPhrase);
@@ -177,7 +177,7 @@ public class MapEditor : MonoBehaviour
 
         priorityInput.cb = (float parse) =>
         {
-            Phrase newPhrase = activePhrase.clone();
+            Phrase newPhrase = activePhrase.hardClone();
             newPhrase.priority = parse;
 
             setActivePhrase(newPhrase);
@@ -219,7 +219,7 @@ public class MapEditor : MonoBehaviour
         {
             if (selectedPhraseSlot != null)
             {
-                selectedPhraseSlot.setPhrase(activePhrase.clone());
+                selectedPhraseSlot.setPhrase(activePhrase.hardClone());
             }
         }
 
@@ -259,12 +259,8 @@ public class MapEditor : MonoBehaviour
     {
         Debug.Log("Hotswap commencing");
 
-        List<string> data = exportString(songTitleField.text+"_hotswap", audioFileField.text);
-
-        foreach (string s in data) Debug.Log(s);
-
-        MapSerializer mapSer = MapSerializer.sing;
-        Map map = mapSer.parseTokens(data.ToArray());
+        // Pipe the data directly
+        Map map = new Map(songTitleField.text+"_hotswap", audioFileField.text, (int) bpm, trackOffset, groups);
 
         // Just requeue the whole map while retaining track position
         MapSerializer.sing.stageMap(map, false);
@@ -272,8 +268,6 @@ public class MapEditor : MonoBehaviour
         // Pause the mplayer
         MusicPlayer.sing.pause();
 
-        // Rename map to have the right name
-        map.name = songTitleField.text;
         return map;
     }
 
@@ -363,7 +357,7 @@ public class MapEditor : MonoBehaviour
 
         // Import to phrase entries
         foreach (Phrase p in groups[0].phrases)
-            workspaceEditor.addPhraseEntry(p.clone());
+            workspaceEditor.addPhraseEntry(p.hardClone());
 
         songTitleField.text = map.name;
         audioFileField.text = map.trackName;

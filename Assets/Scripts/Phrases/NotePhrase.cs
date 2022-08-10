@@ -7,11 +7,6 @@ public class NotePhrase : Phrase
 
     }
 
-    public override Phrase clone()
-    {
-        return new NotePhrase(lane, beat, accent, priority);
-    }
-
     public override Note instantiateNote(MusicPlayer mp)
     {
         return UnityEngine.Object.Instantiate(mp.notePrefab);

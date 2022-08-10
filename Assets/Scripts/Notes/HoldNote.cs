@@ -8,9 +8,9 @@ public class HoldNote : Note
     public bool held = false;
     public Transform bg;
 
-    public override void highlight(Color c)
+    public override void setColor(Color c)
     {
-        base.highlight(c);
+        base.setColor(c);
         bg.GetComponent<SpriteRenderer>().color = c;
     }
 
@@ -52,7 +52,7 @@ public class HoldNote : Note
         if (held)
         {
             dead = true;
-            highlight(Color.grey);
+            setColor(Color.grey);
         }
     }
 
@@ -61,6 +61,6 @@ public class HoldNote : Note
         remove = false;
 
         held = true;
-        highlight(Color.white);
+        setColor(Color.white);
     }
 }

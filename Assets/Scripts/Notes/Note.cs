@@ -24,6 +24,18 @@ public class Note : MonoBehaviour
 
     public Color defaultColor = Color.cyan;
     public Color deadColor = Color.grey;
+
+    public float Opacity
+    {
+        get { return noteBody.color.a; }
+        set
+        {
+            Color c = noteBody.color;
+            c.a = value;
+            noteBody.color = c;
+        }
+    }
+
     public TMPro.TMP_Text text;
 
     private float killTime = -1;
@@ -33,6 +45,7 @@ public class Note : MonoBehaviour
     private Vector2 killLerpTo = Vector2.zero;
 
     public SpriteRenderer noteBody;
+    public SpriteRenderer highlightRend;
     public Phrase phrase = null;
 
     public void Update()
@@ -56,7 +69,7 @@ public class Note : MonoBehaviour
         }
     }
 
-    public virtual void highlight(Color c)
+    public virtual void setColor(Color c)
     {
         noteBody.color = c;
     }
