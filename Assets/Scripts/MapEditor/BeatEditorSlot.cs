@@ -83,10 +83,15 @@ public class BeatEditorSlot : MonoBehaviour, Clickable
         setPhraseNoHotswap(p);
     }
 
+    public void requeuePhrase()
+    {
+        unsubSlot();
+        MapEditor.sing.workspaceEditor.addPhraseEntry(this);
+    }
+
     public void setPhraseNoHotswap(Phrase p)
     {
         phrase = p;
-
         updateGraphics();
     }
 

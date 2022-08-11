@@ -111,6 +111,8 @@ public class Note : MonoBehaviour
 
         float dt = getHitTime() - mp.songTime;
 
+        Debug.Log(dt);
+
         Vector2 dp = -mp.dir * dt * mp.travelSpeed;
         Vector2 p = tPos + dp;
         transform.position = new Vector3(p.x, p.y, -1);

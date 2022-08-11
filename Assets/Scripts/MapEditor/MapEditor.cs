@@ -222,7 +222,12 @@ public class MapEditor : MonoBehaviour
         {
             if (selectedPhraseSlot != null)
             {
+                bool requeue = selectedPhraseSlot.phrase.beat != activePhrase.beat;
+
                 selectedPhraseSlot.setPhrase(activePhrase.hardClone());
+
+                if (requeue)
+                    selectedPhraseSlot.requeuePhrase();
             }
         }
 

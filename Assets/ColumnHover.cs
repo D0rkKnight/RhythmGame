@@ -18,17 +18,33 @@ public class ColumnHover : MonoBehaviour, Clickable
         // On active and detected delta
         if (me != null
             && me.dragCol != null
-            && me.dragCol != parent)
+            && me.selectedPhraseSlot != null)
         {
-            me.dragCol = parent;
+            Phrase p = me.selectedPhraseSlot.phrase.fullClone();
 
-            // Move active phrase as well if selection exists
-            if (me.selectedPhraseSlot != null)
+            // Assign as selected phrase
+            if (me.dragCol != parent)
             {
-                Phrase p = me.selectedPhraseSlot.phrase.fullClone();
+                me.dragCol = parent;
+
+                // Move active phrase as well if selection exists
                 p.lane = parent.colNum;
-                me.setActivePhrase(p);
             }
+
+            // Check up and down drag
+            MusicPlayer mp = MusicPlayer.sing;
+
+            Vector2 delta = (Camera.main.ScreenToWorldPoint(Input.mousePosition) - 
+                parent.transform.Find("TriggerBox").position);
+            float dist = Vector2.Dot(delta, -mp.dir);
+
+            float mBeat = mp.getCurrBeat() + (dist / mp.travelSpeed / mp.beatInterval);
+
+            // Round to quarter beat
+            float rBeat = Mathf.Round(mBeat * 4) / 4;
+            p.beat = rBeat;
+
+            me.setActivePhrase(p);
         }
 
         return 1;

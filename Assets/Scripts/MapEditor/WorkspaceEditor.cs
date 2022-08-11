@@ -72,17 +72,12 @@ public class WorkspaceEditor : MonoBehaviour, Scrollable
 
             if (slot != null && snapBeat != slot.phrase.beat)
             {
-                slot.unsubSlot();
-
-
                 Phrase slotP = slot.phrase.fullClone();
                 slotP.beat = snapBeat;
-                slot.setPhrase(slotP); // Set new beat
+                MapEditor.sing.setActivePhrase(slotP); // Copy back into active phrase which will propagate
 
-                MapEditor.sing.setActivePhrase(slotP); // Copy back into active phrase
-
-                // Add to new slot
-                addPhraseEntry(slot);
+                // Requeue
+                slot.requeuePhrase();
             }
         }
 
