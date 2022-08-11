@@ -188,6 +188,21 @@ public class MapEditor : MonoBehaviour
 
     private void Update()
     {
+        // Read field data
+        // Needs to go first vs frame 1 hotswap
+        if (float.TryParse(BPMField.text, out float tryBpm) && tryBpm > 0
+            && tryBpm != bpm)
+        {
+            bpm = tryBpm;
+            markChange();
+        }
+        if (float.TryParse(trackOffsetField.text, out float tryTrackOffset)
+            && tryTrackOffset != trackOffset)
+        {
+            trackOffset = tryTrackOffset;
+            markChange();
+        }
+
         // Display active phrase
         if (activePhrase != null) 
             codeInd.text = activePhrase.serialize();
@@ -231,20 +246,6 @@ public class MapEditor : MonoBehaviour
             }
         }
 
-        // Read field data
-        if (float.TryParse(BPMField.text, out float tryBpm) && tryBpm > 0
-            && tryBpm != bpm)
-        {
-            bpm = tryBpm;
-            markChange();
-        }
-        if (float.TryParse(trackOffsetField.text, out float tryTrackOffset)
-            && tryTrackOffset != trackOffset)
-        {
-            trackOffset = tryTrackOffset;
-            markChange();
-        }
-
         // Mouse up (deselector)
         if (Input.GetMouseButtonUp(0))
         {
@@ -276,6 +277,20 @@ public class MapEditor : MonoBehaviour
 
         // Pipe the data directly
         Map map = new Map(songTitleField.text+"_hotswap", audioFileField.text, (int) bpm, trackOffset, groups);
+
+        // Tack on hovered item
+        if (interactMode == MODE.WRITE)
+            foreach (PhraseGroup gp in map.groups)
+                if (gp.name.Equals(workspace.group.name)) {
+                    Phrase p = workspaceEditor.ghost.GetComponent<BeatRow>().slots[0].phrase.fullClone();
+                    p.opacity = 0.2f;
+                    p.ownerGroup = gp;
+                    p.ownerMap = map;
+
+                    gp.phrases.Add(p);
+
+                    break;
+                }
 
         // Just requeue the whole map while retaining track position
         MapSerializer.sing.stageMap(map, false);

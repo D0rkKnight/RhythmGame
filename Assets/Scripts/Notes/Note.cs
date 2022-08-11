@@ -30,9 +30,7 @@ public class Note : MonoBehaviour
         get { return noteBody.color.a; }
         set
         {
-            Color c = noteBody.color;
-            c.a = value;
-            noteBody.color = c;
+            defaultColor.a = value;
         }
     }
 
@@ -110,8 +108,6 @@ public class Note : MonoBehaviour
         Vector2 tPos = col.transform.Find("TriggerBox").position;
 
         float dt = getHitTime() - mp.songTime;
-
-        Debug.Log(dt);
 
         Vector2 dp = -mp.dir * dt * mp.travelSpeed;
         Vector2 p = tPos + dp;

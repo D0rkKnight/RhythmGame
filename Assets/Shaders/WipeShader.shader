@@ -69,22 +69,21 @@ Shader "Sprites/WipeShader"
                     fixed4 col = lerp(texCol, i.col, 0.5);
 
                     float alphaRamp = i.uv.y;
-                    col.a += _Intensity - 1 + alphaRamp;
+                    float thresh = _Intensity + alphaRamp;
 
                     // Wobble
                     float wob = sin(1/(alphaRamp+0.1) * 5 - _Intensity*10) * 0.5;
-                    col.a += wob;
+                    thresh += wob;
 
                     // Cut at 0
-                    if (col.a <= 0) col.a = 0;
-                    if (col.a > 0) {
+                    if (thresh <= 0) {
+                        col.a = 0;
+                        col.rgb *= col.a;
+                    }
+                    if (thresh > 0) {
                         // Edge effect
                         if (col.a < 0.3) col.rgb = 1;
-
-                        col.a = 1;
                     }
-
-                    col.rgb *= col.a;
 
                     return col;
                 }

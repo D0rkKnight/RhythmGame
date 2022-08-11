@@ -133,6 +133,7 @@ public class MusicPlayer : MonoBehaviour
     private void Start()
     {
         Combo = 0;
+        updateInternals();
     }
 
     // Update is called once per frame
@@ -163,6 +164,8 @@ public class MusicPlayer : MonoBehaviour
 
     public void updateInternals()
     {
+        songTime = 0; // Def lock to 0
+
         switch (state)
         {
             case STATE.RUN:

@@ -48,18 +48,23 @@ public class WorkspaceEditor : MonoBehaviour, Scrollable
         float snapAlt = Mathf.Round(mouseBar) * snapInterval + (scroll % snapInterval);
         float snapBeat = (-snapAlt + scroll) / beatHeight;
 
-        // Hella boilerplate lol
-        Vector3 newPos = ghost.transform.localPosition;
-        newPos.y = snapAlt;
-        ghost.transform.localPosition = newPos;
+        // Don't update and hotswap if running
+        if (MusicPlayer.sing.state != MusicPlayer.STATE.RUN)
+        {
 
-        // Set ghost phrase
-        BeatRow row = ghost.GetComponent<BeatRow>();
-        Phrase newPhrase = MapEditor.sing.activePhrase.hardClone();
-        newPhrase.beat = snapBeat;
+            // Hella boilerplate lol
+            Vector3 newPos = ghost.transform.localPosition;
+            newPos.y = snapAlt;
+            ghost.transform.localPosition = newPos;
 
-        row.slots[0].setPhraseNoHotswap(newPhrase);
-        row.regenerate();
+            // Set ghost phrase
+            BeatRow row = ghost.GetComponent<BeatRow>();
+            Phrase newPhrase = MapEditor.sing.activePhrase.hardClone();
+            newPhrase.beat = snapBeat;
+
+            row.slots[0].setPhrase(newPhrase);
+            row.regenerate();
+        }
 
         float ghostY = ghost.transform.localPosition.y;
         ghost.SetActive(MapEditor.sing.InteractMode == MapEditor.MODE.WRITE &&
