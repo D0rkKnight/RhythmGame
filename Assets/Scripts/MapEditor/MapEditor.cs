@@ -282,7 +282,7 @@ public class MapEditor : MonoBehaviour
         if (interactMode == MODE.WRITE)
             foreach (PhraseGroup gp in map.groups)
                 if (gp.name.Equals(workspace.group.name)) {
-                    Phrase p = workspaceEditor.ghost.GetComponent<BeatRow>().slots[0].phrase.fullClone();
+                    Phrase p = MapEditor.sing.activePhrase.fullClone();
                     p.opacity = 0.2f;
                     p.ownerGroup = gp;
                     p.ownerMap = map;

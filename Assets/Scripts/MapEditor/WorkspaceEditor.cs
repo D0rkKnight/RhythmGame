@@ -51,18 +51,18 @@ public class WorkspaceEditor : MonoBehaviour, Scrollable
         // Don't update and hotswap if running
         if (MusicPlayer.sing.state != MusicPlayer.STATE.RUN)
         {
-
             // Hella boilerplate lol
             Vector3 newPos = ghost.transform.localPosition;
             newPos.y = snapAlt;
             ghost.transform.localPosition = newPos;
 
             // Set ghost phrase
-            BeatRow row = ghost.GetComponent<BeatRow>();
             Phrase newPhrase = MapEditor.sing.activePhrase.hardClone();
             newPhrase.beat = snapBeat;
+            MapEditor.sing.setActivePhrase(newPhrase);
 
-            row.slots[0].setPhrase(newPhrase);
+            BeatRow row = ghost.GetComponent<BeatRow>();
+            row.slots[0].setPhrase(MapEditor.sing.activePhrase);
             row.regenerate();
         }
 
