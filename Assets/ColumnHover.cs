@@ -8,6 +8,9 @@ public class ColumnHover : MonoBehaviour, Clickable
 
     public int onClick(int code)
     {
+        if (MusicPlayer.sing.state == MusicPlayer.STATE.RUN)
+            return 1; // Can't interact if running
+
         MapEditor me = MapEditor.sing;
         if (me != null && me.InteractMode == MapEditor.MODE.WRITE)
             me.workspaceEditor.addPhraseEntry(); // Write in the active phrase
@@ -17,6 +20,9 @@ public class ColumnHover : MonoBehaviour, Clickable
 
     public int onOver()
     {
+        if (MusicPlayer.sing.state == MusicPlayer.STATE.RUN)
+            return 1; // Can't interact if running
+
         MapEditor me = MapEditor.sing;
 
         // Check up and down drag

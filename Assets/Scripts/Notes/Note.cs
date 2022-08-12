@@ -25,6 +25,9 @@ public class Note : MonoBehaviour
     public Color defaultColor = Color.cyan;
     public Color deadColor = Color.grey;
 
+    public bool hittable = true;
+    public bool crossed = false; // Tracks whether the note has crossed the hitline
+
     public float Opacity
     {
         get { return noteBody.color.a; }
@@ -119,12 +122,18 @@ public class Note : MonoBehaviour
             mp.miss(this);
         }
 
-        // Sort into discard pile
+        // Sort into discard pile (separate process from missing)
         if (passed != null)
         {
             float noteExtension = getNoteExtension(mp);
 
             if (dt < -(mp.noteTimeout + noteExtension)) passed.Add(this);
+        }
+
+        if (dt < 0 && !crossed)
+        {
+            crossed = true;
+            onCross();
         }
     }
 
@@ -169,6 +178,11 @@ public class Note : MonoBehaviour
     }
 
     public virtual void childBlocked(Note child)
+    {
+
+    }
+
+    public virtual void onCross()
     {
 
     }

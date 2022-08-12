@@ -9,6 +9,9 @@ public class NoteClick : MonoBehaviour, Clickable
 
     public int onClick(int code)
     {
+        if (MusicPlayer.sing.state == MusicPlayer.STATE.RUN)
+            return 1; // Can't interact if running
+
         if (MapEditor.sing == null)
             return 1;
 

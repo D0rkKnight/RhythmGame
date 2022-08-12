@@ -13,6 +13,7 @@ public class SkillTree : MonoBehaviour
 
     public bool[] purchasedFlags = new bool[(int)NODE.SENTINEL];
     public bool[] activeFlags = new bool[(int)NODE.SENTINEL];
+    public bool[] toggleFlags = new bool[(int)NODE.SENTINEL]; // Set by the music player at runtime
     public static SkillTree sing;
 
     public bool activateAll;
@@ -29,6 +30,8 @@ public class SkillTree : MonoBehaviour
         init();
 
         if (purchaseAll) for (int i = 0; i < purchasedFlags.Length - 1; i++) purchasedFlags[i] = true;
+
+        resetToggles();
     }
 
     public virtual void Start()
@@ -44,6 +47,21 @@ public class SkillTree : MonoBehaviour
     {
 
     }
+
+    protected void applyToggles()
+    {
+        for(int i=0; i<(int) NODE.SENTINEL; i++)
+        {
+            activeFlags[i] = activeFlags[i] && toggleFlags[i];
+        }
+    }
+
+    public void resetToggles()
+    {
+        // All toggles are on by default
+        for (int i = 0; i < toggleFlags.Length; i++) toggleFlags[i] = true;
+    }
+
     protected virtual void enableNewOptions()
     {
 
@@ -61,7 +79,8 @@ public class SkillTree : MonoBehaviour
     // Recompiles the game state depending on the given skill flags
     public void compile()
     {
-        setActiveFlags();
+        setActiveFlags(); // UI is set here
+        applyToggles();
 
         compileMech();
 

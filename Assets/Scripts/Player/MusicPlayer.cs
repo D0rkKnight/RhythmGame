@@ -227,6 +227,10 @@ public class MusicPlayer : MonoBehaviour
 
                 foreach (Note note in notes)
                 {
+                    // Ignore notes that aren't part of the hit sequence
+                    if (!note.hittable)
+                        continue;
+
                     // Check both assigned column and reroute for validity
                     if (!note.col.Equals(col) && !note.col.Equals(col.reroute)) continue;
 
@@ -474,6 +478,9 @@ public class MusicPlayer : MonoBehaviour
 
         clearNotes();
         clearPhraseQueue();
+
+        SkillTree.sing.resetToggles();
+        SkillTree.sing.compile();
 
         // Any audio we'd be playing would be illegal
         TrackPlayer.sing.audio.Stop();
