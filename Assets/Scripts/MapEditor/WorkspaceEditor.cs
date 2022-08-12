@@ -40,51 +40,19 @@ public class WorkspaceEditor : MonoBehaviour, Scrollable
     {
         updatePhraseEntries();
 
-        // Just sending it with the maths
-        float snapInterval = beatSnap * beatHeight;
+        // Set ghost position
+        Vector3 newPos = ghost.transform.localPosition;
+        newPos.y = -(ghost.GetComponent<BeatRow>().slots[0].phrase.beat * beatHeight - scroll);
+        ghost.transform.localPosition = newPos;
 
-        float mouseAlt = Camera.main.ScreenToWorldPoint(Input.mousePosition).y - transform.position.y;
-        float mouseBar = (mouseAlt - scroll % snapInterval) / snapInterval; // Transform to bar offset from first bar
-        float snapAlt = Mathf.Round(mouseBar) * snapInterval + (scroll % snapInterval);
-        float snapBeat = (-snapAlt + scroll) / beatHeight;
-
-        // Don't update and hotswap if running
-        if (MusicPlayer.sing.state != MusicPlayer.STATE.RUN)
-        {
-            // Hella boilerplate lol
-            Vector3 newPos = ghost.transform.localPosition;
-            newPos.y = snapAlt;
-            ghost.transform.localPosition = newPos;
-
-            // Set ghost phrase
-            Phrase newPhrase = MapEditor.sing.activePhrase.hardClone();
-            newPhrase.beat = snapBeat;
-            MapEditor.sing.setActivePhrase(newPhrase);
-
-            BeatRow row = ghost.GetComponent<BeatRow>();
-            row.slots[0].setPhrase(MapEditor.sing.activePhrase);
-            row.regenerate();
-        }
+        // Set ghost phrase
+        BeatRow row = ghost.GetComponent<BeatRow>();
+        row.slots[0].setPhrase(MapEditor.sing.activePhrase.hardClone());
+        row.regenerate();
 
         float ghostY = ghost.transform.localPosition.y;
         ghost.SetActive(MapEditor.sing.InteractMode == MapEditor.MODE.WRITE &&
             -ghostY <= height && ghostY <= 0);
-
-        if (MapEditor.sing.draggingPhraseSlot)
-        {
-            // Move around the slot
-            BeatEditorSlot slot = MapEditor.sing.selectedPhraseSlot;
-
-            if (slot != null && snapBeat != slot.phrase.beat)
-            {
-                Phrase slotP = slot.phrase.fullClone();
-                slotP.beat = snapBeat;
-                MapEditor.sing.setActivePhrase(slotP); // Copy back into active phrase which will propagate
-
-                // Requeue
-                slot.requeuePhrase();
-            }
-        }
 
         // Regenerate phrase group data
         MapEditor.sing.workspace.group.phrases = rowsToPhraseListing(MapEditor.sing.workspace.rows);
@@ -163,15 +131,7 @@ public class WorkspaceEditor : MonoBehaviour, Scrollable
 
     public void addPhraseEntry()
     {
-        // Get mouse altitude
-        float mAlt = -(Camera.main.ScreenToWorldPoint(Input.mousePosition) - transform.position).y
-            + scroll;
-
-        float unroundBeat = mAlt / beatHeight;
-        float beat = Mathf.Round(unroundBeat / beatSnap) * beatSnap;
-
         Phrase p = MapEditor.sing.activePhrase.hardClone();
-        p.beat = beat;
 
         addPhraseEntry(p);
     }
@@ -181,7 +141,7 @@ public class WorkspaceEditor : MonoBehaviour, Scrollable
         GameObject slotObj = Instantiate(editorSlotPrefab);
         BeatEditorSlot slot = slotObj.GetComponent<BeatEditorSlot>();
 
-        slot.setPhrase(p);
+        slot.setPhrase(p, true);
         addPhraseEntry(slot);
     }
 
@@ -258,5 +218,41 @@ public class WorkspaceEditor : MonoBehaviour, Scrollable
         }
 
         return o;
+    }
+
+    public void updateMouseAndDrag()
+    {
+        // Just sending it with the maths
+        float snapInterval = beatSnap * beatHeight;
+
+        float mouseAlt = Camera.main.ScreenToWorldPoint(Input.mousePosition).y - transform.position.y;
+        float mouseBar = (mouseAlt - scroll % snapInterval) / snapInterval; // Transform to bar offset from first bar
+        float snapAlt = Mathf.Round(mouseBar) * snapInterval + (scroll % snapInterval);
+        float snapBeat = (-snapAlt + scroll) / beatHeight;
+
+        // Don't update and hotswap if running
+        if (MusicPlayer.sing.state != MusicPlayer.STATE.RUN &&
+            MapEditor.sing.InteractMode == MapEditor.MODE.WRITE)
+        {
+            Phrase newPhrase = MapEditor.sing.activePhrase.hardClone();
+            newPhrase.beat = snapBeat;
+            MapEditor.sing.setActivePhrase(newPhrase);
+        }
+
+        if (MapEditor.sing.draggingPhraseSlot)
+        {
+            // Move around the slot
+            BeatEditorSlot slot = MapEditor.sing.selectedPhraseSlot;
+
+            if (slot != null && snapBeat != slot.phrase.beat)
+            {
+                Phrase slotP = slot.phrase.fullClone();
+                slotP.beat = snapBeat;
+                MapEditor.sing.setActivePhrase(slotP); // Copy back into active phrase which will propagate
+
+                // Requeue
+                slot.requeuePhrase();
+            }
+        }
     }
 }

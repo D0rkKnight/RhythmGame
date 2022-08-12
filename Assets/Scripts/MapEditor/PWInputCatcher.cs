@@ -20,6 +20,8 @@ public class PWInputCatcher : MonoBehaviour, Clickable
 
     public int onOver()
     {
+        workspace.updateMouseAndDrag();
+
         return 1;
     }
 }

@@ -70,7 +70,7 @@ public class BeatEditorSlot : MonoBehaviour, Clickable
         return phrase.serialize();
     }
 
-    public void setPhrase(Phrase p)
+    public void setPhrase(Phrase p, bool queueImage = false)
     {
         // Config the phrase before it gets checked for a delta
         if (this == MapEditor.sing.selectedPhraseSlot)
@@ -78,7 +78,10 @@ public class BeatEditorSlot : MonoBehaviour, Clickable
 
         // Mark a change if the phrase is different
         if (phrase == null || !phrase.Equals(p))
-            MapEditor.sing.markChange();
+            MapEditor.sing.queueHotswap();
+
+        if (queueImage)
+            MapEditor.sing.queueImage();
 
         setPhraseNoHotswap(p);
     }

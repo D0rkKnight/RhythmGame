@@ -10,9 +10,7 @@ public class MapEditor : MonoBehaviour
 {
     public static MapEditor sing;
 
-    public Phrase activePhrase = new NotePhrase(0, 0, 0, 1);
-    public Phrase nonePhrase = new NonePhrase(0);
-
+    public Phrase activePhrase = new NotePhrase(0, 0, 0, 1); // Should only be hard data
 
     public List<PhraseGroup> groups = new List<PhraseGroup>();
     public Workspace workspace = new Workspace(new List<BeatRow>(), null);
@@ -76,7 +74,12 @@ public class MapEditor : MonoBehaviour
         set
         {
             interactMode = value;
-            selectedPhraseSlot = null; // Unselect whatever phrase
+
+            if (selectedPhraseSlot != null)
+            {
+                selectedPhraseSlot.deselect(); // Unselect whatever phrase
+                queueHotswap(); // Needs to remove note highlight
+            }
         }
     }
     public BeatEditorSlot selectedPhraseSlot = null;
@@ -164,8 +167,6 @@ public class MapEditor : MonoBehaviour
                 workspaceEditor.addPhraseEntry(p.hardClone());
 
             workspace.group = groups[data];
-
-            Debug.Log("Activating workspace " + data);
         });
 
         // Setup field cbs
@@ -194,13 +195,15 @@ public class MapEditor : MonoBehaviour
             && tryBpm != bpm)
         {
             bpm = tryBpm;
-            markChange();
+            queueHotswap();
+            queueImage();
         }
         if (float.TryParse(trackOffsetField.text, out float tryTrackOffset)
             && tryTrackOffset != trackOffset)
         {
             trackOffset = tryTrackOffset;
-            markChange();
+            queueHotswap();
+            queueImage();
         }
 
         // Display active phrase
@@ -239,7 +242,7 @@ public class MapEditor : MonoBehaviour
             {
                 bool requeue = selectedPhraseSlot.phrase.beat != activePhrase.beat;
 
-                selectedPhraseSlot.setPhrase(activePhrase.hardClone());
+                selectedPhraseSlot.setPhrase(activePhrase.hardClone(), true);
 
                 if (requeue)
                     selectedPhraseSlot.requeuePhrase();
@@ -423,7 +426,7 @@ public class MapEditor : MonoBehaviour
         workspace.rows.Remove(entry);
         Destroy(entry.gameObject);
 
-        markChange();
+        queueHotswap();
     }
 
     public void addAccent(int amt)
@@ -443,10 +446,14 @@ public class MapEditor : MonoBehaviour
             activePhraseToEditorUI();
     }
 
-    public void markChange()
+    public void queueHotswap()
     {
         // Field has been edited
         edited = true;
+    }
+
+    public void queueImage()
+    {
         imageQueued = true;
     }
 

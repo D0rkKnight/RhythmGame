@@ -8,6 +8,10 @@ public class ColumnHover : MonoBehaviour, Clickable
 
     public int onClick(int code)
     {
+        MapEditor me = MapEditor.sing;
+        if (me != null && me.InteractMode == MapEditor.MODE.WRITE)
+            me.workspaceEditor.addPhraseEntry(); // Write in the active phrase
+
         return 1; // pass through
     }
 
@@ -15,12 +19,25 @@ public class ColumnHover : MonoBehaviour, Clickable
     {
         MapEditor me = MapEditor.sing;
 
+        // Check up and down drag
+        MusicPlayer mp = MusicPlayer.sing;
+
+        Vector2 delta = (Camera.main.ScreenToWorldPoint(Input.mousePosition) -
+            parent.transform.Find("TriggerBox").position);
+        float dist = Vector2.Dot(delta, -mp.dir);
+
+        float mBeat = mp.getCurrBeat() + (dist / mp.travelSpeed / mp.beatInterval);
+
+        // Round to quarter beat
+        float rBeat = Mathf.Round(mBeat * 4) / 4;
+
         // On active and detected delta
         if (me != null
             && me.dragCol != null
-            && me.selectedPhraseSlot != null)
+            && me.selectedPhraseSlot != null
+            && me.InteractMode == MapEditor.MODE.EDIT)
         {
-            Phrase p = me.selectedPhraseSlot.phrase.fullClone();
+            Phrase p = me.selectedPhraseSlot.phrase.hardClone();
 
             // Assign as selected phrase
             if (me.dragCol != parent)
@@ -30,18 +47,18 @@ public class ColumnHover : MonoBehaviour, Clickable
                 // Move active phrase as well if selection exists
                 p.lane = parent.colNum;
             }
+            p.beat = rBeat;
 
-            // Check up and down drag
-            MusicPlayer mp = MusicPlayer.sing;
+            me.setActivePhrase(p);
+        }
 
-            Vector2 delta = (Camera.main.ScreenToWorldPoint(Input.mousePosition) - 
-                parent.transform.Find("TriggerBox").position);
-            float dist = Vector2.Dot(delta, -mp.dir);
+        // If not dragging, do previz and set active phrase
+        if (me != null && me.dragCol == null
+            && me.InteractMode == MapEditor.MODE.WRITE)
+        {
+            Phrase p = me.activePhrase.fullClone();
 
-            float mBeat = mp.getCurrBeat() + (dist / mp.travelSpeed / mp.beatInterval);
-
-            // Round to quarter beat
-            float rBeat = Mathf.Round(mBeat * 4) / 4;
+            p.lane = parent.colNum;
             p.beat = rBeat;
 
             me.setActivePhrase(p);

@@ -28,12 +28,6 @@ public class BeatRow : MonoBehaviour
         regenerate();
     }
 
-    public void setPhrase(Phrase p)
-    {
-        slots[0].setPhrase(p);
-        txt.text = p.beat.ToString();
-    }
-
     public void addPhrase(Phrase p)
     {
         GameObject slotObj = Instantiate(editorSlotPrefab, transform);
