@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using System;
 
 public class MusicPlayer : MonoBehaviour
 {
@@ -653,6 +654,9 @@ public class MusicPlayer : MonoBehaviour
             n.onScroll(this);
 
         linkWEditScroll();
+
+        // Reevaluate cross events
+        reevaluateCrosses();
     }
 
     public void linkWEditScroll()
@@ -663,5 +667,42 @@ public class MusicPlayer : MonoBehaviour
             WorkspaceEditor wEdit = MapEditor.sing.workspaceEditor;
             wEdit.setScroll(songTime / beatInterval * wEdit.beatHeight);
         }
+    }
+
+    // Reprocs every on cross event up to the timestamp
+    // This is going to be very laggy
+    public void reevaluateCrosses()
+    {
+        // Toggles are cross dependent so they are wiped
+        SkillTree.sing.resetToggles();
+
+        List<Note> sorted = new List<Note> ();
+        foreach (Note n in notes)
+        {
+            // Reset cross tracker
+            n.crossed = false;
+
+            sorted.Add(n);
+        }
+
+        sorted.Sort((Note n1, Note n2) =>
+        {
+            if (n1.beat > n2.beat) return 1;
+            if (n1.beat < n2.beat) return -1;
+            return 0;
+        });
+
+        foreach (Note n in sorted)
+        {
+            if (songTime >= n.getHitTime())
+                n.onCross();
+            else
+                break;
+        }
+
+        // Since toggles have changed, we should recompile
+        SkillTree.sing.compile();
+
+        return;
     }
 }

@@ -178,6 +178,9 @@ public partial class MapSerializer : MonoBehaviour
             TrackPlayer.sing.resetTrack();
             loadQueued = false;
             resetTrackPosition = true; // Default value
+
+            // Since everything is loaded in, reevaluate crosses
+            MusicPlayer.sing.reevaluateCrosses();
         }
     }
 
