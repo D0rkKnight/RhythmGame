@@ -187,7 +187,7 @@ public class WorkspaceEditor : MonoBehaviour, Scrollable
         } else
         {
             scroll -= amt;
-            scroll = Mathf.Max(0, scroll);
+            // scroll = Mathf.Max(0, scroll); // Scroll can go negative
         }
 
         // Lock mp to scroll as well (in beats)
