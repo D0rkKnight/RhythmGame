@@ -636,6 +636,8 @@ MonoBehaviour:
     type: 3}
   ghostPrefab: {fileID: 8812033195928707392, guid: 994eb8b90eee1164c81b7c4a0c319456,
     type: 3}
+  togglePrefab: {fileID: 3698551915294494855, guid: 573db31b4fe4c8a4191dd065b83e2a49,
+    type: 3}
   columns:
   - {fileID: 4200360234680489265}
   - {fileID: 3967842325593578913}

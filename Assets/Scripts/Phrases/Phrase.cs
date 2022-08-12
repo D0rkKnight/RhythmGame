@@ -44,7 +44,7 @@ public abstract class Phrase
 
     public enum TYPE
     {
-        NONE, NOTE, HOLD, ZIGZAG, SCATTER, REBOUND, MANY, SENTINEL
+        NONE, NOTE, HOLD, ZIGZAG, SCATTER, REBOUND, MANY, TOGGLE, SENTINEL
     }
 
     public Phrase()
@@ -145,6 +145,12 @@ public abstract class Phrase
         typeTable.Add(new TypeEntry('M', TYPE.MANY,
             (lane_, beat_, accent_, meta_, priority_) => {
                 return new ManyPhrase(lane_, beat_, accent_, meta_, priority_);
+            }
+            ));
+
+        typeTable.Add(new TypeEntry('T', TYPE.TOGGLE,
+            (lane_, beat_, accent_, meta_, priority_) => {
+                return new TogglePhrase(beat_, meta_);
             }
             ));
     }
@@ -324,7 +330,6 @@ public abstract class Phrase
         Note nObj = instantiator(mp);
 
         configNote(mp, nObj, spawnLane, spawnBeat, blockFrame, weight);
-        mp.addNote(nObj);
 
         List<Note> o = new List<Note>();
         o.Add(nObj);
@@ -455,6 +460,7 @@ public abstract class Phrase
         nObj.Opacity = opacity;
 
         nObj.resetInit(mp); // Also serves as an intializer
+        mp.addNote(nObj);
     }
 
     public virtual float getBlockFrame()

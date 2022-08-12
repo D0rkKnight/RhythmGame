@@ -10,6 +10,7 @@ public class MusicPlayer : MonoBehaviour
     public HoldNote holdPrefab;
     public ReboundNote reboundPrefab;
     public GhostNote ghostPrefab;
+    public ToggleNote togglePrefab;
 
     public NoteColumn[] columns;
     private float bpm = 60;
