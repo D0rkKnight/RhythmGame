@@ -163,6 +163,9 @@ public class WorkspaceEditor : MonoBehaviour, Scrollable
             MapEditor.sing.workspace.rows.Add(activeRow);
         }
 
+        // Link this up rn
+        slot.phrase.ownerGroup = MapEditor.sing.workspace.group;
+
         activeRow.addSlot(slot);
 
         // Resort workspace

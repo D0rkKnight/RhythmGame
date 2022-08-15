@@ -9,6 +9,16 @@ public class NotePhrase : Phrase
 
     public override Note instantiateNote(MusicPlayer mp)
     {
+        // Search note cache
+        // (since this phrase only spawns 1 type of note any note it finds should be valid to config)
+        if (nCache.Count > 0)
+        {
+            Note n = nCache[nCache.Count - 1];
+            n.gameObject.SetActive(true);
+
+            return n;
+        }
+
         return UnityEngine.Object.Instantiate(mp.notePrefab);
     }
 

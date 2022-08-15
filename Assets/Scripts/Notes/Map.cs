@@ -22,10 +22,28 @@ public partial class Map
         bpm = bpm_;
         offset = offset_;
 
+        // Dupe groups but not phrases
+        // (since groups have little initialization overhead and phrase previz writes to the group)
         groups = new List<PhraseGroup>();
+        foreach (PhraseGroup gp in groups_)
+        {
+            PhraseGroup ngp = new PhraseGroup(new List<Phrase>(), gp.name);
+            foreach (Phrase p in gp.phrases)
+            {
+                ngp.phrases.Add(p);
+                p.ownerMap = this; // Editor phrases will be linked to active map
+            }
+
+            groups.Add(ngp);
+        }
+    }
+
+    public Map copy()
+    {
+        Map map = new Map(name, trackName, bpm, offset, new List<PhraseGroup>());
 
         // Go through groups and link them properly
-        foreach (PhraseGroup gp in groups_)
+        foreach (PhraseGroup gp in groups)
         {
             PhraseGroup ngp = new PhraseGroup(new List<Phrase>(), gp.name);
 
@@ -38,8 +56,10 @@ public partial class Map
                 ngp.phrases.Add(np);
             }
 
-            groups.Add(ngp);
+            map.groups.Add(ngp);
         }
+
+        return map;
     }
 
     public void addPhraseToLastGroup(Phrase p)

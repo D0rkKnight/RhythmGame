@@ -264,7 +264,7 @@ public class MapEditor : MonoBehaviour
 
         // Safe because the song environment gets reset
         MusicPlayer.sing.state = MusicPlayer.STATE.RUN;
-        MusicPlayer.sing.resetSongEnv();
+        MusicPlayer.sing.clearSongEnv();
         MapSerializer.sing.playMap("playTemp.txt");
     }
 
@@ -287,12 +287,11 @@ public class MapEditor : MonoBehaviour
         if (loadActivePhrase)
             foreach (PhraseGroup gp in map.groups)
                 if (gp.name.Equals(workspace.group.name)) {
-                    Phrase p = activePhrase.fullClone();
-                    p.opacity = 0.2f;
-                    p.ownerGroup = gp;
-                    p.ownerMap = map;
+                    activePhrase.opacity = 0.2f;
+                    activePhrase.ownerGroup = gp;
+                    activePhrase.ownerMap = map;
 
-                    gp.phrases.Add(p);
+                    gp.phrases.Add(activePhrase);
 
                     break;
                 }

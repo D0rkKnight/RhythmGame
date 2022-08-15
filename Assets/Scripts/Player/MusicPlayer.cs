@@ -294,7 +294,7 @@ public class MusicPlayer : MonoBehaviour
         // Reset key
         if (InputManager.checkKeyDownGame(resetKey))
         {
-            resetSongEnv();
+            clearSongEnv();
             MapSerializer.sing.playMap(); // Resets to start of the current map
         }
 
@@ -384,7 +384,7 @@ public class MusicPlayer : MonoBehaviour
         // Can also force an awake by itself
         if (InputManager.checkKeyDownGame(pauseKey))
         {
-            resetSongEnv();
+            clearSongEnv();
             GameManager.sing.playNextMap();
 
             state = STATE.RUN;
@@ -424,7 +424,7 @@ public class MusicPlayer : MonoBehaviour
         // Waits for a map to queue up, then resets the environment and pauses.
         if (MapSerializer.sing.activeMap != null)
         {
-            resetSongEnv();
+            clearSongEnv();
             MapSerializer.sing.playMap();
 
             if (pauseOnAwake)
@@ -472,7 +472,7 @@ public class MusicPlayer : MonoBehaviour
         }
     }
 
-    public void resetSongEnv(bool resetTrackPos = true)
+    public void clearSongEnv(bool resetTrackPos = true)
     {
         if (resetTrackPos)
         {
@@ -481,8 +481,8 @@ public class MusicPlayer : MonoBehaviour
             scroll = 0;
         }
 
-        clearNotes();
         clearPhraseQueue();
+        clearNotes();
 
         SkillTree.sing.resetToggles();
         SkillTree.sing.compile();
@@ -493,25 +493,36 @@ public class MusicPlayer : MonoBehaviour
 
     public void reloadNotes()
     {
-        clearNotes();
         clearPhraseQueue();
+        clearNotes();
 
         // Any audio we'd be playing would be illegal
         TrackPlayer.sing.audio.Stop();
     }
 
-    public void clearNotes()
-    {
-        // Clear out note queue and active notes
-        foreach (Note n in notes)
-        {
-            Destroy(n.gameObject);
-        }
-        notes.Clear();
-    }
     public void clearPhraseQueue()
     {
         phraseQueue.Clear();
+    }
+
+    public void clearNotes()
+    {
+        // Clear everything queued into the activemap
+        if (MapSerializer.sing.activeMap != null)
+            foreach (PhraseGroup grp in MapSerializer.sing.activeMap.groups)
+                foreach (Phrase p in grp.phrases)
+                {
+                    if (MapEditor.sing != null)
+                    {
+                        p.dumpToCache();
+                    }
+                    else
+                    {
+                        p.destroyNotes();
+                    }
+                }
+
+        notes.Clear();
     }
 
     private void remove(Note note)

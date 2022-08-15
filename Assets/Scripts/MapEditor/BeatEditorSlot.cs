@@ -76,6 +76,9 @@ public class BeatEditorSlot : MonoBehaviour, Clickable
         if (this == MapEditor.sing.selectedPhraseSlot)
             p.highlight = Color.yellow;
 
+        // Write in owner group
+        p.ownerGroup = MapEditor.sing.workspace.group;
+
         // Mark a change if the phrase is different
         if (phrase == null || !phrase.Equals(p))
         {

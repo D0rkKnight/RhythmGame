@@ -100,6 +100,9 @@ public partial class MapSerializer : MonoBehaviour
 
     public void loadMap(Map map, bool resTrackPos)
     {
+        // Reset music player
+        mPlay.clearSongEnv(resTrackPos);
+
         activeMap = map;
 
         // Start music
@@ -107,9 +110,6 @@ public partial class MapSerializer : MonoBehaviour
 
         // Set music player bpm
         mPlay.BPM = activeMap.bpm;
-
-        // Reset music player
-        mPlay.resetSongEnv(resTrackPos);
 
         // Map is populated now, load into music player
         foreach (Phrase p in activeMap.groups[0].phrases)

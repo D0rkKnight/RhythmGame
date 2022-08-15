@@ -26,6 +26,11 @@ public abstract class Phrase
     // Metadata
     protected string[] meta;
     public static List<TypeEntry> typeTable = new List<TypeEntry>();
+
+    // Rasterization info
+    public List<Note> notes = new List<Note>();
+    public List<Note> nCache = new List<Note>();
+
     public struct TypeEntry
     {
         public char charCode;
@@ -87,6 +92,10 @@ public abstract class Phrase
 
         p.highlight = highlight;
         p.opacity = opacity;
+
+        // Copy over note cache
+        foreach (Note n in nCache)
+            p.nCache.Add(n);
 
         return p;
     }
@@ -241,8 +250,10 @@ public abstract class Phrase
             return;
         }
 
-        if (ownerGroup == null || ownerMap == null)
-            throw new Exception("Not in a rasterizable context");
+        if (ownerGroup == null)
+            throw new Exception("Missing owner group");
+        if (ownerMap == null)
+            throw new Exception("Missing owner map");
 
         // Takes a phrase and spawns its notes
         // TODO: Don't use blocking frame, just check if it clashes with any notes in the buffer
@@ -460,6 +471,8 @@ public abstract class Phrase
         nObj.Opacity = opacity;
 
         nObj.resetInit(mp); // Also serves as an intializer
+
+        notes.Add(nObj); // Put into phrase note listing as well
         mp.addNote(nObj);
     }
 
@@ -539,6 +552,29 @@ public abstract class Phrase
             return false;
 
         return true;
+    }
+
+    // Dumps note listing into cache
+    public void dumpToCache()
+    {
+        foreach (Note n in notes)
+        {
+            nCache.Add(n);
+            n.gameObject.SetActive(false);
+        }
+
+        notes.Clear();
+    }
+
+    // Destroys children notes as well 
+    public void destroyNotes()
+    {
+        foreach (Note n in notes)
+            GameObject.Destroy(n.gameObject);
+
+
+        foreach (Note n in nCache)
+            GameObject.Destroy(n.gameObject);
     }
 }
 
