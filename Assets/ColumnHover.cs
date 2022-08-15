@@ -28,14 +28,8 @@ public class ColumnHover : MonoBehaviour, Clickable
         // Check up and down drag
         MusicPlayer mp = MusicPlayer.sing;
 
-        Vector2 delta = (Camera.main.ScreenToWorldPoint(Input.mousePosition) -
-            parent.transform.Find("TriggerBox").position);
-        float dist = Vector2.Dot(delta, -mp.dir);
-
-        float mBeat = mp.getCurrBeat() + (dist / mp.travelSpeed / mp.beatInterval);
-
         // Round to quarter beat
-        float rBeat = Mathf.Round(mBeat * 4) / 4;
+        float rBeat = parent.getMBeatRounded();
 
         // On active and detected delta
         if (me != null
@@ -48,12 +42,13 @@ public class ColumnHover : MonoBehaviour, Clickable
             // Assign as selected phrase
             if (me.dragCol != parent)
             {
-                me.dragCol = parent;
-
                 // Move active phrase as well if selection exists
-                p.lane = parent.colNum;
+                // This should track left right dragging regardless of starting column
+                p.lane += parent.colNum - me.dragCol.colNum;
+
+                me.dragCol = parent;
             }
-            p.beat = rBeat;
+            p.beat = rBeat - me.dragBeatOffset;
 
             me.setActivePhrase(p);
         }

@@ -29,6 +29,7 @@ public class NoteClick : MonoBehaviour, Clickable
                     slot.select();
 
                     MapEditor.sing.dragCol = parent.col;
+                    MapEditor.sing.dragBeatOffset = parent.col.getMBeatRounded() - parent.phrase.beat;
                     return 1;
                 }
             }

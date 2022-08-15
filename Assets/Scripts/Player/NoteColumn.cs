@@ -157,4 +157,21 @@ public class NoteColumn : MonoBehaviour
             line.Find("Canvas/BeatMarker").GetComponent<TMPro.TMP_Text>().text = "" + beatOn;
         }
     }
+
+    public float getMBeatRounded()
+    {
+        // Check up and down drag
+        MusicPlayer mp = MusicPlayer.sing;
+
+        Vector2 delta = (Camera.main.ScreenToWorldPoint(Input.mousePosition) -
+            transform.Find("TriggerBox").position);
+        float dist = Vector2.Dot(delta, -mp.dir);
+
+        float mBeat = mp.getCurrBeat() + (dist / mp.travelSpeed / mp.beatInterval);
+
+        // Round to quarter beat
+        float rBeat = Mathf.Round(mBeat * 4) / 4;
+
+        return rBeat;
+    }
 }

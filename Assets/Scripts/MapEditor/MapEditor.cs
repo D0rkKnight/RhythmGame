@@ -59,6 +59,7 @@ public class MapEditor : MonoBehaviour
     public WorkspaceEditor workspaceEditor;
 
     public NoteColumn dragCol = null; // Null means not dragging
+    public float dragBeatOffset = 0f; // Tracks where the drag selection begins within the phrase
 
     public enum MODE
     {
