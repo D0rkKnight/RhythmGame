@@ -286,7 +286,7 @@ public class MusicPlayer : MonoBehaviour
             }
 
         // If no notes left, request note serializer to send more notes
-        if (notes.Count == 0 && phraseQueue.Count == 0 && !MapSerializer.sing.loadQueued)
+        if (notes.Count == 0 && phraseQueue.Count == 0)
         {
             inter();
         }

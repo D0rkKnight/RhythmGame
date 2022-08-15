@@ -297,7 +297,7 @@ public class MapEditor : MonoBehaviour
                 }
 
         // Just requeue the whole map while retaining track position
-        MapSerializer.sing.stageMap(map, false);
+        MapSerializer.sing.loadMap(map, false);
 
         // Pause the mplayer
         MusicPlayer.sing.pause();

@@ -39,8 +39,6 @@ public partial class MapSerializer : MonoBehaviour
     public float noteBlockLen = 0.25f;
 
     public static MapSerializer sing;
-    public bool loadQueued = false;
-    public bool resetTrackPosition = true;
 
     private void Awake()
     {
@@ -94,20 +92,37 @@ public partial class MapSerializer : MonoBehaviour
 
         if (fname.Length > 0)
         {
-            stageMap(parseMap(fname), true);
+            loadMap(parseMap(fname), true);
         }
 
         // Don't do anything if we don't have a map to generate
     }
 
-    public void stageMap(Map map, bool resTrackPos)
+    public void loadMap(Map map, bool resTrackPos)
     {
         activeMap = map;
 
         // Start music
         TrackPlayer.sing.loadTrack(activeMap.trackName);
-        loadQueued = true;
-        resetTrackPosition = resTrackPos;
+
+        // Set music player bpm
+        mPlay.BPM = activeMap.bpm;
+
+        // Reset music player
+        mPlay.resetSongEnv(resTrackPos);
+
+        // Map is populated now, load into music player
+        foreach (Phrase p in activeMap.groups[0].phrases)
+        {
+            mPlay.enqueuePhrase(p);
+        }
+
+        // Align music
+        if (resTrackPos)
+            TrackPlayer.sing.resetTrack();
+
+        // Since everything is loaded in, reevaluate crosses
+        MusicPlayer.sing.reevaluateCrosses();
     }
 
     public Map parseMap(string fname)
@@ -160,28 +175,6 @@ public partial class MapSerializer : MonoBehaviour
 
     public void Update()
     {
-        if (loadQueued)
-        {
-            // Set music player bpm
-            mPlay.BPM = activeMap.bpm;
-
-            // Reset music player
-            mPlay.resetSongEnv(resetTrackPosition);
-
-            // Map is populated now, load into music player
-            foreach (Phrase p in activeMap.groups[0].phrases)
-            {
-                mPlay.enqueuePhrase(p);
-            }
-
-            // Align music
-            TrackPlayer.sing.resetTrack();
-            loadQueued = false;
-            resetTrackPosition = true; // Default value
-
-            // Since everything is loaded in, reevaluate crosses
-            MusicPlayer.sing.reevaluateCrosses();
-        }
     }
 
     private ParseState parseHEADER(string tok, Map map)
