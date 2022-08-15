@@ -5,8 +5,8 @@ offset: 0
 
 streamstart
 Main
-[0]T(L_EXPAND,F)1{0}
-[2]T(L_EXPAND,T)1{0}
+[0]1{1}
+[0.25]2{1}
 End
 
 Sub1

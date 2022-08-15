@@ -225,7 +225,7 @@ public class MapEditor : MonoBehaviour
         }
         if (hotswapQueued)
         {
-            hotswap();
+            hotswap(interactMode == MODE.WRITE);
             hotswapQueued = false;
         }
 
@@ -275,7 +275,7 @@ public class MapEditor : MonoBehaviour
     }
 
     // Returns map that is hotswapped in
-    public Map hotswap()
+    public Map hotswap(bool loadActivePhrase = false)
     {
         Debug.Log("Hotswap commencing");
 
@@ -283,10 +283,10 @@ public class MapEditor : MonoBehaviour
         Map map = new Map(songTitleField.text+"_hotswap", audioFileField.text, (int) bpm, trackOffset, groups);
 
         // Tack on hovered item
-        if (interactMode == MODE.WRITE)
+        if (loadActivePhrase)
             foreach (PhraseGroup gp in map.groups)
                 if (gp.name.Equals(workspace.group.name)) {
-                    Phrase p = MapEditor.sing.activePhrase.fullClone();
+                    Phrase p = activePhrase.fullClone();
                     p.opacity = 0.2f;
                     p.ownerGroup = gp;
                     p.ownerMap = map;
