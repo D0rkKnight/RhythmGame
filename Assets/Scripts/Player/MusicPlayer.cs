@@ -456,6 +456,10 @@ public class MusicPlayer : MonoBehaviour
 
     public void unpause()
     {
+        // Force load in map on unpause
+        if (MapEditor.sing != null)
+            MapEditor.sing.hotswap(); // Dont load active phrase
+
         state = STATE.RUN;
         pausedTotal += Time.time - pauseStart;
 
