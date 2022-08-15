@@ -1,0 +1,23 @@
+mapname: Allegretto_Town
+track: Allegretto_Town2_3.wav
+bpm: 100
+offset: 0
+
+streamstart
+Main
+[1.5]1{1}
+[2.5]1{1}
+[2.75]3{1}
+[3.25]3{1}
+[3.75]2{1}
+[4.25]4{1}
+[4.75]4{1}
+[5]Z(3,3,0.25,F)1{1}
+End
+
+Sub1
+End
+
+Sub2
+End
+
