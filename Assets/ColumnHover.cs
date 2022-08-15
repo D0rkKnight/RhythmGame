@@ -45,6 +45,7 @@ public class ColumnHover : MonoBehaviour, Clickable
                 // Move active phrase as well if selection exists
                 // This should track left right dragging regardless of starting column
                 p.lane += parent.colNum - me.dragCol.colNum;
+                p.lane = Mathf.Clamp(p.lane, 0, MusicPlayer.sing.columns.Length - 1);
 
                 me.dragCol = parent;
             }
