@@ -34,7 +34,7 @@ public class EditorSkillTree : SkillTree
                 compile();
 
                 // If the map editor is alive, queue up a hotswap
-                if (MapEditor.sing != null) MapEditor.sing.hotswapQueued = true;
+                if (MapEditor.sing != null) MapEditor.sing.queueHotswap();
             });
         }
     }

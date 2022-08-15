@@ -217,16 +217,13 @@ public class MapEditor : MonoBehaviour
         {
             image = onEdit();
             edited = false;
+
+            MusicPlayer.sing.pause();
         }
         if (imageQueued)
         {
             undoCache.Push(image);
             imageQueued = false;
-        }
-        if (hotswapQueued)
-        {
-            hotswap(interactMode == MODE.WRITE);
-            hotswapQueued = false;
         }
 
         // Check for undo input
@@ -268,9 +265,10 @@ public class MapEditor : MonoBehaviour
         MapSerializer.sing.playMap("playTemp.txt");
     }
 
+    // Update visuals after an edit in the editor
     public Map onEdit()
     {
-        Map image = hotswap();
+        Map image = hotswap(interactMode == MODE.WRITE);
         return image;
     }
 
@@ -298,9 +296,6 @@ public class MapEditor : MonoBehaviour
 
         // Just requeue the whole map while retaining track position
         MapSerializer.sing.loadMap(map, false);
-
-        // Pause the mplayer
-        MusicPlayer.sing.pause();
 
         return map;
     }
