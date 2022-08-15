@@ -78,10 +78,11 @@ public class BeatEditorSlot : MonoBehaviour, Clickable
 
         // Mark a change if the phrase is different
         if (phrase == null || !phrase.Equals(p))
+        {
             MapEditor.sing.queueHotswap();
-
-        if (queueImage)
-            MapEditor.sing.queueImage();
+            if (queueImage)
+                MapEditor.sing.queueImage();
+        }
 
         setPhraseNoHotswap(p);
     }

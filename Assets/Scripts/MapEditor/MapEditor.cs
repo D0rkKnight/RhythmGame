@@ -222,6 +222,9 @@ public class MapEditor : MonoBehaviour
         }
         if (imageQueued)
         {
+            if (image == null)
+                throw new Exception("Bad image request");
+
             undoCache.Push(image);
             imageQueued = false;
         }
