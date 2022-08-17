@@ -129,7 +129,7 @@ public class ReboundNote : Note
 
         for (int i = ghosts.Count - 1; i >= reboundNum; i--)
         {
-            MusicPlayer.sing.removeNote(ghosts[i]);
+            MusicPlayer.sing.recycleNote(ghosts[i]);
             ghosts.RemoveAt(i);
         }
 
@@ -141,7 +141,7 @@ public class ReboundNote : Note
             int laneInd = Array.IndexOf(MusicPlayer.sing.columns, col);
             phrase.spawn(MusicPlayer.sing, laneInd, beat, blockDur, weight, (MusicPlayer mp) =>
             {
-                return Instantiate(mp.notePrefab);
+                return phrase.instantiateNote(mp.notePrefab); // Request a swap from the parent phrase
             });
         }
     }

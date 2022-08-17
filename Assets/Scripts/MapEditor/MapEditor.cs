@@ -141,7 +141,7 @@ public class MapEditor : MonoBehaviour
 
             Phrase p = sing.activePhrase;
             Phrase newPhrase = Phrase.staticCon(p.lane, p.beat, p.accent, null, p.priority, (Phrase.TYPE) newType);
-            sing.setActivePhrase(newPhrase);
+            sing.writeActivePhrase(newPhrase);
 
             Debug.Log("type changed");
         });
@@ -176,7 +176,7 @@ public class MapEditor : MonoBehaviour
             Phrase newPhrase = activePhrase.hardClone();
             newPhrase.beat = parse;
 
-            setActivePhrase(newPhrase);
+            writeActivePhrase(newPhrase);
         };
 
         priorityInput.cb = (float parse) =>
@@ -184,7 +184,7 @@ public class MapEditor : MonoBehaviour
             Phrase newPhrase = activePhrase.hardClone();
             newPhrase.priority = parse;
 
-            setActivePhrase(newPhrase);
+            writeActivePhrase(newPhrase);
         };
     }
 
@@ -432,16 +432,13 @@ public class MapEditor : MonoBehaviour
         activePhrase.accent = Mathf.Max(0, activePhrase.accent + amt);
     }
 
-    public void setActivePhrase(Phrase p)
+    public void writeActivePhrase(Phrase p)
     {
-        bool uiUpdateQueued = false;
         if (!activePhrase.Equals(p))
-            uiUpdateQueued = true;
-
-        activePhrase = p;
-
-        if (uiUpdateQueued)
+        {
+            activePhrase = p;
             activePhraseToEditorUI();
+        }
     }
 
     public void queueHotswap()

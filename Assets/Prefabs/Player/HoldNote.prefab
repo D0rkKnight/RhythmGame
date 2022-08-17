@@ -50,10 +50,12 @@ MonoBehaviour:
   beat: 0
   blockDur: 0
   weight: 0
-  lane: {fileID: 0}
+  col: {fileID: 0}
   dead: 0
   defaultColor: {r: 0, g: 1, b: 0.26041698, a: 1}
   deadColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+  hittable: 1
+  crossed: 0
   text: {fileID: 7052191657182655997}
   killDelay: 1
   lerpSpeed: 3
@@ -61,6 +63,7 @@ MonoBehaviour:
   noteBody: {fileID: 5816874069299252784}
   highlightRend: {fileID: 5932378471419121823}
   clickListener: {fileID: 6584733897716677981}
+  catName: Hold
   holdBeats: 4
   held: 0
   bg: {fileID: 4073856288480711784}

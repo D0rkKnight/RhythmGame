@@ -33,9 +33,9 @@ public class HoldPhrase : Phrase
     public override Note instantiateNote(MusicPlayer mp)
     {
         if (!MapSerializer.sing.genType[(int)TYPE.HOLD])
-            return UnityEngine.Object.Instantiate(mp.notePrefab).GetComponent<Note>();
+            return instantiateNote(mp.notePrefab);
 
-        return UnityEngine.Object.Instantiate(mp.holdPrefab).GetComponent<Note>();
+        return instantiateNote(mp.holdPrefab); ;
     }
     public override void configNote(MusicPlayer mp, Note nObj, int spawnLane, float spawnBeat, float blockFrame, float weight)
     {

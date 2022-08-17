@@ -51,6 +51,8 @@ public class Note : MonoBehaviour
 
     public Phrase phrase = null;
 
+    public string catName; // Used to sort prefabs into different recycling categories
+
     public void Start()
     {
         clickListener.parent = this;
@@ -84,7 +86,6 @@ public class Note : MonoBehaviour
 
     public void remove()
     {
-        // Straight up destroy
         Destroy(gameObject);
     }
 
@@ -150,6 +151,7 @@ public class Note : MonoBehaviour
     public virtual void resetInit(MusicPlayer mp)
     {
         dead = false;
+        phrase = null;
     }
 
     public virtual void onBeat(MusicPlayer mp)

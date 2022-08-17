@@ -111,7 +111,7 @@ public class BeatEditorSlot : MonoBehaviour, Clickable
         if (Input.GetKeyDown(MapEditor.sing.copyKey))
         {
             // Write phrase to active phrase
-            MapEditor.sing.setActivePhrase(phrase.hardClone());
+            MapEditor.sing.writeActivePhrase(phrase.hardClone());
         }
 
         return 0;
@@ -137,7 +137,7 @@ public class BeatEditorSlot : MonoBehaviour, Clickable
         if (me.selectedPhraseSlot != null)
             me.selectedPhraseSlot.deselect();
 
-        me.setActivePhrase(phrase.hardClone());
+        me.writeActivePhrase(phrase.hardClone());
         me.selectedPhraseSlot = this;
         me.draggingPhraseSlot = dragAction;
     }

@@ -450,8 +450,6 @@ public class MusicPlayer : MonoBehaviour
         if (state != STATE.PAUSE) pauseStart = Time.time;
         state = STATE.PAUSE;
         TrackPlayer.sing.audio.Stop();
-
-        Debug.Log("Pausing");
     }
 
     public void unpause()
@@ -507,20 +505,13 @@ public class MusicPlayer : MonoBehaviour
 
     public void clearNotes()
     {
-        // Clear everything queued into the activemap
-        if (MapSerializer.sing.activeMap != null)
-            foreach (PhraseGroup grp in MapSerializer.sing.activeMap.groups)
-                foreach (Phrase p in grp.phrases)
-                {
-                    if (MapEditor.sing != null)
-                    {
-                        p.dumpToCache();
-                    }
-                    else
-                    {
-                        p.destroyNotes();
-                    }
-                }
+        // Dump every note to the cache
+        foreach (Note n in notes)
+        {
+            NotePooler.Instance.addToCache(n);
+        }
+
+        Debug.LogWarning("Notes: " + notes.Count);
 
         notes.Clear();
     }
@@ -592,9 +583,16 @@ public class MusicPlayer : MonoBehaviour
 
     public void removeNote(Note n)
     {
-        Destroy(n.gameObject);
+        n.remove();
         notes.Remove(n);
     }
+
+    public void recycleNote(Note n)
+    {
+        NotePooler.Instance.addToCache(n);
+        notes.Remove(n);
+    }
+
     private void processPhraseQueue()
     {
         List<Phrase> dump = new List<Phrase>();

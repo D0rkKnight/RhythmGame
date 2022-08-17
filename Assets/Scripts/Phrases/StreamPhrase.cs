@@ -18,7 +18,7 @@ public abstract class StreamPhrase : Phrase
 
     public override Note instantiateNote(MusicPlayer mp)
     {
-        return Object.Instantiate(mp.notePrefab).GetComponent<Note>();
+        return instantiateNote(mp.notePrefab);
     }
 
     public override void writeMetaFields(List<InputField> fields)

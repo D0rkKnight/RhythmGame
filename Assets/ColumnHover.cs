@@ -51,7 +51,7 @@ public class ColumnHover : MonoBehaviour, Clickable
             }
             p.beat = rBeat - me.dragBeatOffset;
 
-            me.setActivePhrase(p);
+            me.writeActivePhrase(p);
         }
 
         // If not dragging, do previz and set active phrase
@@ -63,7 +63,7 @@ public class ColumnHover : MonoBehaviour, Clickable
             p.lane = parent.colNum;
             p.beat = rBeat;
 
-            me.setActivePhrase(p);
+            me.writeActivePhrase(p);
         }
 
         return 1;

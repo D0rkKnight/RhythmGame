@@ -239,7 +239,7 @@ public class WorkspaceEditor : MonoBehaviour, Scrollable
         {
             Phrase newPhrase = MapEditor.sing.activePhrase.hardClone();
             newPhrase.beat = snapBeat;
-            MapEditor.sing.setActivePhrase(newPhrase);
+            MapEditor.sing.writeActivePhrase(newPhrase);
         }
 
         if (MapEditor.sing.draggingPhraseSlot)
@@ -251,7 +251,7 @@ public class WorkspaceEditor : MonoBehaviour, Scrollable
             {
                 Phrase slotP = slot.phrase.fullClone();
                 slotP.beat = snapBeat;
-                MapEditor.sing.setActivePhrase(slotP); // Copy back into active phrase which will propagate
+                MapEditor.sing.writeActivePhrase(slotP); // Copy back into active phrase which will propagate
 
                 // Requeue
                 slot.requeuePhrase();

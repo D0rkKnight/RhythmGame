@@ -29,7 +29,7 @@ class TogglePhrase : Phrase
 
     public override Note instantiateNote(MusicPlayer mp)
     {
-        return UnityEngine.Object.Instantiate(mp.togglePrefab);
+        return instantiateNote(mp.togglePrefab);
     }
 
     public override void configNote(MusicPlayer mp, Note nObj, int spawnLane, float spawnBeat, float blockFrame, float weight)

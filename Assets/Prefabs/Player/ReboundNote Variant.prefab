@@ -107,10 +107,12 @@ MonoBehaviour:
   beat: 0
   blockDur: 0
   weight: 0
-  lane: {fileID: 0}
+  col: {fileID: 0}
   dead: 0
   defaultColor: {r: 0.9882353, g: 1, b: 0.39215687, a: 1}
   deadColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+  hittable: 1
+  crossed: 0
   text: {fileID: 5457028050237446273}
   killDelay: 0.5
   lerpSpeed: 20
@@ -118,6 +120,7 @@ MonoBehaviour:
   noteBody: {fileID: 8853118979949323084}
   highlightRend: {fileID: 8660741088102464995}
   clickListener: {fileID: 8143779695780335649}
+  catName: Rebound
   reboundDelta: 1
   rebounds: 1
   currRebound: 0

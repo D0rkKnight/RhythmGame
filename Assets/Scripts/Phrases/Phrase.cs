@@ -27,10 +27,6 @@ public abstract class Phrase
     protected string[] meta;
     public static List<TypeEntry> typeTable = new List<TypeEntry>();
 
-    // Rasterization info
-    public List<Note> notes = new List<Note>();
-    public List<Note> nCache = new List<Note>();
-
     public struct TypeEntry
     {
         public char charCode;
@@ -92,10 +88,6 @@ public abstract class Phrase
 
         p.highlight = highlight;
         p.opacity = opacity;
-
-        // Copy over note cache
-        foreach (Note n in nCache)
-            p.nCache.Add(n);
 
         return p;
     }
@@ -339,7 +331,6 @@ public abstract class Phrase
 
         // Spawn note
         Note nObj = instantiator(mp);
-
         configNote(mp, nObj, spawnLane, spawnBeat, blockFrame, weight);
 
         List<Note> o = new List<Note>();
@@ -362,6 +353,7 @@ public abstract class Phrase
     // Returns whether the given note is alive after checks
     public virtual bool checkNoteCollisions(MusicPlayer mp, int lane_, float beat_, float blockDur_, float weight)
     {
+
         // Check for note collisions
         NoteColumn col = mp.columns[lane_];
 
@@ -374,7 +366,7 @@ public abstract class Phrase
                 collisions.Add(n);
             }
 
-            if (n.beat == beat_ && n.col == col)
+            else if (n.beat == beat_ && n.col == col)
             {
                 collisions.Add(n);
             }
@@ -401,9 +393,7 @@ public abstract class Phrase
                 foreach (Note n in collisions)
                 {
                     n.blocked();
-
-                    mp.notes.Remove(n);
-                    UnityEngine.Object.Destroy(n.gameObject);
+                    mp.recycleNote(n);
                 }
                 return true;
             } 
@@ -412,6 +402,7 @@ public abstract class Phrase
                 return false; // Not alive so don't instantiate the note
             }
         }
+
 
         return true;
     }
@@ -453,9 +444,22 @@ public abstract class Phrase
 
 
     public abstract Note instantiateNote(MusicPlayer mp);
+    public Note instantiateNote(Note prefab)
+    {
+        // Lookup cache
+        Note n = NotePooler.Instance.getFromCache(prefab.catName);
+        if (n != null)
+            return n;
+
+        UnityEngine.Debug.LogWarning("Forced instantiate");
+
+        return UnityEngine.Object.Instantiate(prefab);
+    }
 
     public virtual void configNote(MusicPlayer mp, Note nObj, int spawnLane, float spawnBeat, float blockFrame, float weight)
     {
+        nObj.resetInit(mp); // Also serves as an intializer
+
         nObj.col = mp.columns[spawnLane];
         nObj.beat = spawnBeat;
         nObj.weight = weight;
@@ -470,9 +474,6 @@ public abstract class Phrase
         nObj.highlightRend.color = highlight;
         nObj.Opacity = opacity;
 
-        nObj.resetInit(mp); // Also serves as an intializer
-
-        notes.Add(nObj); // Put into phrase note listing as well
         mp.addNote(nObj);
     }
 
@@ -552,29 +553,6 @@ public abstract class Phrase
             return false;
 
         return true;
-    }
-
-    // Dumps note listing into cache
-    public void dumpToCache()
-    {
-        foreach (Note n in notes)
-        {
-            nCache.Add(n);
-            n.gameObject.SetActive(false);
-        }
-
-        notes.Clear();
-    }
-
-    // Destroys children notes as well 
-    public void destroyNotes()
-    {
-        foreach (Note n in notes)
-            GameObject.Destroy(n.gameObject);
-
-
-        foreach (Note n in nCache)
-            GameObject.Destroy(n.gameObject);
     }
 }
 

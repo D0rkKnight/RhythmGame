@@ -55,6 +55,7 @@ MonoBehaviour:
   defaultColor: {r: 0, g: 1, b: 1, a: 1}
   deadColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
   hittable: 0
+  crossed: 0
   text: {fileID: 2212444277903502456}
   killDelay: 1
   lerpSpeed: 3
@@ -62,6 +63,7 @@ MonoBehaviour:
   noteBody: {fileID: 3446367032341403573}
   highlightRend: {fileID: 3260129363438094618}
   clickListener: {fileID: 2597424955619599576}
+  catName: Toggle
   label: {fileID: 9033054896152080257}
   node: 0
   val: 0

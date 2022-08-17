@@ -17,7 +17,7 @@ public class ReboundPhrase : Phrase
     // Core instantiator used by default spawner
     public override Note instantiateNote(MusicPlayer mp)
     {
-        ReboundNote note = Object.Instantiate(mp.reboundPrefab).GetComponent<ReboundNote>();
+        ReboundNote note = (ReboundNote) instantiateNote(mp.reboundPrefab);
         note.reboundDelta = reboundBeatDist * mp.beatInterval;
         note.rebounds = times;
 
@@ -39,7 +39,7 @@ public class ReboundPhrase : Phrase
                 base.spawn(mp, spawnLane, spawnBeat + i * reboundBeatDist, blockFrame, weight, 
                     (MusicPlayer mp) =>
                 {
-                    return Object.Instantiate(mp.notePrefab).GetComponent<Note>();
+                    return instantiateNote(mp.notePrefab);
                 });
             }
             return null;
@@ -62,7 +62,8 @@ public class ReboundPhrase : Phrase
             base.spawn(mp, spawnLane, ghostBeat, blockFrame, weight,
                 (MusicPlayer mp) =>
                 {
-                    GhostNote ghost = Object.Instantiate(mp.ghostPrefab);
+                    GhostNote ghost = (GhostNote) instantiateNote(mp.ghostPrefab);
+
                     ghost.parent = reboundN;
                     reboundN.ghosts.Add(ghost);
 

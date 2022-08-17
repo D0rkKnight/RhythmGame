@@ -107,10 +107,12 @@ MonoBehaviour:
   beat: 0
   blockDur: 0
   weight: 0
-  lane: {fileID: 0}
+  col: {fileID: 0}
   dead: 0
   defaultColor: {r: 0, g: 1, b: 1, a: 1}
   deadColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+  hittable: 1
+  crossed: 0
   text: {fileID: 6437706858258441740}
   killDelay: 0.5
   lerpSpeed: 20
@@ -118,6 +120,7 @@ MonoBehaviour:
   noteBody: {fileID: 7507657329480572353}
   highlightRend: {fileID: 7700368645705417582}
   clickListener: {fileID: 7199164680977215148}
+  catName: Note
 --- !u!1 &1196107105503589299
 GameObject:
   m_ObjectHideFlags: 0
@@ -570,6 +573,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   parent: {fileID: 0}
+  parSlot: {fileID: 0}
 --- !u!61 &2129330496974578008
 BoxCollider2D:
   m_ObjectHideFlags: 0

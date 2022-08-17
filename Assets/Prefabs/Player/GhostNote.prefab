@@ -247,10 +247,12 @@ MonoBehaviour:
   beat: 0
   blockDur: 0
   weight: 0
-  lane: {fileID: 0}
+  col: {fileID: 0}
   dead: 0
   defaultColor: {r: 1, g: 1, b: 1, a: 1}
   deadColor: {r: 1, g: 1, b: 1, a: 1}
+  hittable: 1
+  crossed: 0
   text: {fileID: 1467474262138482498}
   killDelay: 1
   lerpSpeed: 3
@@ -258,6 +260,7 @@ MonoBehaviour:
   noteBody: {fileID: 2682560740372632719}
   highlightRend: {fileID: 2871014163752028704}
   clickListener: {fileID: 3378335744928163810}
+  catName: Ghost
   parent: {fileID: 0}
 --- !u!4 &8142263935326153491 stripped
 Transform:
