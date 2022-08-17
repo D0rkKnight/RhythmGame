@@ -163,6 +163,8 @@ public class GameManager : MonoBehaviour
                         case "active":
                             if (MapEditor.sing != null && toks.Length >= 2)
                             {
+                                Debug.Log("Preloaded " + toks[1]);
+
                                 MapEditor.sing.importField.text = toks[1];
                             }
 
@@ -203,7 +205,9 @@ public class GameManager : MonoBehaviour
             Timeliner.sing.Stage = _stage;
         }
 
-        ((MainSkillTree)SkillTree.sing).Tokens = _tokens;
+        // Maybe delegate this load action to the skilltree class
+        if (SkillTree.sing is MainSkillTree)
+            ((MainSkillTree)SkillTree.sing).Tokens = _tokens;
 
         // Recompile (activates heat mechanic)
         SkillTree.sing.compile();
