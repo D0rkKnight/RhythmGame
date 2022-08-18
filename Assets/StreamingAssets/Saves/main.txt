@@ -1,4 +1,6 @@
 stage: 2
+tokens: 0
+heat: 0
 
 nodes
 0
@@ -26,4 +28,6 @@ nodes
 1
 
 editor
-active: Allegretto_Town.txt
+active:
+
+
