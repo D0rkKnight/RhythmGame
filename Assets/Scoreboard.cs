@@ -35,8 +35,12 @@ public class Scoreboard : MonoBehaviour
         if (l != null)
         {
             string o = "";
-            foreach (int score in l.scores)
-                o = score + "\n" + o;
+            for (int i = l.scores.Count-1; i >= 0; i--)
+            {
+                o += l.scores[i];
+                if (i == 0 && GameManager.sing.wasHighscore) o += " Highscore!";
+                o += "\n";
+            }
 
             scores.text = o;
         }

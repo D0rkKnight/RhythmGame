@@ -29,6 +29,7 @@ public class SaveSelectButton : MonoBehaviour, Clickable
         {
             string fpath = Path.Combine(Application.streamingAssetsPath, "Saves", save + ".txt");
             File.Delete(fpath);
+            File.Delete(fpath+".meta"); // Delete meta file as well
         });
     }
 

@@ -25,6 +25,7 @@ public class GameManager : MonoBehaviour
 
     public List<Ledger> highscores = new List<Ledger>();
     public int maxHighscores = 5;
+    public bool wasHighscore = false;
 
     public string[] mapList;
     public List<string> mapQueue = new List<string>();
@@ -279,6 +280,11 @@ public class GameManager : MonoBehaviour
             led = new Ledger(songname, new List<int>());
             highscores.Add(led);
         }
+
+        // Check against last score since that should be highest
+        // Or set to true if no prior scores
+        wasHighscore = led.scores.Count == 0 ||
+            score > led.scores[led.scores.Count - 1];
 
         led.scores.Add(score);
         led.scores.Sort();
