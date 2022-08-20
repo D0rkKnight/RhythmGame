@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.IO;
 
 public class Timeliner : MonoBehaviour
 {
@@ -36,18 +37,15 @@ public class Timeliner : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        string activeProfile = "main";
+        string activeProfile = GameManager.activeSave;
+        string fpath = Path.Combine(Application.streamingAssetsPath, "Saves", activeProfile + ".txt");
 
-        if (newStart)
+        if (!File.Exists(fpath))
         {
-            cloak.SetActive(true); // Turn on cloak to begin with
-
-            activeProfile = "new";
+            // Copy main.txt
+            string mainPath = Path.Combine(Application.streamingAssetsPath, "Saves", "main.txt");
+            File.Copy(mainPath, fpath);
         }
-
-        if (forceProfile.Length > 0)
-            activeProfile = forceProfile;
-
         string saveData = GameManager.getSave(activeProfile);
 
         // Boot up skilltree and musicplayer

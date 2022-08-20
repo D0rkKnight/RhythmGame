@@ -17,7 +17,10 @@ public class GameManager : MonoBehaviour
     public GameObject activePanel = null;
 
     public string forceSave = "";
-    public string activeSave = "";
+
+    [SerializeField] 
+    public static string activeSave = "";
+
     public bool saveOnInter = true;
 
     public List<Ledger> highscores = new List<Ledger>();
@@ -92,7 +95,7 @@ public class GameManager : MonoBehaviour
         string data = reader.ReadToEnd();
         reader.Close();
 
-        sing.activeSave = name;
+        activeSave = name;
 
         return data;
     }
@@ -258,7 +261,7 @@ public class GameManager : MonoBehaviour
 
     public static void writeSave()
     {
-        writeSave(sing.activeSave);
+        writeSave(activeSave);
     }
 
     public void addScore(string songname, int score)

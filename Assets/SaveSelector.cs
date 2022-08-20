@@ -5,31 +5,46 @@ using System.IO;
 
 public class SaveSelector : MonoBehaviour
 {
-    public List<CustomButton> saveSlots;
+    public List<SaveSelectButton> saveSlots;
 
     // Start is called before the first frame update
     void Start()
     {
+        foreach (var slot in saveSlots)
+            slot.delBut.onClick.AddListener(() =>
+            {
+                updateSaveUI();
+            });
+
         // Write data to saveslots
+        updateSaveUI();
 
-        for (int i=0; i<saveSlots.Count; i++)
-        {
-            string fpath = Path.Combine(Application.streamingAssetsPath, "Saves", "save" + (i+1) + ".txt");
-            CustomButton but = saveSlots[i];
-
-            if (File.Exists(fpath))
-            {
-                but.txt.text = "Save " + (i+1);
-            } else
-            {
-                but.txt.text = "New Save";
-            }
-        }
     }
 
     // Update is called once per frame
     void Update()
     {
         
+    }
+
+    public void updateSaveUI()
+    {
+        for (int i = 0; i < saveSlots.Count; i++)
+        {
+            string saveName = "save" + (i + 1);
+            string fpath = Path.Combine(Application.streamingAssetsPath, "Saves", saveName + ".txt");
+            SaveSelectButton but = saveSlots[i];
+
+            if (File.Exists(fpath))
+            {
+                but.custBut.txt.text = "Save " + (i + 1);
+            }
+            else
+            {
+                but.custBut.txt.text = "New Save";
+            }
+
+            but.save = saveName;
+        }
     }
 }
