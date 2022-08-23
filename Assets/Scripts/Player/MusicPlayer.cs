@@ -511,8 +511,6 @@ public class MusicPlayer : MonoBehaviour
             NotePooler.Instance.addToCache(n);
         }
 
-        Debug.LogWarning("Notes: " + notes.Count);
-
         notes.Clear();
     }
 
@@ -577,18 +575,21 @@ public class MusicPlayer : MonoBehaviour
 
     public void addNote(Note n)
     {
+        n.inPlayer = true;
         notes.Add(n);
         n.ShowWeight = showNoteWeight;
     }
 
     public void removeNote(Note n)
     {
+        n.inPlayer = false;
         n.remove();
         notes.Remove(n);
     }
 
     public void recycleNote(Note n)
     {
+        n.inPlayer = false;
         NotePooler.Instance.addToCache(n);
         notes.Remove(n);
     }
@@ -717,5 +718,26 @@ public class MusicPlayer : MonoBehaviour
         SkillTree.sing.compile();
 
         return;
+    }
+
+    public void revise()
+    {
+        // Prep revision by marking notes as unresolved
+        foreach (Note n in notes)
+            n.resolved = false;
+
+        // Copy to a list cache
+        List<Note> ls = new List<Note>();
+        foreach (Note n in notes)
+            ls.Add(n);
+
+        foreach (Note n in ls)
+        {
+            if (!n.resolved && n.inPlayer)
+            {
+                n.onRevise();
+                n.resolved = true;
+            }
+        }
     }
 }

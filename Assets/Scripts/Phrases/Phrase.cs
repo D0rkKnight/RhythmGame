@@ -304,6 +304,9 @@ public abstract class Phrase
         {
             spawn(MusicPlayer.sing, mutLane, beat, blockFrame, weight);
         }
+
+        // Rasterization is complete, revise every note in the mplayer
+        MusicPlayer.sing.revise();
     }
 
     // Generates this phrase attached to the given music player
@@ -359,14 +362,21 @@ public abstract class Phrase
 
         List<Note> collisions = new List<Note>();
         foreach (Note n in mp.notes)
-        {   
-            // Check opposing note's tail and head
-            if (n.beat+n.blockDur >= beat_ && n.beat <= beat_ + blockDur_ && col == n.col)
-            {
-                collisions.Add(n);
-            }
+        {
+            // Check lane
+            bool rer = SkillTree.sing.getActive(SkillTree.NODE.FREE_LATERAL);
+            if (rer && col != n.col)
+                continue; // Skip note if this note only blocks in its own lane
 
-            else if (n.beat == beat_ && n.col == col)
+            // Check if note is not upstream or downstream
+            // Checks def reroute and lane ids since those persist regardless of reroute activation
+            else if (col != n.col && col.defNoteReroute != n.col.colNum && n.col.defNoteReroute != col.colNum)
+                continue;
+
+            // Check opposing note's tail and head
+            // And check if they are on the same beat
+            if ((n.beat+n.blockDur >= beat_ && n.beat <= beat_ + blockDur_) ||
+                n.beat == beat_)
             {
                 collisions.Add(n);
             }
@@ -458,8 +468,6 @@ public abstract class Phrase
 
     public virtual void configNote(MusicPlayer mp, Note nObj, int spawnLane, float spawnBeat, float blockFrame, float weight)
     {
-        nObj.resetInit(mp); // Also serves as an intializer
-
         nObj.col = mp.columns[spawnLane];
         nObj.beat = spawnBeat;
         nObj.weight = weight;
@@ -473,6 +481,8 @@ public abstract class Phrase
         // Setup visuals
         nObj.highlightRend.color = highlight;
         nObj.Opacity = opacity;
+
+        nObj.resetInit(mp); // Also serves as an initializer (expects above info as inputs)
 
         mp.addNote(nObj);
     }

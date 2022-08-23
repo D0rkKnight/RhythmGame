@@ -42,6 +42,7 @@ public class NotePooler : MonoBehaviour
         l.RemoveAt(l.Count - 1);
 
         n.gameObject.SetActive(true);
+        n.onRecycle();
 
         return n;
     }

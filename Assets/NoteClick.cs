@@ -18,11 +18,14 @@ public class NoteClick : MonoBehaviour, Clickable
         if (MapEditor.sing.InteractMode != MapEditor.MODE.EDIT)
             return 1;
 
+
         // If map editor is active, scour map editor for parent phrase
         foreach (BeatRow row in MapEditor.sing.workspace.rows)
         {
             foreach (BeatEditorSlot slot in row.slots)
             {
+                Debug.Log(parent.phrase);
+
                 if (slot.phrase.hardEquals(parent.phrase))
                 {
                     parSlot = slot;

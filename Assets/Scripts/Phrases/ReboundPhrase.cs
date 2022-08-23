@@ -5,8 +5,8 @@ using UnityEngine.UI;
 
 public class ReboundPhrase : Phrase
 {
-    float reboundBeatDist = 1.0f; // Distance of rebounded note (in beats)
-    int times = 1;
+    public float reboundBeatDist = 1.0f; // Distance of rebounded note (in beats)
+    public int times = 1;
 
     public ReboundPhrase(int lane_, float beat_, int accent_, string[] typeMeta_, float priority_) :
     base(lane_, beat_, accent_, TYPE.REBOUND, typeMeta_, 2, priority_)
@@ -22,6 +22,11 @@ public class ReboundPhrase : Phrase
         note.rebounds = times;
 
         return note;
+    }
+
+    public override void configNote(MusicPlayer mp, Note nObj, int spawnLane, float spawnBeat, float blockFrame, float weight)
+    {
+        base.configNote(mp, nObj, spawnLane, spawnBeat, blockFrame, weight);
     }
 
     public override float getBlockFrame()
@@ -45,27 +50,24 @@ public class ReboundPhrase : Phrase
             return null;
         }
 
-        List<Note> nList = base.spawn(mp, spawnLane, spawnBeat, blockFrame, weight);
-        if (nList == null) return null; // Failed to spawn
-
-        ReboundNote reboundN = (ReboundNote) nList[0];
-
         // Generates a sequence of ghosts
         // Ghosts also double as representatives of the rebound's future position
         // So they can block and be blocked
-        for (int i=0; i<times; i++)
+        GhostNote prev = null;
+        for (int i=0; i<times+1; i++)
         {
-            
-
-            float ghostBeat = spawnBeat + (i + 1) * reboundBeatDist;
+            float ghostBeat = spawnBeat + i * reboundBeatDist;
 
             base.spawn(mp, spawnLane, ghostBeat, blockFrame, weight,
                 (MusicPlayer mp) =>
                 {
                     GhostNote ghost = (GhostNote) instantiateNote(mp.ghostPrefab);
 
-                    ghost.parent = reboundN;
-                    reboundN.ghosts.Add(ghost);
+                    ghost.prev = prev;
+                    if (prev != null)
+                        prev.next = ghost;
+
+                    prev = ghost; // Advance prev pointer
 
                     return ghost;
                 });

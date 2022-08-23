@@ -11,8 +11,7 @@ public class ReboundNote : Note
 
     private float linearExtend = 0.2f;
     public float floatingHitTime;
-
-    public List<GhostNote> ghosts = new List<GhostNote>();
+    public bool swapOnRev = false; // Determines if the rebound note should be swapped with a reg note on revise
 
     public override void updateNote(MusicPlayer mp, List<Note> passed)
     {
@@ -84,8 +83,14 @@ public class ReboundNote : Note
     public override void resetInit(MusicPlayer mp)
     {
         base.resetInit(mp);
-
         onChange(mp);
+    }
+
+    public override void onRecycle()
+    {
+        base.onRecycle();
+
+        swapOnRev = false;
     }
 
     public override void onScroll(MusicPlayer mp)
@@ -118,30 +123,15 @@ public class ReboundNote : Note
         return floatingHitTime;
     }
 
-    public override void childBlocked(Note child)
+    public override void onRevise()
     {
-        base.childBlocked(child);
+        base.onRevise();
 
-        GhostNote ghost = (GhostNote)child;
-
-        int reboundNum = ghosts.IndexOf(ghost);
-        if (reboundNum < 0) return; // Somehow there's a floating child out there
-
-        for (int i = ghosts.Count - 1; i >= reboundNum; i--)
+        if (swapOnRev)
         {
-            MusicPlayer.sing.recycleNote(ghosts[i]);
-            ghosts.RemoveAt(i);
-        }
-
-        rebounds = reboundNum; // Limit rebounds to before the blocked note
-
-        if (rebounds == 0)
-        {
-            // Swap with regular note
-            int laneInd = Array.IndexOf(MusicPlayer.sing.columns, col);
-            phrase.spawn(MusicPlayer.sing, laneInd, beat, blockDur, weight, (MusicPlayer mp) =>
+            phrase.spawn(MusicPlayer.sing, col.colNum, beat, blockDur, weight, (MusicPlayer mp) =>
             {
-                return phrase.instantiateNote(mp.notePrefab); // Request a swap from the parent phrase
+                return phrase.instantiateNote(mp.notePrefab);
             });
         }
     }

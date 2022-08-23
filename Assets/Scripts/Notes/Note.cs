@@ -27,7 +27,7 @@ public class Note : MonoBehaviour
 
     public bool hittable = true;
     public bool crossed = false; // Tracks whether the note has crossed the hitline
-
+    public bool resolved = false; // Marker for whether revision pass has reached this note
     public float Opacity
     {
         get { return noteBody.color.a; }
@@ -52,6 +52,7 @@ public class Note : MonoBehaviour
     public Phrase phrase = null;
 
     public string catName; // Used to sort prefabs into different recycling categories
+    public bool inPlayer = false; // Whether the note is in the musicplayer
 
     public void Start()
     {
@@ -151,7 +152,6 @@ public class Note : MonoBehaviour
     public virtual void resetInit(MusicPlayer mp)
     {
         dead = false;
-        phrase = null;
     }
 
     public virtual void onBeat(MusicPlayer mp)
@@ -179,12 +179,17 @@ public class Note : MonoBehaviour
 
     }
 
-    public virtual void childBlocked(Note child)
+    public virtual void onRevise()
     {
 
     }
 
     public virtual void onCross()
+    {
+
+    }
+
+    public virtual void onRecycle()
     {
 
     }
