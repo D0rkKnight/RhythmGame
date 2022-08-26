@@ -95,7 +95,7 @@ public class GhostNote : Note
 
         stable = true; // Stabilize this note aswell
 
-        GhostNote succ = n.next; // Grab the successor before delinking n fully
+        GhostNote succ = n.next; // Grab the successor before delinking n fully so n doesn't propagate a destabilizing signal
         if (prev != null)
             prev.next = null;
         if (next != null)
@@ -109,8 +109,6 @@ public class GhostNote : Note
             // Check if the trailing ghost note is still there - may have been destroyed during collision
             if (rebounds > 0 && succ != null)
             {
-                // Make sure to delink the note so it doesn't propagate a destabilizing signal
-
                 ReboundNote reb = (ReboundNote) phrase.instantiateNote(mp.reboundPrefab);
                 reb.rebounds = rebounds;
                 reb.reboundDelta = ((ReboundPhrase)phrase).reboundBeatDist * mp.beatInterval;
@@ -118,9 +116,6 @@ public class GhostNote : Note
                 // Link it up (succ has to exist)
                 succ.reb = reb;
                 reb.next = succ;
-
-                // Search for number of rebounds
-                Debug.Log("Rebounds after instantiation " + rebounds);
 
                 return reb;
             } else
