@@ -12,6 +12,7 @@ public class ReboundNote : Note
     private float linearExtend = 0.2f;
     public float floatingHitTime;
     public bool swapOnRev = false; // Determines if the rebound note should be swapped with a reg note on revise
+    public GhostNote next = null;
 
     public override void updateNote(MusicPlayer mp, List<Note> passed)
     {
@@ -80,9 +81,9 @@ public class ReboundNote : Note
             base.hit(out remove);
     }
 
-    public override void resetInit(MusicPlayer mp)
+    public override void resetEnv(MusicPlayer mp)
     {
-        base.resetInit(mp);
+        base.resetEnv(mp);
         onChange(mp);
     }
 
@@ -91,6 +92,7 @@ public class ReboundNote : Note
         base.onRecycle();
 
         swapOnRev = false;
+        next = null;
     }
 
     public override void onScroll(MusicPlayer mp)
@@ -134,5 +136,20 @@ public class ReboundNote : Note
                 return phrase.instantiateNote(mp.notePrefab);
             });
         }
+    }
+
+    public void calcRebounds()
+    {
+        // Count the number of next notes still linked for num of rebounds
+        rebounds = 0;
+        GhostNote n = next;
+
+        while (n != null)
+        {
+            n = n.next;
+            rebounds++;
+        }
+
+        onChange(MusicPlayer.sing);
     }
 }

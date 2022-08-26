@@ -149,7 +149,7 @@ public class Note : MonoBehaviour
         return 0;
     }
 
-    public virtual void resetInit(MusicPlayer mp)
+    public virtual void resetEnv(MusicPlayer mp)
     {
         dead = false;
     }

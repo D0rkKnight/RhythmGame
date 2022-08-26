@@ -363,7 +363,7 @@ public class MusicPlayer : MonoBehaviour
             if (n.dead && n.getHitTime() > songTime)
             {
                 n.dead = false;
-                n.resetInit(this);
+                n.resetEnv(this);
             }
         }
     }

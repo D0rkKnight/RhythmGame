@@ -24,9 +24,9 @@ public class HoldNote : Note
         return holdBeats * mp.beatInterval;
     }
 
-    public override void resetInit(MusicPlayer mp)
+    public override void resetEnv(MusicPlayer mp)
     {
-        base.resetInit(mp);
+        base.resetEnv(mp);
 
         held = false;
     }

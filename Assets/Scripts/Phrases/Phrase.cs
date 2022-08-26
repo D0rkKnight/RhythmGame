@@ -461,8 +461,6 @@ public abstract class Phrase
         if (n != null)
             return n;
 
-        UnityEngine.Debug.LogWarning("Forced instantiate");
-
         return UnityEngine.Object.Instantiate(prefab);
     }
 
@@ -482,7 +480,7 @@ public abstract class Phrase
         nObj.highlightRend.color = highlight;
         nObj.Opacity = opacity;
 
-        nObj.resetInit(mp); // Also serves as an initializer (expects above info as inputs)
+        nObj.resetEnv(mp); // Also serves as an initializer (expects above info as inputs)
 
         mp.addNote(nObj);
     }

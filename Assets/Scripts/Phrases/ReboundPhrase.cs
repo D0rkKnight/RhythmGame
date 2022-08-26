@@ -17,11 +17,13 @@ public class ReboundPhrase : Phrase
     // Core instantiator used by default spawner
     public override Note instantiateNote(MusicPlayer mp)
     {
-        ReboundNote note = (ReboundNote) instantiateNote(mp.reboundPrefab);
+        throw new System.Exception("Rebound note creation supposed to be post rasterization");
+
+        /*ReboundNote note = (ReboundNote) instantiateNote(mp.reboundPrefab);
         note.reboundDelta = reboundBeatDist * mp.beatInterval;
         note.rebounds = times;
 
-        return note;
+        return note;*/
     }
 
     public override void configNote(MusicPlayer mp, Note nObj, int spawnLane, float spawnBeat, float blockFrame, float weight)
@@ -63,9 +65,12 @@ public class ReboundPhrase : Phrase
                 {
                     GhostNote ghost = (GhostNote) instantiateNote(mp.ghostPrefab);
 
-                    ghost.prev = prev;
-                    if (prev != null)
+                    // Checks to see if prev was blocked by the curr note
+                    if (prev != null && prev.inPlayer)
+                    {
+                        ghost.prev = prev;
                         prev.next = ghost;
+                    }
 
                     prev = ghost; // Advance prev pointer
 
