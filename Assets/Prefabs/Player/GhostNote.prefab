@@ -251,8 +251,9 @@ MonoBehaviour:
   dead: 0
   defaultColor: {r: 1, g: 1, b: 1, a: 1}
   deadColor: {r: 1, g: 1, b: 1, a: 1}
-  hittable: 1
+  hittable: 0
   crossed: 0
+  resolved: 0
   text: {fileID: 1467474262138482498}
   killDelay: 1
   lerpSpeed: 3
@@ -261,7 +262,11 @@ MonoBehaviour:
   highlightRend: {fileID: 2871014163752028704}
   clickListener: {fileID: 3378335744928163810}
   catName: Ghost
-  parent: {fileID: 0}
+  inPlayer: 0
+  prev: {fileID: 0}
+  next: {fileID: 0}
+  stable: 0
+  reb: {fileID: 0}
 --- !u!4 &8142263935326153491 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4464740409688138333, guid: e914aa2c2b6a2394f93aaeb0038a55eb,

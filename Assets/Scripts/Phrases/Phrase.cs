@@ -319,6 +319,11 @@ public abstract class Phrase
     // Spawn accepts an instantiator override
     public virtual List<Note> spawn(MusicPlayer mp, int spawnLane, float spawnBeat, float blockFrame, float weight, Func<MusicPlayer, Note> instantiator)
     {
+        // Check if beat is too granular (with error thresh for floating point)
+        // Abs bc % doesn't work on negative values, and we are just looking for beat adjacency
+        if (Mathf.Abs(spawnBeat) % MapSerializer.sing.beatGran > 0.00001)
+            return null;
+
         // TODO: Use this check for all higher complexity phrases
         if (!noteValid(mp, spawnLane, spawnBeat, blockFrame))
         {

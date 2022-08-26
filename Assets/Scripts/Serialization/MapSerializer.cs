@@ -38,6 +38,9 @@ public partial class MapSerializer : MonoBehaviour
     // # of beats that notes block for
     public float noteBlockLen = 0.25f;
 
+    // Accepted beat granularity
+    public float beatGran = 0f;
+
     public static MapSerializer sing;
 
     private void Awake()

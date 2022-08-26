@@ -250,12 +250,12 @@ public class MusicPlayer : MonoBehaviour
                 {
                     if (Mathf.Abs(bestNote.getHitTime() - songTime) < hitWindow)
                     {
-                        addNoteScore();
-                        hit(bestNote);
-
                         // Check accuracy of hit
                         float delta = Mathf.Abs(bestNote.getHitTime() - songTime);
                         broadCastHitAcc(delta);
+
+                        addNoteScore();
+                        hit(bestNote);
                     }
 
                     // Check if its a miss since it's not a hit

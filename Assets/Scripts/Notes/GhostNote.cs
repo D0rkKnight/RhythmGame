@@ -126,4 +126,10 @@ public class GhostNote : Note
             }
         });
     }
+
+    public override bool checkMiss(MusicPlayer mp, float dt)
+    {
+        // Can't miss these
+        return false;
+    }
 }
