@@ -19,7 +19,7 @@ public class GameManager : MonoBehaviour
     public string forceSave = "";
 
     [SerializeField] 
-    public static string activeSave = "test.txt";
+    public static string activeSave = "test";
 
     public bool saveOnInter = true;
 

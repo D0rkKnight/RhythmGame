@@ -74,18 +74,22 @@ public class NoteColumn : MonoBehaviour
     {
         Key = Key; // Update graphics
 
-        // Load in beat lines
-        float stackHeight = bg.transform.localScale.y;
-        float stackDist = MusicPlayer.sing.beatInterval * MusicPlayer.sing.travelSpeed;
-
-        for (float alt=0; alt<=stackHeight; alt += stackDist)
+        // Only do beatlines in the editor
+        if (MapEditor.sing != null)
         {
-            Transform line = Instantiate(beatLinePrefab, transform);
-            beatLines.Add(line);
+            // Load in beat lines
+            float stackHeight = bg.transform.localScale.y;
+            float stackDist = MusicPlayer.sing.beatInterval * MusicPlayer.sing.travelSpeed;
 
-            line.Find("Canvas/BeatMarker").gameObject.SetActive(showBeat);
+            for (float alt = 0; alt <= stackHeight; alt += stackDist)
+            {
+                Transform line = Instantiate(beatLinePrefab, transform);
+                beatLines.Add(line);
+
+                line.Find("Canvas/BeatMarker").gameObject.SetActive(showBeat);
+            }
+            updateLines();
         }
-        updateLines();
     }
 
     // Update is called once per frame
