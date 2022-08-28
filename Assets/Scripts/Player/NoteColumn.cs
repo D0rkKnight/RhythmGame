@@ -19,7 +19,7 @@ public class NoteColumn : MonoBehaviour
     public Transform beatLinePrefab;
     public List<Transform> beatLines = new List<Transform>();
     public bool showBeat = false;
-
+    public bool latCrowd = false;
     public KeyCode Key
     {
         get { return GameManager.sing.colKeys[colNum];  }

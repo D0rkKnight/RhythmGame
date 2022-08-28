@@ -370,9 +370,8 @@ public abstract class Phrase
         List<Note> collisions = new List<Note>();
         foreach (Note n in mp.notes)
         {
-            // Check lane
-            bool rer = SkillTree.sing.getActive(SkillTree.NODE.FREE_LATERAL);
-            if (rer && col != n.col)
+            // Check lane;
+            if (!col.latCrowd && col != n.col)
                 continue; // Skip note if this note only blocks in its own lane
 
             // Check if note is not upstream or downstream

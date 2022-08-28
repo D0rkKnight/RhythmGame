@@ -197,7 +197,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cloak: {fileID: 630751028}
   newStart: 0
-  forceProfile: save1
 --- !u!4 &504201493
 Transform:
   m_ObjectHideFlags: 0
@@ -1267,61 +1266,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 504201493}
     m_Modifications:
-    - target: {fileID: 2487532530350811626, guid: 4b410983daa7d1640bfc1b88d4bdc2f9,
-        type: 3}
-      propertyPath: m_Pivot.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2487532530350811626, guid: 4b410983daa7d1640bfc1b88d4bdc2f9,
-        type: 3}
-      propertyPath: m_AnchorMax.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2487532530350811626, guid: 4b410983daa7d1640bfc1b88d4bdc2f9,
-        type: 3}
-      propertyPath: m_AnchorMin.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2487532530350811626, guid: 4b410983daa7d1640bfc1b88d4bdc2f9,
-        type: 3}
-      propertyPath: m_SizeDelta.x
-      value: 114.160034
-      objectReference: {fileID: 0}
-    - target: {fileID: 2487532530350811626, guid: 4b410983daa7d1640bfc1b88d4bdc2f9,
-        type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 89.99996
-      objectReference: {fileID: 0}
-    - target: {fileID: 2487532530350811626, guid: 4b410983daa7d1640bfc1b88d4bdc2f9,
-        type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: 300.3
-      objectReference: {fileID: 0}
-    - target: {fileID: 2487532530350811626, guid: 4b410983daa7d1640bfc1b88d4bdc2f9,
-        type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: -120
-      objectReference: {fileID: 0}
-    - target: {fileID: 4319359636817344423, guid: 4b410983daa7d1640bfc1b88d4bdc2f9,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 5365092799155926862, guid: 4b410983daa7d1640bfc1b88d4bdc2f9,
         type: 3}
       propertyPath: m_Camera
       value: 
       objectReference: {fileID: 705287535}
-    - target: {fileID: 5365092799155926863, guid: 4b410983daa7d1640bfc1b88d4bdc2f9,
-        type: 3}
-      propertyPath: m_UiScaleMode
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5365092799155926863, guid: 4b410983daa7d1640bfc1b88d4bdc2f9,
-        type: 3}
-      propertyPath: m_ReferenceResolution.x
-      value: 1024
-      objectReference: {fileID: 0}
     - target: {fileID: 5365092800069189188, guid: 4b410983daa7d1640bfc1b88d4bdc2f9,
         type: 3}
       propertyPath: m_RootOrder

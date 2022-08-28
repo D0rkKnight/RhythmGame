@@ -7,9 +7,10 @@ public class SkillTree : MonoBehaviour
 {
     public enum NODE
     {
-        L_EXPAND, R_EXPAND, ACCENT_1, ACCENT_2, ACCENT_3, HOLD, L_REROUTE, R_REROUTE, QUANT_1, QUANT_2, QUANT_3,
-        CORE_L, CORE_R, SKILLTREE, AUD_VIZ, SCORE, COMBO, HEAT, REBOUND, FREE_LATERAL, 
-        EIGHTH_NOTES, SIXTEENTH_NOTES, FREE_BEAT_GRAN,
+        L_EXPAND, R_EXPAND, ACCENT_1, ACCENT_2, ACCENT_3, HOLD, L_REROUTE, R_REROUTE, QUANT_1, QUANT_2, QUANT_3, // 0-10
+        CORE_L, CORE_R, SKILLTREE, AUD_VIZ, SCORE, COMBO, HEAT, REBOUND, // 11-18
+        L_DENSITY, R_DENSITY, // 19-20
+        EIGHTH_NOTES, SIXTEENTH_NOTES, FREE_BEAT_GRAN, // 21-23
         SENTINEL,
     }
 
@@ -125,6 +126,11 @@ public class SkillTree : MonoBehaviour
         if (getActive(NODE.EIGHTH_NOTES)) ns.beatGran = 0.125f;
         if (getActive(NODE.SIXTEENTH_NOTES)) ns.beatGran = 0.0625f;
         if (getActive(NODE.FREE_BEAT_GRAN)) ns.beatGran = 0f;
+
+        mp.columns[0].latCrowd = !getActive(NODE.L_DENSITY);
+        mp.columns[1].latCrowd = !getActive(NODE.L_DENSITY);
+        mp.columns[2].latCrowd = !getActive(NODE.R_DENSITY);
+        mp.columns[3].latCrowd = !getActive(NODE.R_DENSITY);
     }
 
     public bool getActive(NODE n)

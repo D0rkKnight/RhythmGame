@@ -8,41 +8,27 @@ nodes
 0
 0
 0
-1
+0
 1
 1
 0
 0
 0
-1
-1
-1
 1
 1
 1
 1
-0
 1
 0
 0
 0
 0
 0
-0
-0
-0
+1
 0
 0
 
 editor
-active: 
-
-highscores
-Allegretto_Town
-1600
-11600
-
-rhythm_1
-3310
+active: Pendulum.txt
 
 

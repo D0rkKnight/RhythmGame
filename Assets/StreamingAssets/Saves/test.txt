@@ -1,18 +1,12 @@
 stage: 2
-tokens: 17
-heat: 50
+tokens: 88164
+heat: 100
 
 nodes
-0
-0
-0
-0
-0
 1
 1
 1
-0
-0
+1
 0
 1
 1
@@ -21,12 +15,18 @@ nodes
 1
 1
 1
-0
-0
-0
-0
-0
-0
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
 0
 0
 0
@@ -38,10 +38,10 @@ editor
 active: 
 
 highscores
+Pendulum
+32200
+
 Allegretto_Town
-5600
-5600
-10300
-11600
+57400
 
 
