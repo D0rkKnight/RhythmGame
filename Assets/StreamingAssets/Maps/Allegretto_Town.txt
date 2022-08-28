@@ -2,6 +2,7 @@ mapname: Allegretto_Town
 track: Allegretto_Town2_3.wav
 bpm: 100
 offset: 0
+xtime: 1
 
 streamstart
 Main

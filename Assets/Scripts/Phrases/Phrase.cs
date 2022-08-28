@@ -274,7 +274,7 @@ public abstract class Phrase
         }
 
         // Get block frame
-        float blockFrame = getBlockFrame();
+        float blockFrame = getBlockFrame() * (float) Math.Pow(2.0f, ownerMap.xtime);
         float weight = priority + accent; // Weight is based off of raw accent
 
 
@@ -321,7 +321,9 @@ public abstract class Phrase
     {
         // Check if beat is too granular (with error thresh for floating point)
         // Abs bc % doesn't work on negative values, and we are just looking for beat adjacency
-        if (Mathf.Abs(spawnBeat) % MapSerializer.sing.beatGran > 0.00001)
+        // If a song is playing in double time, we require the beats to be converted to single time for granularity checks
+        float trueBeat = spawnBeat / (float)Mathf.Pow(2, ownerMap.xtime);
+        if (Mathf.Abs(trueBeat) % MapSerializer.sing.beatGran > 0.00001)
             return null;
 
         // TODO: Use this check for all higher complexity phrases

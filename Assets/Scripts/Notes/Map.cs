@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+
+// Todo: move map serializer to here
 public partial class Map
 {
     public string name;
@@ -8,6 +10,7 @@ public partial class Map
     public float offset; // In beats
 
     public List<PhraseGroup> groups;
+    public int xtime = 0; // Power representing double/single/halftime tempo
 
     // Map is populated after creation
     public Map()
@@ -15,12 +18,13 @@ public partial class Map
         groups = new List<PhraseGroup>();
     }
 
-    public Map(string name_, string trackName_, int bpm_, float offset_, List<PhraseGroup> groups_)
+    public Map(string name_, string trackName_, int bpm_, float offset_, int xtime_, List<PhraseGroup> groups_)
     {
         name = name_;
         trackName = trackName_;
         bpm = bpm_;
         offset = offset_;
+        xtime = xtime_;
 
         // Dupe groups but not phrases
         // (since groups have little initialization overhead and phrase previz writes to the group)
@@ -40,7 +44,7 @@ public partial class Map
 
     public Map copy()
     {
-        Map map = new Map(name, trackName, bpm, offset, new List<PhraseGroup>());
+        Map map = new Map(name, trackName, bpm, offset, xtime, new List<PhraseGroup>());
 
         // Go through groups and link them properly
         foreach (PhraseGroup gp in groups)

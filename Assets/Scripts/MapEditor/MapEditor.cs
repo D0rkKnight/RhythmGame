@@ -28,8 +28,10 @@ public class MapEditor : MonoBehaviour
 
     public InputField BPMField;
     public TMP_InputField trackOffsetField;
+    public TMP_InputField xTimeField;
     public float bpm;
     public float trackOffset;
+    public int xTime;
 
     public TMP_Dropdown typeDropdown;
     private bool blockTypeUpdate = false;
@@ -206,6 +208,13 @@ public class MapEditor : MonoBehaviour
             queueHotswap();
             queueImage();
         }
+        if (int.TryParse(xTimeField.text, out int tryXTime)
+            && tryXTime != xTime)
+        {
+            xTime = tryXTime;
+            queueHotswap();
+            queueImage();
+        }
 
         // Display active phrase
         if (activePhrase != null) 
@@ -281,7 +290,7 @@ public class MapEditor : MonoBehaviour
         Debug.Log("Hotswap commencing");
 
         // Pipe the data directly
-        Map map = new Map(songTitleField.text+"_hotswap", audioFileField.text, (int) bpm, trackOffset, groups);
+        Map map = new Map(songTitleField.text+"_hotswap", audioFileField.text, (int) bpm, trackOffset, xTime, groups);
 
         // Tack on hovered item
         if (loadActivePhrase)
@@ -337,6 +346,7 @@ public class MapEditor : MonoBehaviour
         data.Add("track: " + track);
         data.Add("bpm: " + bpm);
         data.Add("offset: " + trackOffset);
+        data.Add("xtime: " + xTime); // Use 0 as default for now
 
         data.Add("\nstreamstart");
 
@@ -394,6 +404,7 @@ public class MapEditor : MonoBehaviour
         audioFileField.text = map.trackName;
         BPMField.text = map.bpm.ToString();
         trackOffsetField.text = map.offset.ToString();
+        xTimeField.text = map.xtime.ToString();
 
         edited = true;
     }

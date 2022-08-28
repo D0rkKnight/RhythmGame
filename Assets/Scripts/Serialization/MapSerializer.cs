@@ -208,6 +208,9 @@ public partial class MapSerializer : MonoBehaviour
                 case "offset":
                     map.offset = float.Parse(value);
                     break;
+                case "xtime":
+                    map.xtime = int.Parse(value);
+                    break;
                 case "":
                     break;
                 default:

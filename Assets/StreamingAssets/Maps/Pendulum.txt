@@ -2,6 +2,7 @@ mapname: Pendulum
 track: pendulum2.wav
 bpm: 60
 offset: 0
+xtime: 0
 
 streamstart
 Main

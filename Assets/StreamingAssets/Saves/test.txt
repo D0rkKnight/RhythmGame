@@ -1,6 +1,6 @@
 stage: 2
-tokens: 10
-heat: 0
+tokens: 17
+heat: 50
 
 nodes
 0
@@ -8,19 +8,19 @@ nodes
 0
 0
 0
-0
-1
-1
-0
-0
-0
-1
-1
 1
 1
 1
 0
 0
+0
+1
+1
+1
+1
+1
+1
+1
 0
 0
 0
@@ -39,6 +39,9 @@ active:
 
 highscores
 Allegretto_Town
+5600
+5600
 10300
+11600
 
 
