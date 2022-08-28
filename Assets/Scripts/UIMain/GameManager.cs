@@ -19,7 +19,7 @@ public class GameManager : MonoBehaviour
     public string forceSave = "";
 
     [SerializeField] 
-    public static string activeSave = "";
+    public static string activeSave = "test.txt";
 
     public bool saveOnInter = true;
 
@@ -153,8 +153,14 @@ public class GameManager : MonoBehaviour
                     if (_node < (int)SkillTree.NODE.SENTINEL)
                     { // Check bounds
 
-                        SkillTree.sing.purchasedFlags[_node] = int.Parse(line) > 0;
-                        _node++;
+                        bool succ = int.TryParse(line, out int val);
+
+                        // If can't parse, just skip
+                        if (succ)
+                        {
+                            SkillTree.sing.purchasedFlags[_node] = val > 0;
+                            _node++;
+                        }
                     }
 
                     if (line.Equals("editor"))

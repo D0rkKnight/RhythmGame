@@ -11,7 +11,6 @@ public class Timeliner : MonoBehaviour
 
     // Config
     public bool newStart = true;
-    public string forceProfile = "";
     private int stage = 0;
     public int Stage
     {
@@ -46,6 +45,7 @@ public class Timeliner : MonoBehaviour
             string mainPath = Path.Combine(Application.streamingAssetsPath, "Saves", "main.txt");
             File.Copy(mainPath, fpath);
         }
+
         string saveData = GameManager.getSave(activeProfile);
 
         // Boot up skilltree and musicplayer
