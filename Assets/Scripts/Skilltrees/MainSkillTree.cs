@@ -148,6 +148,8 @@ public class MainSkillTree : SkillTree
             pulsing = false;
 
         firstSkillNode.btn.pulsing = pulsing;
+
+        regenLines(); // Redundancy
     }
 
     protected override void setActiveFlags()
@@ -244,6 +246,8 @@ public class MainSkillTree : SkillTree
 
     private void regenLines()
     {
+        // Might want to optimize if this ever becomes an issue
+
         // Clear old lines
         foreach (LineRenderer lr in lineRends) Destroy(lr);
         lineRends.Clear();

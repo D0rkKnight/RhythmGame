@@ -5,9 +5,16 @@ using System.IO;
 
 public class Timeliner : MonoBehaviour
 {
-
     public GameObject cloak;
     private Animator anim;
+
+    public bool mpCentered = false;
+    public Transform mpCenteredMarker;
+    public Transform mpOffsetMarker;
+    public float mpLerpSpeed = 4f;
+
+    public Transform stCenteredMarker;
+    public Transform stOffsetMarker;
 
     // Config
     public bool newStart = true;
@@ -56,5 +63,16 @@ public class Timeliner : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+
+        // State animator for music player
+        Transform mpLerpMarker = mpCentered ? mpCenteredMarker : mpOffsetMarker;
+        MusicPlayer.sing.transform.position = Vector3.Lerp(
+            MusicPlayer.sing.transform.position, mpLerpMarker.transform.position, mpLerpSpeed * Time.deltaTime);
+
+        Transform stLerpMarker = !mpCentered ? stCenteredMarker : stOffsetMarker;
+        Vector3 newSTPos = Vector3.Lerp(
+            SkillTree.sing.transform.position, stLerpMarker.transform.position, mpLerpSpeed * Time.deltaTime);
+        SkillTree.sing.transform.position = newSTPos;
     }
+
 }
