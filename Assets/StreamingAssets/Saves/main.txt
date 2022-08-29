@@ -31,4 +31,11 @@ nodes
 editor
 active: Pendulum.txt
 
+highscores
 
+keybinds
+D
+F
+J
+K
+P

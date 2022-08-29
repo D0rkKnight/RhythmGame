@@ -13,6 +13,11 @@ public class InputManager : MonoBehaviour
 
     public static bool[] banList;
 
+    public enum BINDS
+    {
+        COL1, COL2, COL3, COL4, PAUSE, SENTINEL
+    }
+
     private void Awake()
     {
         if (sing != null) Debug.LogError("Singleton broken");

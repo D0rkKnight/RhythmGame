@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using UnityEngine;
 using System.IO;
 
-// Prolly not necessary
 public class Save
 {
     public string name;
@@ -17,13 +16,14 @@ public class Save
     public string editorMap;
 
     public List<Ledger> highscores;
-    public Dictionary<string, KeyCode> keybinds;
+    public KeyCode[] keybinds;
 
     public Save(string name_)
     {
         name = name_;
 
         nodes = new bool[(int)SkillTree.NODE.SENTINEL];
+        keybinds = new KeyCode[(int)InputManager.BINDS.SENTINEL];
         highscores = new List<Ledger>();
     }
 
@@ -48,6 +48,13 @@ public class Save
             Ledger nl = new Ledger(l.name, new List<int>(l.scores));
             highscores.Add(nl);
         }
+
+        // Read keybinds
+        for (int i = 0; i <= (int)InputManager.BINDS.COL4 - (int)InputManager.BINDS.COL1; i++)
+        {
+            keybinds[(int)InputManager.BINDS.COL1 + i] = MusicPlayer.sing.columns[i].Key;
+        }
+        keybinds[(int)InputManager.BINDS.PAUSE] = MusicPlayer.sing.pauseKey;
     }
 
     public void readFromSave()
@@ -79,6 +86,13 @@ public class Save
             Ledger nl = new Ledger(l.name, new List<int>(l.scores));
             GameManager.sing.highscores.Add(nl);
         }
+
+        // Write keybinds
+        for(int i=0; i<=(int) InputManager.BINDS.COL4 - (int) InputManager.BINDS.COL1; i++)
+        {
+            MusicPlayer.sing.columns[i].Key = keybinds[(int)InputManager.BINDS.COL1 + i];
+        }
+        MusicPlayer.sing.pauseKey = keybinds[(int)InputManager.BINDS.PAUSE];
     }
 
     public void writeToDisk()
@@ -111,6 +125,14 @@ public class Save
             o += "\n";
         }
 
+        // Write keybinds
+        o += "\n";
+        o += "keybinds\n";
+        foreach (KeyCode c in keybinds)
+        {
+            o += c.ToString() + "\n";
+        }
+
         // Write to file
         string path = Application.streamingAssetsPath + "/Saves/" + name + ".txt";
         StreamWriter writer = new StreamWriter(path);
@@ -131,6 +153,7 @@ public class Save
         string[] tokens = data.Split('\n');
         int block = 0; // Block 0 is the header
         int _node = 0;
+        int _key = 0;
 
         // Parse tokens (start with header)
         for (int i = 0; i < tokens.Length; i++)
@@ -209,6 +232,12 @@ public class Save
                     break;
                 case 3:
 
+                    if (line.Equals("keybinds"))
+                    {
+                        block++;
+                        break; // Short circuit and don't add a ledger
+                    }
+
                     // Read in a block at a time
                     string name = line;
                     List<int> scores = new List<int>();
@@ -222,6 +251,16 @@ public class Save
                     }
 
                     save.highscores.Add(new Ledger(name, scores));
+                    break;
+                case 4:
+                    if (_key < (int) InputManager.BINDS.SENTINEL)
+                    {
+                        object bObj = Enum.Parse(typeof(KeyCode), line);
+                        save.keybinds[_key] = (KeyCode) bObj;
+
+                        _key++;
+                    }
+
                     break;
                 default:
                     Debug.LogError("Block overflow");
