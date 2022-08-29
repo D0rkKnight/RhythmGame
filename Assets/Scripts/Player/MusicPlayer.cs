@@ -454,7 +454,11 @@ public class MusicPlayer : MonoBehaviour
 
     public void pause()
     {
-        if (state != STATE.PAUSE) pauseStart = Time.time;
+        // Can only pause when running a song
+        if (state != STATE.RUN)
+            return;
+
+        pauseStart = Time.time;
         state = STATE.PAUSE;
         TrackPlayer.sing.audio.Stop();
     }
