@@ -15,7 +15,7 @@ public class InputManager : MonoBehaviour
 
     public enum BINDS
     {
-        COL1, COL2, COL3, COL4, PAUSE, SENTINEL
+        COL1, COL2, COL3, COL_LAST, PAUSE, SENTINEL
     }
 
     private void Awake()
@@ -94,5 +94,11 @@ public class InputManager : MonoBehaviour
     public static bool checkKeyDownGame(KeyCode c)
     {
         return checkKeyDown(c) && GameManager.sing.panelStack.Count == 0;
+    }
+
+    public static void resetDefaults()
+    {
+        Save s = Save.readFromDisk("main");
+        s.readInputsFromSave();
     }
 }

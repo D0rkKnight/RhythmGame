@@ -12,6 +12,7 @@ public class GameManager : MonoBehaviour
 
     public GameObject settings;
     public KeyCode[] colKeys;
+    public KeyCode optionsKey = KeyCode.Escape;
 
     public Stack<GameObject> panelStack = new Stack<GameObject>(); // Tracks the active stack of ui panels
     public GameObject activePanel = null;
@@ -60,6 +61,13 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (Input.GetKeyDown(optionsKey))
+        {
+            if (panelStack.Peek() == settings)
+                popPanelStack();
+            else
+                openOptions();
+        }
     }
 
     public void changeScene(string scene)
@@ -159,9 +167,10 @@ public class GameManager : MonoBehaviour
         activeSave.writeToDisk();
     }
 
-    public static bool saveExists(string name)
+    public void openOptions()
     {
-        string fpath = Path.Combine(Application.streamingAssetsPath, "Saves", name + ".txt");
-        return File.Exists(fpath);
+        pushPanelStack(settings);
+        if (MusicPlayer.sing != null)
+            MusicPlayer.sing.pause();
     }
 }

@@ -46,7 +46,7 @@ public class Timeliner : MonoBehaviour
         string activeProfile = GameManager.saveToLoad;
         string fpath = Path.Combine(Application.streamingAssetsPath, "Saves", activeProfile + ".txt");
 
-        if (!GameManager.saveExists(activeProfile))
+        if (!Save.exists(activeProfile))
         {
             // Copy main.txt
             string mainPath = Path.Combine(Application.streamingAssetsPath, "Saves", "main.txt");

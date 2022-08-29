@@ -27,10 +27,7 @@ public class SaveSelector : MonoBehaviour
 
                 // Configure delete configure button
                 Button yesBut = delPopup.GetComponent<YesNoPopup>().yesBut;
-                yesBut.onClick.RemoveAllListeners();
-                yesBut.GetComponent<PanelInteractor>().attach();
-
-                yesBut.onClick.AddListener(() =>
+                yesBut.GetComponent<IndependentClickCB>().cb = () =>
                 {
                     string fpath = Path.Combine(Application.streamingAssetsPath, "Saves", slot.save + ".txt");
                     File.Delete(fpath);
@@ -38,7 +35,7 @@ public class SaveSelector : MonoBehaviour
 
                     // Queue text regeneration
                     updateSaveUI();
-                });
+                };
             });
         }
 

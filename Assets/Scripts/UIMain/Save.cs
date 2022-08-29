@@ -50,9 +50,9 @@ public class Save
         }
 
         // Read keybinds
-        for (int i = 0; i <= (int)InputManager.BINDS.COL4 - (int)InputManager.BINDS.COL1; i++)
+        for (int i = 0; i <= (int)InputManager.BINDS.COL_LAST - (int)InputManager.BINDS.COL1; i++)
         {
-            keybinds[(int)InputManager.BINDS.COL1 + i] = MusicPlayer.sing.columns[i].Key;
+            keybinds[(int)InputManager.BINDS.COL1 + i] = GameManager.sing.colKeys[i];
         }
         keybinds[(int)InputManager.BINDS.PAUSE] = MusicPlayer.sing.pauseKey;
     }
@@ -87,10 +87,14 @@ public class Save
             GameManager.sing.highscores.Add(nl);
         }
 
+        readInputsFromSave();
+    }
+    public void readInputsFromSave()
+    {
         // Write keybinds
-        for(int i=0; i<=(int) InputManager.BINDS.COL4 - (int) InputManager.BINDS.COL1; i++)
+        for (int i = 0; i <= (int)InputManager.BINDS.COL_LAST - (int)InputManager.BINDS.COL1; i++)
         {
-            MusicPlayer.sing.columns[i].Key = keybinds[(int)InputManager.BINDS.COL1 + i];
+            GameManager.sing.colKeys[i] = keybinds[(int)InputManager.BINDS.COL1 + i];
         }
         MusicPlayer.sing.pauseKey = keybinds[(int)InputManager.BINDS.PAUSE];
     }
@@ -269,5 +273,11 @@ public class Save
         }
 
         return save;
+    }
+
+    public static bool exists(string name)
+    {
+        string fpath = Path.Combine(Application.streamingAssetsPath, "Saves", name + ".txt");
+        return File.Exists(fpath);
     }
 }

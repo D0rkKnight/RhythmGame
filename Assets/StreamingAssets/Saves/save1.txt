@@ -27,22 +27,15 @@ nodes
 1
 0
 0
-0
-0
-0
-0
-0
-0
 
 editor
-active: 
+active: Pendulum.txt
 
 highscores
 
 keybinds
-Q
-E
-U
-I
-Space
-
+D
+F
+J
+K
+P

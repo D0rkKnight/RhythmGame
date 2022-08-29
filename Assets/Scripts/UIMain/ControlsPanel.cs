@@ -10,6 +10,8 @@ public class ControlsPanel : MonoBehaviour
 
     public GameObject[] colInput;
     public GameObject pauseInput;
+    public Button defInputButton;
+    public YesNoPopup popup;
     [SerializeField] private GameObject clickBlocker;
 
     public bool selectingKey = false;
@@ -19,6 +21,16 @@ public class ControlsPanel : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        defInputButton.onClick.AddListener(() =>
+        {
+            GameManager.sing.pushPanelStack(popup.gameObject, false);
+
+            popup.yesBut.GetComponent<IndependentClickCB>().cb = () => {
+                resetDefaults();
+                updateButtons();
+            };
+        });
+
         updateButtons();
     }
 
@@ -95,5 +107,11 @@ public class ControlsPanel : MonoBehaviour
         };
 
         queueKeyChange();
+    }
+
+    public void resetDefaults()
+    {
+        InputManager.resetDefaults();
+        updateButtons();
     }
 }

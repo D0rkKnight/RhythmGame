@@ -681,11 +681,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: GameManager
       objectReference: {fileID: 0}
-    - target: {fileID: 1136174380943972679, guid: 5963d0f7b8dc7fd48b1984c8de6c851e,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 1136174381191104911, guid: 5963d0f7b8dc7fd48b1984c8de6c851e,
         type: 3}
       propertyPath: m_Camera

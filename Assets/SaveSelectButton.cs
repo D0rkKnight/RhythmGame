@@ -27,7 +27,7 @@ public class SaveSelectButton : MonoBehaviour, Clickable
     private void Update()
     {
         delBut.gameObject.SetActive(framesSinceHov <= 1 &&
-            GameManager.saveExists(save));
+            Save.exists(save));
 
         framesSinceHov++;
     }
