@@ -1,20 +1,46 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using System.IO;
 
 public class SaveSelector : MonoBehaviour
 {
     public List<SaveSelectButton> saveSlots;
+    public YesNoPopup delPopup;
 
     // Start is called before the first frame update
     void Start()
     {
         foreach (var slot in saveSlots)
+        {
             slot.delBut.onClick.AddListener(() =>
             {
                 updateSaveUI();
             });
+
+            slot.delBut.gameObject.SetActive(false);
+
+            slot.delBut.onClick.AddListener(() =>
+            {
+                GameManager.sing.pushPanelStack(delPopup.gameObject, false);
+
+                // Configure delete configure button
+                Button yesBut = delPopup.GetComponent<YesNoPopup>().yesBut;
+                yesBut.onClick.RemoveAllListeners();
+                yesBut.GetComponent<PanelInteractor>().attach();
+
+                yesBut.onClick.AddListener(() =>
+                {
+                    string fpath = Path.Combine(Application.streamingAssetsPath, "Saves", slot.save + ".txt");
+                    File.Delete(fpath);
+                    File.Delete(fpath + ".meta"); // Delete meta file as well
+
+                    // Queue text regeneration
+                    updateSaveUI();
+                });
+            });
+        }
 
         // Write data to saveslots
         updateSaveUI();

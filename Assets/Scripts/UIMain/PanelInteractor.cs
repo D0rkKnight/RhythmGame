@@ -18,16 +18,27 @@ public class PanelInteractor : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        GetComponent<Button>().onClick.AddListener(() =>
+        attach();
+    }
+
+    public void attach()
+    {
+        Button btn = GetComponent<Button>();
+
+        // Clean prior attachments
+        btn.onClick.RemoveListener(onClick);
+        btn.onClick.AddListener(onClick);
+    }
+
+    public void onClick()
+    {
+        if (mode == MODE.PUSH)
         {
-            if (mode == MODE.PUSH)
-            {
-                GameManager.sing.pushPanelStack(panel);
-            }
-            else if (mode == MODE.POP)
-            {
-                GameManager.sing.popPanelStack();
-            }
-        });
+            GameManager.sing.pushPanelStack(panel);
+        }
+        else if (mode == MODE.POP)
+        {
+            GameManager.sing.popPanelStack();
+        }
     }
 }

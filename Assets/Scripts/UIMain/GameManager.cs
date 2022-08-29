@@ -332,4 +332,9 @@ public class GameManager : MonoBehaviour
 
         MapSerializer.sing.playMap(nextMapName);
     }
+    public static bool saveExists(string name)
+    {
+        string fpath = Path.Combine(Application.streamingAssetsPath, "Saves", name + ".txt");
+        return File.Exists(fpath);
+    }
 }

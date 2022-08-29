@@ -22,20 +22,12 @@ public class SaveSelectButton : MonoBehaviour, Clickable
             GameManager.activeSave = save;
             GameManager.sing.changeScene("Scenes/MainScene");
         });
-
-        delBut.gameObject.SetActive(false);
-
-        delBut.onClick.AddListener(() =>
-        {
-            string fpath = Path.Combine(Application.streamingAssetsPath, "Saves", save + ".txt");
-            File.Delete(fpath);
-            File.Delete(fpath+".meta"); // Delete meta file as well
-        });
     }
 
     private void Update()
     {
-        delBut.gameObject.SetActive(framesSinceHov <= 1);
+        delBut.gameObject.SetActive(framesSinceHov <= 1 &&
+            GameManager.saveExists(save));
 
         framesSinceHov++;
     }

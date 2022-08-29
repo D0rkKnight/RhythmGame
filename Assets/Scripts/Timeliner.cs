@@ -46,7 +46,7 @@ public class Timeliner : MonoBehaviour
         string activeProfile = GameManager.activeSave;
         string fpath = Path.Combine(Application.streamingAssetsPath, "Saves", activeProfile + ".txt");
 
-        if (!File.Exists(fpath))
+        if (!GameManager.saveExists(activeProfile))
         {
             // Copy main.txt
             string mainPath = Path.Combine(Application.streamingAssetsPath, "Saves", "main.txt");
@@ -74,5 +74,4 @@ public class Timeliner : MonoBehaviour
             SkillTree.sing.transform.position, stLerpMarker.transform.position, mpLerpSpeed * Time.deltaTime);
         SkillTree.sing.transform.position = newSTPos;
     }
-
 }
