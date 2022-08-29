@@ -11,7 +11,6 @@ public class GameManager : MonoBehaviour
     public static GameManager sing;
 
     public GameObject settings;
-    public KeyCode[] colKeys;
     public KeyCode optionsKey = KeyCode.Escape;
 
     public Stack<GameObject> panelStack = new Stack<GameObject>(); // Tracks the active stack of ui panels
@@ -172,5 +171,18 @@ public class GameManager : MonoBehaviour
         pushPanelStack(settings);
         if (MusicPlayer.sing != null)
             MusicPlayer.sing.pause();
+    }
+
+    public static KeyCode getColKey(int i, Save source = null)
+    {
+        if (source == null)
+            source = activeSave;
+
+        return activeSave.keybinds[(int)InputManager.BINDS.COL_FIRST + i];
+    }
+
+    public static void setColKey(int i, KeyCode val)
+    {
+        activeSave.setKey((InputManager.BINDS) ((int) InputManager.BINDS.COL_FIRST + i), val);
     }
 }

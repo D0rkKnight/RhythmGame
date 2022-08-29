@@ -15,7 +15,7 @@ public class InputManager : MonoBehaviour
 
     public enum BINDS
     {
-        COL1, COL2, COL3, COL_LAST, PAUSE, SENTINEL
+        COL_FIRST, COL2, COL3, COL_LAST, PAUSE, SENTINEL
     }
 
     private void Awake()

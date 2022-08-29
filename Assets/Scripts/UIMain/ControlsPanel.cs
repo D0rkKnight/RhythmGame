@@ -77,7 +77,7 @@ public class ControlsPanel : MonoBehaviour
 
             // Labels and keycodes
             col.transform.Find("Label").GetComponent<TMP_Text>().text = "COL " + (i + 1);
-            col.transform.Find("Button/Text").GetComponent<TMP_Text>().text = GameManager.sing.colKeys[i].ToString();
+            col.transform.Find("Button/Text").GetComponent<TMP_Text>().text = GameManager.getColKey(i).ToString();
         }
 
         pauseInput.transform.Find("Button/Text").GetComponent<TMP_Text>().text = MusicPlayer.sing.pauseKey.ToString();
@@ -93,7 +93,7 @@ public class ControlsPanel : MonoBehaviour
     {
         onSelect = (KeyCode newKey) =>
         {
-            GameManager.sing.colKeys[col] = newKey;
+            GameManager.setColKey(col, newKey);
         };
 
         queueKeyChange();

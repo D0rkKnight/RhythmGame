@@ -92,7 +92,14 @@ public class MusicPlayer : MonoBehaviour
         RUN, PAUSE, INTERIM, SLEEPING
     }
 
-    public KeyCode pauseKey = KeyCode.P;
+    public KeyCode pauseKey
+    {
+        get { return GameManager.activeSave.keybinds[(int) InputManager.BINDS.PAUSE];  }
+        set
+        {
+            GameManager.activeSave.setKey(InputManager.BINDS.PAUSE, value);
+        }
+    }
     private float pauseStart = 0f;
     private float pausedTotal;
     public STATE state = STATE.SLEEPING;

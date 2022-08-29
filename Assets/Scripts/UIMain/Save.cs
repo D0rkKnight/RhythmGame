@@ -50,9 +50,11 @@ public class Save
         }
 
         // Read keybinds
-        for (int i = 0; i <= (int)InputManager.BINDS.COL_LAST - (int)InputManager.BINDS.COL1; i++)
+        // Cyclic if this is the active save
+        // But lets us write data to other saves while referencing the active save
+        for (int i = 0; i <= (int)InputManager.BINDS.COL_LAST - (int)InputManager.BINDS.COL_FIRST; i++)
         {
-            keybinds[(int)InputManager.BINDS.COL1 + i] = GameManager.sing.colKeys[i];
+            keybinds[(int)InputManager.BINDS.COL_FIRST + i] = GameManager.getColKey(i);
         }
         keybinds[(int)InputManager.BINDS.PAUSE] = MusicPlayer.sing.pauseKey;
     }
@@ -92,9 +94,9 @@ public class Save
     public void readInputsFromSave()
     {
         // Write keybinds
-        for (int i = 0; i <= (int)InputManager.BINDS.COL_LAST - (int)InputManager.BINDS.COL1; i++)
+        for (int i = 0; i <= (int)InputManager.BINDS.COL_LAST - (int)InputManager.BINDS.COL_FIRST; i++)
         {
-            GameManager.sing.colKeys[i] = keybinds[(int)InputManager.BINDS.COL1 + i];
+            GameManager.setColKey(i, keybinds[(int)InputManager.BINDS.COL_FIRST + i]);
         }
         MusicPlayer.sing.pauseKey = keybinds[(int)InputManager.BINDS.PAUSE];
     }
@@ -279,5 +281,17 @@ public class Save
     {
         string fpath = Path.Combine(Application.streamingAssetsPath, "Saves", name + ".txt");
         return File.Exists(fpath);
+    }
+
+    // Will overwrite any existing keys of the value
+    public void setKey(InputManager.BINDS bind, KeyCode key)
+    {
+        for(int i=0; i<keybinds.Length; i++)
+        {
+            if (keybinds[i] == key)
+                keybinds[i] = KeyCode.None;
+        }
+
+        keybinds[(int)bind] = key;
     }
 }

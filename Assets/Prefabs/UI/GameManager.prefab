@@ -123,7 +123,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   settings: {fileID: 1136174380943972679}
-  colKeys: 64000000660000006a0000006b000000
   optionsKey: 27
   activePanel: {fileID: 0}
   forceSave: 
@@ -133,6 +132,7 @@ MonoBehaviour:
   mapList:
   - Pendulum.txt
   - rhythm_1.txt
+  - Allegretto_Town.txt
   mapQueue: []
 --- !u!114 &5646453678850200551
 MonoBehaviour:

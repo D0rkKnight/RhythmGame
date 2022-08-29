@@ -22,10 +22,10 @@ public class NoteColumn : MonoBehaviour
     public bool latCrowd = false;
     public KeyCode Key
     {
-        get { return GameManager.sing.colKeys[colNum];  }
+        get { return GameManager.getColKey(colNum);  }
         set
         {
-            GameManager.sing.colKeys[colNum] = value;
+            GameManager.setColKey(colNum, value);
 
             charTxt.GetComponent<TextMeshProUGUI>().SetText(value.ToString());
         }
