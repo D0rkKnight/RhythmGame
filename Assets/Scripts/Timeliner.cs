@@ -43,7 +43,7 @@ public class Timeliner : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        string activeProfile = GameManager.activeSave;
+        string activeProfile = GameManager.saveToLoad;
         string fpath = Path.Combine(Application.streamingAssetsPath, "Saves", activeProfile + ".txt");
 
         if (!GameManager.saveExists(activeProfile))
@@ -53,11 +53,11 @@ public class Timeliner : MonoBehaviour
             File.Copy(mainPath, fpath);
         }
 
-        string saveData = GameManager.getSave(activeProfile);
+        GameManager.activeSave = Save.readFromDisk(GameManager.saveToLoad);
+        GameManager.activeSave.readFromSave();
 
         // Boot up skilltree and musicplayer
         SkillTree.sing.compile();
-        GameManager.loadSave(saveData);
     }
 
     // Update is called once per frame

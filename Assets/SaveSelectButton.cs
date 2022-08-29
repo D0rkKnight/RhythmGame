@@ -19,7 +19,7 @@ public class SaveSelectButton : MonoBehaviour, Clickable
         // Assign save info
         custBut.btn.onClick.AddListener(() =>
         {
-            GameManager.activeSave = save;
+            GameManager.saveToLoad = save;
             GameManager.sing.changeScene("Scenes/MainScene");
         });
     }
