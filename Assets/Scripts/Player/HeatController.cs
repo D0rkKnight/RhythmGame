@@ -72,4 +72,9 @@ public class HeatController : MonoBehaviour
 
         bar2.localScale = new Vector3(1, barFill, 1);
     }
+
+    public Color getHeatCol(float heat)
+    {
+        return colors[(int)(heat / heatTierDist)];
+    }
 }

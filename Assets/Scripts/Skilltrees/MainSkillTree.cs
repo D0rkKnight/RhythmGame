@@ -127,6 +127,14 @@ public class MainSkillTree : SkillTree
 
         // Sets initial token text
         Tokens = Tokens;
+
+        // Set skill heat colors
+        foreach (buttonPair but in nodes) {
+            Image heatImg = but.btn.heatImg;
+
+            float a = heatImg.color.a;
+            heatImg.color = HeatController.sing.getHeatCol(but.heatReq);
+        }
     }
 
     public void Update()
