@@ -101,4 +101,15 @@ public class InputManager : MonoBehaviour
         Save s = Save.readFromDisk("main");
         s.readInputsFromSave();
     }
+
+    public static string keycodeToString(KeyCode key)
+    {
+        string txt = key.ToString();
+        if (key == KeyCode.Mouse0)
+            txt = "M1";
+        else if (key == KeyCode.Mouse1)
+            txt = "M2";
+
+        return txt;
+    }
 }

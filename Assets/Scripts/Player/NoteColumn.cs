@@ -27,7 +27,8 @@ public class NoteColumn : MonoBehaviour
         {
             GameManager.setColKey(colNum, value);
 
-            charTxt.GetComponent<TextMeshProUGUI>().SetText(value.ToString());
+
+            charTxt.GetComponent<TextMeshProUGUI>().SetText(InputManager.keycodeToString(value));
         }
     }
     public NoteColumn reroute;  // Whether to substitute input for other columns

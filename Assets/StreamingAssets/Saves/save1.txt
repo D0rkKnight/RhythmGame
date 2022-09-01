@@ -1,6 +1,6 @@
 stage: 2
-tokens: 6
-heat: 56
+tokens: 82
+heat: 100
 
 nodes
 0
@@ -43,6 +43,7 @@ rhythm_1
 
 Pendulum
 11210
+69640
 
 Allegretto_Town
 5600

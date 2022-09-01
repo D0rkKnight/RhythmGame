@@ -82,6 +82,10 @@ public class HeatController : MonoBehaviour
 
     public Color getHeatCol(float heat_)
     {
-        return colors[(int)(heat_ / heatTierDist)];
+        // First color is reserved for the zero bg
+        int i = (int)(heat_ / heatTierDist) + 1;
+        i = Mathf.Min(i, colors.Length - 1);
+
+        return colors[i];
     }
 }
