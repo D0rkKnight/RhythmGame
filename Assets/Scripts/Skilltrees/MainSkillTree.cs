@@ -17,6 +17,7 @@ public class MainSkillTree : SkillTree
         public NODE[] prereqs;
         public int cost = 100;
         public float heatReq = 0;
+        public float tokenMult = 1f;
 
         private MainSkillTree owner;
 
@@ -103,6 +104,8 @@ public class MainSkillTree : SkillTree
 
     public buttonPair firstSkillNode; // Picks a first skill node to pulse
 
+    public float tokenMult = 1f;
+
     public override void init()
     {
         base.init();
@@ -159,6 +162,8 @@ public class MainSkillTree : SkillTree
 
         regenLines(); // Redundancy
     }
+
+
 
     protected override void setActiveFlags()
     {
@@ -238,6 +243,14 @@ public class MainSkillTree : SkillTree
         mpTrans.Find("Canvas/Score").gameObject.SetActive(activeFlags[(int)NODE.SCORE]);
         mpTrans.Find("Canvas/Combo").gameObject.SetActive(activeFlags[(int)NODE.COMBO]);
         mpTrans.Find("Canvas/Heat").gameObject.SetActive(activeFlags[(int)NODE.HEAT]);
+
+        // Set token multiplier
+        tokenMult = 1f;
+        foreach (buttonPair but in nodes)
+        {
+            if (activeFlags[(int)but.node])
+                tokenMult *= but.tokenMult;
+        }
     }
 
     protected override void enableNewOptions()
@@ -325,5 +338,10 @@ public class MainSkillTree : SkillTree
                 lineRends.Add(lr);
             }
         }
+    }
+
+    public void addSubtokens(float amt)
+    {
+        SubToken += (int) (tokenMult * amt);
     }
 }

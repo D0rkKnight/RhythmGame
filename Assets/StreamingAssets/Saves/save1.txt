@@ -1,6 +1,6 @@
 stage: 2
-tokens: 5
-heat: 0
+tokens: 11
+heat: 56
 
 nodes
 0
@@ -8,19 +8,19 @@ nodes
 0
 0
 0
-0
-1
-1
-0
-0
-0
-1
-1
 1
 1
 1
 0
 0
+0
+1
+1
+1
+1
+1
+0
+1
 0
 0
 0
@@ -40,6 +40,12 @@ active:
 highscores
 rhythm_1
 5200
+
+Pendulum
+11210
+
+Allegretto_Town
+5600
 
 
 keybinds

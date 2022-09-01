@@ -407,7 +407,7 @@ public class MusicPlayer : MonoBehaviour
         if (SkillTree.sing.GetType() == typeof(MainSkillTree))
         {
             MainSkillTree mst = (MainSkillTree)SkillTree.sing;
-            mst.SubToken += score / 2;
+            mst.addSubtokens(score / 2);
         }
 
         // Add score to highscore
@@ -566,7 +566,7 @@ public class MusicPlayer : MonoBehaviour
         int amt = 100 * (int) (1 + combo / 10f);
         Score += amt;
         if (SkillTree.sing.GetType() == typeof(MainSkillTree))
-            ((MainSkillTree) SkillTree.sing).SubToken += amt / 2; // Get tokens while playing too
+            ((MainSkillTree) SkillTree.sing).addSubtokens(amt / 2); // Get tokens while playing too
     }
 
     private void onBeat()

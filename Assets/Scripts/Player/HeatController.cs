@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class HeatController : MonoBehaviour
 {
@@ -34,6 +35,8 @@ public class HeatController : MonoBehaviour
     public float maxHeat = 100; // Maximum heat achievable
     public Transform bar1;
     public Transform bar2;
+    public TMPro.TMP_Text text;
+    public SpriteRenderer icon;
 
     public Color[] colors;
     public static HeatController sing;
@@ -71,10 +74,14 @@ public class HeatController : MonoBehaviour
         bar2.GetComponent<SpriteRenderer>().color = barCol;
 
         bar2.localScale = new Vector3(1, barFill, 1);
+
+
+        text.text = heat.ToString();
+        icon.color = getHeatCol(heat);
     }
 
-    public Color getHeatCol(float heat)
+    public Color getHeatCol(float heat_)
     {
-        return colors[(int)(heat / heatTierDist)];
+        return colors[(int)(heat_ / heatTierDist)];
     }
 }
