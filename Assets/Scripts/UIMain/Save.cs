@@ -34,7 +34,8 @@ public class Save
 
         if (Timeliner.sing != null)
             stage = Timeliner.sing.Stage;
-        tokens = ((MainSkillTree)SkillTree.sing).Tokens;
+        if (SkillTree.sing is MainSkillTree)
+            tokens = ((MainSkillTree)SkillTree.sing).Tokens;
         heat = HeatController.sing.Heat;
 
         if (MapEditor.sing != null)
@@ -71,7 +72,8 @@ public class Save
 
         if (Timeliner.sing != null)
             Timeliner.sing.Stage = stage;
-        ((MainSkillTree)SkillTree.sing).Tokens = tokens;
+        if (SkillTree.sing is MainSkillTree)
+            ((MainSkillTree)SkillTree.sing).Tokens = tokens;
 
         SkillTree.sing.compile(); // Just some weird switching that's necessary
         HeatController.sing.Heat = heat;

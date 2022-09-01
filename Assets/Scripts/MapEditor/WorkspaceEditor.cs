@@ -197,7 +197,7 @@ public class WorkspaceEditor : MonoBehaviour, Scrollable
         // This is some weird math lol
         MusicPlayer mp = MusicPlayer.sing;
         float scrollessST = mp.songTime - mp.scroll;
-        MusicPlayer.sing.scroll = scroll / beatHeight - scrollessST;
+        MusicPlayer.sing.scroll = (scroll / beatHeight * mp.beatInterval) - scrollessST;
 
         regenBeatMarkers();
         updatePhraseEntries();
