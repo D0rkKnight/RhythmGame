@@ -40,6 +40,8 @@ public class MainSkillTree : SkillTree
 
             owner.purchasedFlags[(int)node] = true;
             owner.compile();
+
+            GameManager.writeSave(); // Autosave
         }
 
         public void checkPrereqs()

@@ -1,5 +1,5 @@
 stage: 2
-tokens: 11
+tokens: 6
 heat: 56
 
 nodes
@@ -19,7 +19,7 @@ nodes
 1
 1
 1
-0
+1
 1
 0
 0
