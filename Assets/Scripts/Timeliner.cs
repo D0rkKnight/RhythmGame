@@ -15,6 +15,7 @@ public class Timeliner : MonoBehaviour
 
     public Transform stCenteredMarker;
     public Transform stOffsetMarker;
+    public Transform skillTreeRegion;
 
     // Config
     public bool newStart = true;
@@ -71,7 +72,7 @@ public class Timeliner : MonoBehaviour
 
         Transform stLerpMarker = !mpCentered ? stCenteredMarker : stOffsetMarker;
         Vector3 newSTPos = Vector3.Lerp(
-            SkillTree.sing.transform.position, stLerpMarker.transform.position, mpLerpSpeed * Time.deltaTime);
-        SkillTree.sing.transform.position = newSTPos;
+            skillTreeRegion.position, stLerpMarker.transform.position, mpLerpSpeed * Time.deltaTime);
+        skillTreeRegion.position = newSTPos;
     }
 }

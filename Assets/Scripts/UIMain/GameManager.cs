@@ -27,7 +27,8 @@ public class GameManager : MonoBehaviour
     public bool wasHighscore = false;
 
     public string[] mapList;
-    public List<string> mapQueue = new List<string>();
+    public bool[] mapBans;
+    public List<int> mapQueue = new List<int>(); // Contains song indexes
 
     // Start is called before the first frame update
     void Awake()
@@ -55,6 +56,8 @@ public class GameManager : MonoBehaviour
             activeSave = Save.readFromDisk(forceSave);
             activeSave.readFromSave();
         }
+
+        mapBans = new bool[mapList.Length];
     }
 
     // Update is called once per frame
@@ -134,30 +137,43 @@ public class GameManager : MonoBehaviour
             MapEditor.sing.play();
             return;
         }
-            
+
+        // Burn through illegal maps
+        while (mapQueue.Count > 0 && mapBans[mapQueue[0]])
+            mapQueue.RemoveAt(0);
 
         if (mapQueue.Count == 0)
-        {
-            // Regenerate queue
-            foreach (string s in mapList)
-                mapQueue.Add(s);
+            regenerateMapQueue();
 
-            // Shuffle
-            for (int i = 0; i < mapQueue.Count; i++)
-            {
-                // Choose a random spot to swap to
-                int nextInd = UnityEngine.Random.Range(0, mapQueue.Count);
-
-                string tmp = mapQueue[nextInd];
-                mapQueue[nextInd] = mapQueue[i];
-                mapQueue[i] = tmp;
-            }
-        }
-
-        string nextMapName = mapQueue[0];
+        string nextMapName = mapList[mapQueue[0]];
         mapQueue.RemoveAt(0);
 
         MapSerializer.sing.playMap(nextMapName);
+    }
+
+    public void regenerateMapQueue()
+    {
+        mapQueue.Clear();
+
+        // Regenerate queue
+        for (int i = 0; i < mapList.Length; i++)
+        {
+            if (mapBans[i])
+                continue; // Ignore banned maps
+
+            mapQueue.Add(i);
+        }
+
+        // Shuffle
+        for (int i = 0; i < mapQueue.Count; i++)
+        {
+            // Choose a random spot to swap to
+            int nextInd = UnityEngine.Random.Range(0, mapQueue.Count);
+
+            int tmp = mapQueue[nextInd];
+            mapQueue[nextInd] = mapQueue[i];
+            mapQueue[i] = tmp;
+        }
     }
 
     public static void writeSave()

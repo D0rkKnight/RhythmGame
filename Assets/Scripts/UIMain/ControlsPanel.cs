@@ -27,11 +27,11 @@ public class ControlsPanel : MonoBehaviour
 
             popup.yesBut.GetComponent<IndependentClickCB>().cb = () => {
                 resetDefaults();
-                updateButtons();
+                updateVisuals();
             };
         });
 
-        updateButtons();
+        updateVisuals();
     }
 
     // Update is called once per frame
@@ -62,13 +62,12 @@ public class ControlsPanel : MonoBehaviour
                 InputManager.banKey(newKey);
 
                 // Proc a visual update
-                updateButtons();
-                NoteColumn.Regenerate();
+                updateVisuals();
             }
         }
     }
 
-    private void updateButtons()
+    private void updateVisuals()
     {
         // Set labels
         for (int i = 0; i < colInput.Length; i++)
@@ -83,6 +82,8 @@ public class ControlsPanel : MonoBehaviour
 
         pauseInput.transform.Find("Button/Text").GetComponent<TMP_Text>().text = 
             InputManager.keycodeToString(MusicPlayer.sing.pauseKey);
+
+        NoteColumn.Regenerate();
     }
 
     private void queueKeyChange()
@@ -114,6 +115,6 @@ public class ControlsPanel : MonoBehaviour
     public void resetDefaults()
     {
         InputManager.resetDefaults();
-        updateButtons();
+        updateVisuals();
     }
 }
