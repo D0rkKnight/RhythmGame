@@ -16,6 +16,7 @@ public class InteractModeButton : MonoBehaviour
         GetComponent<Button>().onClick.AddListener(() =>
         {
             MapEditor.sing.InteractMode = mode;
+            MapEditor.sing.queueHotswap();
         });
 
         img = GetComponent<Image>();

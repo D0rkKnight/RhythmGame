@@ -17,7 +17,7 @@ public class GameManager : MonoBehaviour
     public GameObject activePanel = null;
 
     public string forceSave = "";
-    public static string saveToLoad = "test";
+    public static string saveToLoad;
     public static Save activeSave;
 
     public bool saveOnInter = true;
@@ -36,6 +36,10 @@ public class GameManager : MonoBehaviour
         if (sing != null) Debug.LogError("Gamemanager Singleton broken (very bad)");
         sing = this;
 
+        // Force read the save if no save is queued
+        if (forceSave.Length > 0 && saveToLoad == null)
+            activeSave = Save.readFromDisk(forceSave);
+
         Phrase.init();
     }
 
@@ -51,11 +55,8 @@ public class GameManager : MonoBehaviour
         }
 
         // Force a save load
-        if (forceSave.Length > 0)
-        {
-            activeSave = Save.readFromDisk(forceSave);
+        if (forceSave.Length > 0 && saveToLoad == null)
             activeSave.readFromSave();
-        }
 
         mapBans = new bool[mapList.Length];
     }
@@ -63,9 +64,9 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(optionsKey))
+        if (InputManager.checkKeyDown(optionsKey))
         {
-            if (panelStack.Peek() == settings)
+            if (panelStack.Count > 0 && panelStack.Peek() == settings)
                 popPanelStack();
             else
                 openOptions();
@@ -194,7 +195,7 @@ public class GameManager : MonoBehaviour
         if (source == null)
             source = activeSave;
 
-        return activeSave.keybinds[(int)InputManager.BINDS.COL_FIRST + i];
+        return source.keybinds[(int)InputManager.BINDS.COL_FIRST + i];
     }
 
     public static void setColKey(int i, KeyCode val)

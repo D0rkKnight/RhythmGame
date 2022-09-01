@@ -274,7 +274,12 @@ public abstract class Phrase
         }
 
         // Get block frame
-        float blockFrame = getBlockFrame() * (float) Math.Pow(2.0f, ownerMap.xtime);
+        float blockFrame = getBlockFrame();
+
+        // Limit to prevent note overload on double time maps
+        blockFrame = Mathf.Max(blockFrame,
+            MapSerializer.sing.noteBlockLen * (float)Math.Pow(2.0f, ownerMap.xtime));
+
         float weight = priority + accent; // Weight is based off of raw accent
 
 
