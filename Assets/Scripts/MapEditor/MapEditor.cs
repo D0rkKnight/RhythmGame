@@ -513,5 +513,7 @@ public class MapEditor : MonoBehaviour
         MetaInputField field = Instantiate(prefab, metaFieldAnchor);
         field.transform.position = metaFieldAnchor.position + Vector3.down * 1 * metaFields.Count;
         metaFields.Add(field);
+
+        field.Label = fd.label; // Copy over label
     }
 }

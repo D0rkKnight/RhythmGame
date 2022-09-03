@@ -57,13 +57,6 @@ public class ManyPhrase : Phrase
 
         return null; // Guess this is unsupported for now
     }
-
-    public override void writeMetaFields(List<MetaInputField> fields)
-    {
-        base.writeMetaFields(fields);
-
-        fields[0].Label = "Group";
-    }
     public override List<FieldDataPair> getFieldData()
     {
         List<FieldDataPair> data = base.getFieldData();

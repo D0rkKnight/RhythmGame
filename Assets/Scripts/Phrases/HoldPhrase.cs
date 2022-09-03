@@ -54,13 +54,6 @@ public class HoldPhrase : Phrase
         }
     }
 
-    public override void writeMetaFields(List<MetaInputField> fields)
-    {
-        base.writeMetaFields(fields);
-
-        fields[0].Label = "Hold Dur";
-    }
-
     public override List<FieldDataPair> getFieldData()
     {
         List<FieldDataPair> data =  base.getFieldData();

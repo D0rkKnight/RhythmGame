@@ -81,13 +81,6 @@ public class ReboundPhrase : Phrase
         return null;
     }
 
-    public override void writeMetaFields(List<MetaInputField> fields)
-    {
-        base.writeMetaFields(fields);
-
-        fields[0].Label = "Delta";
-        fields[1].Label = "Times";
-    }
     public override List<FieldDataPair> getFieldData()
     {
         List<FieldDataPair> data = base.getFieldData();

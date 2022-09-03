@@ -43,14 +43,6 @@ class TogglePhrase : Phrase
         tog.label.text = ((SkillTree.NODE)node).ToString() + " - " + (val ? "T" : "F");
     }
 
-    public override void writeMetaFields(List<MetaInputField> fields)
-    {
-        base.writeMetaFields(fields);
-
-        fields[0].Label = "Skill name";
-        fields[1].Label = "Val";
-    }
-
     public override List<FieldDataPair> getFieldData()
     {
         List<FieldDataPair> data = base.getFieldData();
