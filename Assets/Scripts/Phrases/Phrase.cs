@@ -49,11 +49,17 @@ public abstract class Phrase
     {
         public MetaInputField.TYPE type;
         public string label;
+        public MetaInputField.TEXT_DATA dtype;
 
-        public FieldDataPair(MetaInputField.TYPE type_, string label_)
+        public FieldDataPair(MetaInputField.TYPE type_, string label_, MetaInputField.TEXT_DATA dtype_)
         {
             type = type_;
             label = label_;
+            dtype = dtype_;
+        }
+
+        public FieldDataPair(MetaInputField.TYPE type_, string label_) : this(type_, label_, MetaInputField.TEXT_DATA.RAW)
+        {
         }
     }
 

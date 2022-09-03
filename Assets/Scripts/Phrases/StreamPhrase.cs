@@ -24,9 +24,9 @@ public abstract class StreamPhrase : Phrase
     public override List<FieldDataPair> getFieldData()
     {
         List<FieldDataPair> data = base.getFieldData();
-        data.Add(new FieldDataPair(MetaInputField.TYPE.TEXT, "Num notes"));
-        data.Add(new FieldDataPair(MetaInputField.TYPE.TEXT, "Width"));
-        data.Add(new FieldDataPair(MetaInputField.TYPE.TEXT, "Note len"));
+        data.Add(new FieldDataPair(MetaInputField.TYPE.TEXT, "Num notes", MetaInputField.TEXT_DATA.INT));
+        data.Add(new FieldDataPair(MetaInputField.TYPE.TEXT, "Width", MetaInputField.TEXT_DATA.INT));
+        data.Add(new FieldDataPair(MetaInputField.TYPE.TEXT, "Note len", MetaInputField.TEXT_DATA.FLOAT));
         data.Add(new FieldDataPair(MetaInputField.TYPE.TOGGLE, "Recurse"));
 
         return data;

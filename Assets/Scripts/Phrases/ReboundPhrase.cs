@@ -84,8 +84,8 @@ public class ReboundPhrase : Phrase
     public override List<FieldDataPair> getFieldData()
     {
         List<FieldDataPair> data = base.getFieldData();
-        data.Add(new FieldDataPair(MetaInputField.TYPE.TEXT, "Delta"));
-        data.Add(new FieldDataPair(MetaInputField.TYPE.TEXT, "Times"));
+        data.Add(new FieldDataPair(MetaInputField.TYPE.TEXT, "Delta", MetaInputField.TEXT_DATA.FLOAT));
+        data.Add(new FieldDataPair(MetaInputField.TYPE.TEXT, "Times", MetaInputField.TEXT_DATA.INT));
 
         return data;
     }

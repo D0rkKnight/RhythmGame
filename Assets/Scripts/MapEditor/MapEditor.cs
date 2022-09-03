@@ -515,5 +515,6 @@ public class MapEditor : MonoBehaviour
         metaFields.Add(field);
 
         field.Label = fd.label; // Copy over label
+        field.fieldType = fd.dtype;
     }
 }

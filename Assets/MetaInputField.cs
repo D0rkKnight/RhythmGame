@@ -13,9 +13,16 @@ public class MetaInputField : MonoBehaviour
         TEXT, TOGGLE
     }
 
+    public enum TEXT_DATA
+    {
+        RAW, INT, FLOAT
+    }
 
     // Bunch of potential inputs
     public TMP_InputField field;
+    private string fieldText;
+    public TEXT_DATA fieldType;
+
     public Toggle toggle;
 
     // Keep it a string since serialization is stringwise anyways
@@ -24,7 +31,7 @@ public class MetaInputField : MonoBehaviour
         get
         {
             if (field != null)
-                return field.text;
+                return fieldText;
 
             if (toggle != null)
                 return toggle.isOn ? "T" : "F";
@@ -35,7 +42,10 @@ public class MetaInputField : MonoBehaviour
         set
         {
             if (field != null)
+            {
                 field.text = value;
+                fieldText = value; // Needs to set both
+            }
 
             if (toggle != null)
                 toggle.isOn = value == "T";
@@ -65,6 +75,29 @@ public class MetaInputField : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        // Write field data into field text
+        if (field != null)
+        {
+            bool succ = true;
+
+            // Check if field is valid
+            switch (fieldType)
+            {
+                case TEXT_DATA.RAW:
+                    succ = true;
+                    break;
+                case TEXT_DATA.INT:
+                    succ = int.TryParse(field.text, out int iRes);
+                    break;
+                case TEXT_DATA.FLOAT:
+                    succ = float.TryParse(field.text, out float fRes);
+                    break;
+            }
+
+            if (succ || field.text.Length == 0)
+                fieldText = field.text;
+            else
+                field.text = fieldText; // Revert
+        }
     }
 }

@@ -57,7 +57,7 @@ public class HoldPhrase : Phrase
     public override List<FieldDataPair> getFieldData()
     {
         List<FieldDataPair> data =  base.getFieldData();
-        data.Add(new FieldDataPair(MetaInputField.TYPE.TEXT, "Hold Dur"));
+        data.Add(new FieldDataPair(MetaInputField.TYPE.TEXT, "Hold Dur", MetaInputField.TEXT_DATA.FLOAT));
 
         return data;
     }
