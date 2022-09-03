@@ -50,8 +50,9 @@ public class MapEditor : MonoBehaviour
     public bool imageQueued = false;
     public bool hotswapQueued = false;
 
-    public GameObject metaFieldPrefab;
-    public List<InputField> metaFields;
+    public MetaInputField metaFieldPrefab;
+    public MetaInputField metaTogglePrefab;
+    public List<MetaInputField> metaFields;
 
     public KeyCode copyKey = KeyCode.C;
 
@@ -97,15 +98,7 @@ public class MapEditor : MonoBehaviour
         phraseMarker = transform.Find("Canvas/PhraseMarker");
         workspaceEditor = transform.Find("PhraseWorkspace").GetComponent<WorkspaceEditor>();
 
-        // Create meta fields
-        metaFields = new List<InputField>();
-        Transform metaFieldAnchor = transform.Find("Canvas/MetaFieldAnchor");
-        for (int i=0; i<4; i++)
-        {
-            Transform field = Instantiate(metaFieldPrefab, metaFieldAnchor).transform;
-            field.position = metaFieldAnchor.position + Vector3.down * 1 * i;
-            metaFields.Add(field.GetComponent<InputField>());
-        }
+        metaFields = new List<MetaInputField>();
 
         // Create default workspace
         genDefWorkspaces();
@@ -445,7 +438,7 @@ public class MapEditor : MonoBehaviour
 
     public void writeActivePhrase(Phrase p)
     {
-        if (!activePhrase.Equals(p))
+        if (!activePhrase.hardEquals(p))
         {
             activePhrase = p;
             activePhraseToEditorUI();
@@ -466,6 +459,20 @@ public class MapEditor : MonoBehaviour
     public void activePhraseToEditorUI()
     {
         // Flag metadata input fields
+        // activePhrase.writeMetaFields(metaFields);
+        List<Phrase.FieldDataPair> fdata = activePhrase.getFieldData();
+
+        // Clear old fields and construct new ones
+        foreach (MetaInputField f in metaFields)
+            Destroy(f.gameObject);
+        metaFields.Clear();
+
+        foreach (Phrase.FieldDataPair fd in fdata)
+        {
+            genMetaField(fd);
+        }
+
+        // Write data into said fields now that they are constructed
         activePhrase.writeMetaFields(metaFields);
 
         // Select right type dropdown option
@@ -484,5 +491,27 @@ public class MapEditor : MonoBehaviour
         // Write to beat and priority input fields
         beatInput.setValue(activePhrase.beat);
         priorityInput.setValue(activePhrase.priority);
+    }
+
+    public void genMetaField(Phrase.FieldDataPair fd)
+    {
+        MetaInputField prefab;
+        Transform metaFieldAnchor = transform.Find("Canvas/MetaFieldAnchor");
+        switch (fd.type)
+        {
+            case MetaInputField.TYPE.TEXT:
+                prefab = metaFieldPrefab;
+                break;
+            case MetaInputField.TYPE.TOGGLE:
+                prefab = metaTogglePrefab;
+                break;
+            default:
+                throw new Exception("Illegal Field Type");
+        }
+
+        // Create meta field
+        MetaInputField field = Instantiate(prefab, metaFieldAnchor);
+        field.transform.position = metaFieldAnchor.position + Vector3.down * 1 * metaFields.Count;
+        metaFields.Add(field);
     }
 }

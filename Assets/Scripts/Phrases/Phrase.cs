@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 [System.Serializable]
 public abstract class Phrase
@@ -33,12 +34,26 @@ public abstract class Phrase
         public TYPE type;
 
         public Func<int, float, int, string[], float, Phrase> con;
+        
 
         public TypeEntry(char charCode_, TYPE type_, Func<int, float, int, string[], float, Phrase> con_)
         {
             charCode = charCode_;
             type = type_;
             con = con_;
+        }
+    }
+
+    // Meta labelling data
+    public struct FieldDataPair
+    {
+        public MetaInputField.TYPE type;
+        public string label;
+
+        public FieldDataPair(MetaInputField.TYPE type_, string label_)
+        {
+            type = type_;
+            label = label_;
         }
     }
 
@@ -501,28 +516,33 @@ public abstract class Phrase
         return 0;
     }
 
+    public virtual List<FieldDataPair> getFieldData()
+    {
+        return new List<FieldDataPair>();
+    }
+
     // Writes meta contents to input field
-    public virtual void writeMetaFields(List<InputField> fields)
+    public virtual void writeMetaFields(List<MetaInputField> fields)
     {
         writeToMeta(); // Reads object field values into meta cache
 
         // No fields
-        foreach (InputField f in fields) f.gameObject.SetActive(false);
+        foreach (MetaInputField f in fields) f.gameObject.SetActive(false);
 
         for (int i=0; i<meta.Length; i++)
         {
             fields[i].gameObject.SetActive(true);
-            fields[i].text = meta[i];
+            fields[i].value = meta[i];
         }
     }
 
 
     // Read meta contents to phrase
-    public void readMetaFields(List<InputField> fields)
+    public void readMetaFields(List<MetaInputField> fields)
     {
         for (int i = 0; i < meta.Length; i++)
         {
-            meta[i] = fields[i].text;
+            meta[i] = fields[i].value;
         }
 
         readFromMeta(); // Writes newly read inputfield values into object fields
@@ -567,7 +587,7 @@ public abstract class Phrase
         Phrase p = (Phrase)obj;
 
         // Check visuals
-        if (highlight != p.highlight ||
+        if (!highlight.Equals(p.highlight) ||
             opacity != p.opacity)
             return false;
 

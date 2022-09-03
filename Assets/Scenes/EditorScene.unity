@@ -8957,7 +8957,9 @@ MonoBehaviour:
   edited: 0
   imageQueued: 0
   hotswapQueued: 0
-  metaFieldPrefab: {fileID: 1438528978180745376, guid: c176e967adc8a7140b035cd9b3ff8017,
+  metaFieldPrefab: {fileID: 2819367453507212441, guid: 574232eb2a29bf34c80e324163afab8a,
+    type: 3}
+  metaTogglePrefab: {fileID: 7106836708687378291, guid: f1271a1aac2338140802ce4c2b07c73a,
     type: 3}
   metaFields: []
   copyKey: 99
@@ -11050,6 +11052,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_RenderMode
       value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 4417488125498661922, guid: c2a31872aa83f7b4dbb8513e9a71bf11,
+        type: 3}
+      propertyPath: m_AdditionalShaderChannelsFlag
+      value: 25
       objectReference: {fileID: 0}
     - target: {fileID: 4417488125498661923, guid: c2a31872aa83f7b4dbb8513e9a71bf11,
         type: 3}

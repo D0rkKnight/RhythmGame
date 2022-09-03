@@ -21,15 +21,27 @@ public abstract class StreamPhrase : Phrase
         return instantiateNote(mp.notePrefab);
     }
 
-    public override void writeMetaFields(List<InputField> fields)
+    public override void writeMetaFields(List<MetaInputField> fields)
     {
         base.writeMetaFields(fields);
 
-        fields[0].placeholder.GetComponent<Text>().text = "Num notes";
-        fields[1].placeholder.GetComponent<Text>().text = "Width";
-        fields[2].placeholder.GetComponent<Text>().text = "Note len";
-        fields[3].placeholder.GetComponent<Text>().text = "Recurse";
+        fields[0].Label = "Num notes";
+        fields[1].Label = "Width";
+        fields[2].Label = "Note len";
+        fields[3].Label = "Recurse";
     }
+
+    public override List<FieldDataPair> getFieldData()
+    {
+        List<FieldDataPair> data = base.getFieldData();
+        data.Add(new FieldDataPair(MetaInputField.TYPE.TEXT, "Num notes"));
+        data.Add(new FieldDataPair(MetaInputField.TYPE.TEXT, "Width"));
+        data.Add(new FieldDataPair(MetaInputField.TYPE.TEXT, "Note len"));
+        data.Add(new FieldDataPair(MetaInputField.TYPE.TOGGLE, "Recurse"));
+
+        return data;
+    }
+
 
     public override void writeToMeta()
     {

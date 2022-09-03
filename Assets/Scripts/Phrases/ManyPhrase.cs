@@ -58,11 +58,18 @@ public class ManyPhrase : Phrase
         return null; // Guess this is unsupported for now
     }
 
-    public override void writeMetaFields(List<InputField> fields)
+    public override void writeMetaFields(List<MetaInputField> fields)
     {
         base.writeMetaFields(fields);
 
-        fields[0].placeholder.GetComponent<Text>().text = "Group";
+        fields[0].Label = "Group";
+    }
+    public override List<FieldDataPair> getFieldData()
+    {
+        List<FieldDataPair> data = base.getFieldData();
+        data.Add(new FieldDataPair(MetaInputField.TYPE.TEXT, "Group"));
+
+        return data;
     }
 
     public override void writeToMeta()
