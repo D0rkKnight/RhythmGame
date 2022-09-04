@@ -10983,6 +10983,16 @@ PrefabInstance:
       propertyPath: purchasedFlags.Array.size
       value: 50
       objectReference: {fileID: 0}
+    - target: {fileID: 4417488125102286285, guid: c2a31872aa83f7b4dbb8513e9a71bf11,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4417488125113502841, guid: c2a31872aa83f7b4dbb8513e9a71bf11,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4417488125113502843, guid: c2a31872aa83f7b4dbb8513e9a71bf11,
         type: 3}
       propertyPath: m_Pivot.x
@@ -11138,6 +11148,21 @@ PrefabInstance:
       propertyPath: m_SizeDelta.x
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4417488126460178705, guid: c2a31872aa83f7b4dbb8513e9a71bf11,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4417488126460178710, guid: c2a31872aa83f7b4dbb8513e9a71bf11,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4417488126460178711, guid: c2a31872aa83f7b4dbb8513e9a71bf11,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4417488126880871312, guid: c2a31872aa83f7b4dbb8513e9a71bf11,
         type: 3}
       propertyPath: m_AnchorMax.x
@@ -11167,6 +11192,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_SizeDelta.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4417488126916215686, guid: c2a31872aa83f7b4dbb8513e9a71bf11,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c2a31872aa83f7b4dbb8513e9a71bf11, type: 3}

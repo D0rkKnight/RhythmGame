@@ -23,7 +23,7 @@ public class SongPicker : MonoBehaviour
             Map map = MapSerializer.sing.parseMap(mapItem);
 
             Toggle toggle = Instantiate(togglePrefab, scrollRegion);
-            toggle.GetComponentInChildren<Text>().text = map.name;
+            toggle.GetComponentInChildren<TMPro.TMP_Text>().text = map.name;
 
             toggle.onValueChanged.AddListener((val) =>
             {

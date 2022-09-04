@@ -26,7 +26,7 @@ public class EditorSkillTree : SkillTree
             toggles[i] = obj.GetComponent<Toggle>();
 
             string txt = Enum.GetName(typeof(NODE), i); // Get name of enum
-            toggles[i].GetComponentInChildren<Text>().text = txt;
+            toggles[i].GetComponentInChildren<TMPro.TMP_Text>().text = txt;
 
             // Set recompile on any toggle chage
             toggles[i].onValueChanged.AddListener(delegate
