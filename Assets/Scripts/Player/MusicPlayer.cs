@@ -400,6 +400,14 @@ public class MusicPlayer : MonoBehaviour
 
     private void inter()
     {
+        // First time coming to interim? Activate skilltree
+        if (!SkillTree.sing.getActive(SkillTree.NODE.SKILLTREE)) {
+            SkillTree.sing.purchasedFlags[(int)SkillTree.NODE.SKILLTREE] = true;
+            Timeliner.sing.mpCentered = false; // Reveal skilltree
+
+            SkillTree.sing.recompileQueued = true;
+        }
+
         state = STATE.INTERIM;
         interimTil = Time.time + 1f;
 

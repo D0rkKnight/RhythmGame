@@ -253,6 +253,18 @@ public class MainSkillTree : SkillTree
             if (activeFlags[(int)but.node])
                 tokenMult *= but.tokenMult;
         }
+
+        // Flag skill tree expansion
+        if (!getActive(NODE.SKILLTREE))
+        {
+            Timeliner.sing.mpCentered = true;
+        }
+        MusicPlayer.sing.transform.Find("Canvas/SkillTreeExpandBut").gameObject.SetActive(getActive(NODE.SKILLTREE));
+
+        // Link song picker to both columns
+        Timeliner.sing.transform.Find("SideAreaCanvas/Selectors").gameObject.SetActive(
+            getPurchased(NODE.L_EXPAND) && getPurchased(NODE.R_EXPAND)
+        );
     }
 
     protected override void enableNewOptions()

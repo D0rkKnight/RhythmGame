@@ -1,14 +1,8 @@
 stage: 2
-tokens: 82
-heat: 100
+tokens: 829
+heat: 0
 
 nodes
-0
-0
-0
-0
-0
-1
 1
 1
 0
@@ -18,11 +12,17 @@ nodes
 1
 1
 1
+0
+0
+1
+1
+1
+1
 1
 1
 1
 0
-0
+1
 0
 1
 0
@@ -38,15 +38,8 @@ editor
 active: 
 
 highscores
-rhythm_1
-5200
-
 Pendulum
-11210
-69640
-
-Allegretto_Town
-5600
+10600
 
 
 keybinds
@@ -54,5 +47,5 @@ D
 F
 J
 K
-Space
+P
 

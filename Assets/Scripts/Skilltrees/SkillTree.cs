@@ -137,4 +137,9 @@ public class SkillTree : MonoBehaviour
     {
         return activeFlags[(int)n];
     }
+
+    public bool getPurchased(NODE n)
+    {
+        return purchasedFlags[(int)n];
+    }
 }
