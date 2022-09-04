@@ -21,7 +21,6 @@ public class MapEditor : MonoBehaviour
         set { activePhrase.lane = value; }
     }
 
-    public Text beatIndicator;
     public InputField songTitleField;
     public InputField audioFileField;
     public InputField importField;
@@ -40,8 +39,7 @@ public class MapEditor : MonoBehaviour
     public FloatLockedField beatInput;
     public FloatLockedField priorityInput;
 
-    public Text codeInd;
-    public Transform phraseMarker;
+    public TMP_Text codeInd;
 
     public bool songPlayQueued = false;
 
@@ -94,8 +92,6 @@ public class MapEditor : MonoBehaviour
     {
         if (sing != null) Debug.LogError("Singleton broken");
         sing = this;
-
-        phraseMarker = transform.Find("Canvas/PhraseMarker");
         workspaceEditor = transform.Find("PhraseWorkspace").GetComponent<WorkspaceEditor>();
 
         metaFields = new List<MetaInputField>();
