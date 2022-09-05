@@ -51,7 +51,11 @@ public class ManyPhrase : Phrase
             pc.opacity = opacity;
 
             pc.beat += beat; // Root their beat 0 at this phrase's beat
-            pc.lane = (pc.lane + lane) % MusicPlayer.sing.columns.Length; // Cycle spilled phrases
+
+            int targetLane = (pc.lane % MusicPlayer.sing.columns.Length) + lane;
+            targetLane = Mathf.Min(targetLane, MusicPlayer.sing.columns.Length-1);
+
+            pc.lane = targetLane; // Cycle spilled phrases
             pc.rasterize(MapSerializer.sing);
         }
 

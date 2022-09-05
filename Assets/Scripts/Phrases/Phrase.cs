@@ -301,6 +301,8 @@ public abstract class Phrase
         blockFrame = Mathf.Max(blockFrame,
             MapSerializer.sing.noteBlockLen * (float)Math.Pow(2.0f, ownerMap.xtime));
 
+        Debug.Log(blockFrame);
+
         float weight = priority + accent; // Weight is based off of raw accent
 
 
@@ -350,7 +352,7 @@ public abstract class Phrase
         // If a song is playing in double time, we require the beats to be converted to single time for granularity checks
         float trueBeat = spawnBeat / (float)Mathf.Pow(2, ownerMap.xtime);
         if (Mathf.Abs(trueBeat) % MapSerializer.sing.beatGran > 0.00001)
-            return null;
+            weight -= 2; // Steep weight penalty instead of being completely removed
 
         // TODO: Use this check for all higher complexity phrases
         if (!noteValid(mp, spawnLane, spawnBeat, blockFrame))
