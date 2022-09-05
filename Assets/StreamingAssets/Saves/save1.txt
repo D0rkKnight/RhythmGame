@@ -1,8 +1,14 @@
 stage: 2
-tokens: 829
+tokens: 0
 heat: 0
 
 nodes
+0
+0
+0
+0
+0
+0
 1
 1
 0
@@ -10,37 +16,22 @@ nodes
 0
 1
 1
-1
-1
-0
 0
 1
-1
-1
-1
-1
-1
-1
-0
-1
-0
 1
 0
 0
 0
 0
 0
-0
+1
 0
 0
 
 editor
-active: 
+active: Pendulum.txt
 
 highscores
-Pendulum
-10600
-
 
 keybinds
 D
@@ -48,4 +39,3 @@ F
 J
 K
 P
-

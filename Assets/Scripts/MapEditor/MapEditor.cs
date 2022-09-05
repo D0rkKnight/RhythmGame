@@ -21,11 +21,11 @@ public class MapEditor : MonoBehaviour
         set { activePhrase.lane = value; }
     }
 
-    public InputField songTitleField;
-    public InputField audioFileField;
-    public InputField importField;
+    public TMP_InputField songTitleField;
+    public TMP_InputField audioFileField;
+    public TMP_InputField importField;
 
-    public InputField BPMField;
+    public TMP_InputField BPMField;
     public TMP_InputField trackOffsetField;
     public TMP_InputField xTimeField;
     public float bpm;

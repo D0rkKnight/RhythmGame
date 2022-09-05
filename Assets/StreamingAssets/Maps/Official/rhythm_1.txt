@@ -2,6 +2,7 @@ mapname: rhythm_1
 track: rhythm1.mp3
 bpm: 100
 offset: 0
+xtime: 1
 
 streamstart
 Main

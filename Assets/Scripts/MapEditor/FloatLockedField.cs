@@ -29,7 +29,7 @@ public class FloatLockedField : MonoBehaviour
             if (succ)
             {
                 // On change, call the cb
-                if (value != parse)
+                if (value != parse && cb != null)
                     cb(parse);
                 value = parse;
             }

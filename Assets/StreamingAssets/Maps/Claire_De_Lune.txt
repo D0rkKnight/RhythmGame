@@ -1,0 +1,18 @@
+mapname: Claire_De_Lune
+track: Claire_De_Lune_Brent_Hugh.wav
+bpm: 100
+offset: 0
+xtime: 0
+
+streamstart
+Main
+[0]1{1}
+[2]1{1}
+End
+
+Sub1
+End
+
+Sub2
+End
+
