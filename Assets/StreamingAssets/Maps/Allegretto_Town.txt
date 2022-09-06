@@ -1,5 +1,6 @@
 mapname: Allegretto_Town
 track: Allegretto_Town2_3.wav
+author: Angelina
 bpm: 100
 offset: 0
 xtime: 1

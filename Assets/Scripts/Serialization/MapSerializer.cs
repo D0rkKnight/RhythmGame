@@ -126,6 +126,11 @@ public partial class MapSerializer : MonoBehaviour
 
         // Since everything is loaded in, reevaluate crosses
         MusicPlayer.sing.reevaluateCrosses();
+
+        // Write in attributions
+        MusicPlayer.sing.transform.Find("Canvas/Attributions").GetComponent<TMPro.TMP_Text>().text = 
+            map.name + " - " + map.author;
+
     }
 
     public Map parseMap(string fname)
@@ -201,6 +206,9 @@ public partial class MapSerializer : MonoBehaviour
                     break;
                 case "track":
                     map.trackName = value;
+                    break;
+                case "author":
+                    map.author = value;
                     break;
                 case "bpm":
                     map.bpm = int.Parse(value);

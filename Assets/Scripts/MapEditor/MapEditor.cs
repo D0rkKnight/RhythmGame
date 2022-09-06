@@ -24,6 +24,7 @@ public class MapEditor : MonoBehaviour
     public TMP_InputField songTitleField;
     public TMP_InputField audioFileField;
     public TMP_InputField importField;
+    public TMP_InputField authorField;
 
     public TMP_InputField BPMField;
     public TMP_InputField trackOffsetField;
@@ -279,7 +280,7 @@ public class MapEditor : MonoBehaviour
         Debug.Log("Hotswap commencing");
 
         // Pipe the data directly
-        Map map = new Map(songTitleField.text+"_hotswap", audioFileField.text, (int) bpm, trackOffset, xTime, groups);
+        Map map = new Map(songTitleField.text+"_hotswap", audioFileField.text, authorField.text, (int) bpm, trackOffset, xTime, groups);
 
         // Tack on hovered item
         if (loadActivePhrase)
@@ -333,6 +334,7 @@ public class MapEditor : MonoBehaviour
 
         data.Add("mapname: " + mapName);
         data.Add("track: " + track);
+        data.Add("author: " + authorField.text);
         data.Add("bpm: " + bpm);
         data.Add("offset: " + trackOffset);
         data.Add("xtime: " + xTime); // Use 0 as default for now
@@ -393,6 +395,7 @@ public class MapEditor : MonoBehaviour
         audioFileField.text = map.trackName;
         BPMField.text = map.bpm.ToString();
         trackOffsetField.text = map.offset.ToString();
+        authorField.text = map.author;
         xTimeField.text = map.xtime.ToString();
 
         edited = true;
@@ -400,7 +403,11 @@ public class MapEditor : MonoBehaviour
 
     public void import()
     {
+        // This is what the button hooks into
         string fname = importField.text;
+        if (!File.Exists(Path.Combine(Application.streamingAssetsPath, "Maps", fname)))
+            return;
+
         Map map = MapSerializer.sing.parseMap(fname);
 
         import(map);

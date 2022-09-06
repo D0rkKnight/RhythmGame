@@ -1,5 +1,6 @@
 mapname: playTemp
 track: rhythm1.mp3
+author: soltosirus
 bpm: 100
 offset: 0
 xtime: 1

@@ -1,5 +1,6 @@
 mapname: Pendulum
 track: pendulum2.wav
+author: Angelina
 bpm: 60
 offset: 0
 xtime: 0

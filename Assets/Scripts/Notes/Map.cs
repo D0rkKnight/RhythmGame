@@ -6,6 +6,7 @@ public partial class Map
 {
     public string name;
     public string trackName;
+    public string author = "def_author";
     public int bpm;
     public float offset; // In beats
 
@@ -18,10 +19,11 @@ public partial class Map
         groups = new List<PhraseGroup>();
     }
 
-    public Map(string name_, string trackName_, int bpm_, float offset_, int xtime_, List<PhraseGroup> groups_)
+    public Map(string name_, string trackName_, string author_, int bpm_, float offset_, int xtime_, List<PhraseGroup> groups_)
     {
         name = name_;
         trackName = trackName_;
+        author = author_;
         bpm = bpm_;
         offset = offset_;
         xtime = xtime_;
@@ -44,7 +46,7 @@ public partial class Map
 
     public Map copy()
     {
-        Map map = new Map(name, trackName, bpm, offset, xtime, new List<PhraseGroup>());
+        Map map = new Map(name, trackName, author, bpm, offset, xtime, new List<PhraseGroup>());
 
         // Go through groups and link them properly
         foreach (PhraseGroup gp in groups)
